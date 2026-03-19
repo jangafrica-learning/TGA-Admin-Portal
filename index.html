@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+<title>The Gambia Academy Admin Portal</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F5D4A">
+
+<style>
+
+:root {
+    --green: #0F5D4A;
+    --gold: #020742;
+    --cream: #FAF7F2;
+    --dark: #1F1F1F;
+}
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+    background: var(--cream);
+    color: var(--dark);
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(135deg, var(--green), #4f005f);
+    color: #fff;
+    padding: 40px 20px 60px;
+    text-align: center;
+    position: relative;
+}
+
+.header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: var(--gold);
+}
+
+.header img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+/* MAIN */
+.main {
+    padding: 50px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.portal-grid {
+    max-width: 1000px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 260px));
+    gap: 26px;
+    justify-content: center;
+}
+
+/* CARD */
+.portal-card {
+    background: #a6bff1;
+    border-radius: 14px;
+    padding: 30px 22px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.portal-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(8, 2, 2, 0.15);
+}
+
+/* ICON */
+.icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon svg {
+    width: 34px;
+    height: 34px;
+    fill: white;
+}
+
+/* TEXT ALIGNMENT FIX */
+.portal-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+    min-height: 22px;
+}
+
+.portal-card p {
+    font-size: 14px;
+    color: #32353d;
+    margin-bottom: 18px;
+    min-height: 44px;
+}
+
+/* ACCESS BUTTON (UNCHANGED STYLE) */
+.portal-card::after {
+    content: "CLICK HERE";
+    display: inline-block;
+    background: #01433b;
+    color: #fff;
+    font-size: 12px;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* COLORS */
+.portal-card.admin .icon {
+    background: #f59e0b;
+}
+
+.portal-card.teacher .icon {
+    background: #60a5fa;
+}
+
+.portal-card.request .icon {
+    background: #47012e;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    padding: 25px 10px;
+    font-size: .8rem;
+    color: #000;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <img src="logo.png" alt="The Gambia Academy">
+    <h1>The Gambia Academy Administration Portal</h1>
+    <p>System Management • Staff Oversight • Academic Monitoring</p>
+    <p>All critical functions centralized for efficient control.</p>
+</header>
+
+<main class="main">
+<section class="portal-grid">
+
+<!-- ADMIN -->
+<div class="portal-card admin" onclick="window.location.href='admin_dashboard.html'">
+    <div class="icon">
+        <!-- GEAR ICON -->
+        <svg viewBox="0 0 24 24">
+            <path d="M19.14,12.94a7.49,7.49,0,0,0,.05-.94,7.49,7.49,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,13.77,2H10.23a.5.5,0,0,0-.49.41L9.36,5.06a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.86,11.06a7.49,7.49,0,0,0-.05.94,7.49,7.49,0,0,0,.05.94L2.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.49.41h3.54a.5.5,0,0,0,.49-.41l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+        </svg>
+    </div>
+    <h3>Administration</h3>
+    <p>Manage and Monitor</p>
+</div>
+
+<!-- TEACHER -->
+<div class="portal-card teacher" onclick="window.location.href='https://jangafrica-learning.github.io/TGA-staff-portal/index.html'">
+    <div class="icon">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2
+            c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+        </svg>
+    </div>
+    <h3>Teacher's Portal</h3>
+    <p>Schedules | Curriculum</p>
+</div>
+
+<!-- STUDENTS -->
+<div class="portal-card request" onclick="window.location.href='https://jangafrica-learning.github.io/TGA-Student-Folders/index.html'">
+    <div class="icon">
+        <!-- USERS ICON -->
+        <svg viewBox="0 0 24 24">
+            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.96 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+        </svg>
+    </div>
+    <h3>Students' Center</h3>
+    <p>Academic Projects | Progress Reports</p>
+</div>
+
+<!-- WEBSITE -->
+<div class="portal-card request" onclick="window.location.href='https://www.thegambiaacademy.org/'">
+    <div class="icon">
+        <!-- GLOBE ICON -->
+        <svg viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm7.93 9h-3.02a15.72 15.72 0 00-1.38-5.03A8.03 8.03 0 0119.93 11zM12 4c1.93 2.37 2.9 5.07 3.24 7H8.76C9.1 9.07 10.07 6.37 12 4zM4.07 13h3.02a15.72 15.72 0 001.38 5.03A8.03 8.03 0 014.07 13zm3.02-2H4.07a8.03 8.03 0 014.4-5.03A15.72 15.72 0 007.09 11zM12 20c-1.93-2.37-2.9-5.07-3.24-7h6.48C14.9 14.93 13.93 17.63 12 20zm3.53-1.97A15.72 15.72 0 0016.91 13h3.02a8.03 8.03 0 01-4.4 5.03z"/>
+        </svg>
+    </div>
+    <h3>Access Website</h3>
+    <p>Visit our main website for more information</p>
+</div>
+
+</section>
+</main>
+
+<footer class="footer">
+    Powered by JangAfrica<br>
+    © <span id="year"></span> The Gambia Academy
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+<script>
+(function () {
+    const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    const isInStandaloneMode = ('standalone' in window.navigator) && window.navigator.standalone;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    if (!isIOS || isInStandaloneMode || !isSafari) return;
+    if (localStorage.getItem("iosInstallDismissed")) return;
+
+    const banner = document.createElement("div");
+    banner.innerHTML = `
+        <div style="
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 420px;
+            background: #1e293b;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 9999;
+        ">
+            📲 Install this app: Tap Share ⬆️ then "Add to Home Screen"
+            <button id="ios-install-close" style="margin-top:10px;">Dismiss</button>
+        </div>
+    `;
+
+    document.body.appendChild(banner);
+
+    document.getElementById("ios-install-close").onclick = function () {
+        banner.remove();
+        localStorage.setItem("iosInstallDismissed", "true");
+    };
+})();
+</script>
+
+</body>
+</html>
