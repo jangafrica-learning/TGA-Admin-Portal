@@ -33,13 +33,17 @@
             padding: 10px 15px;
             border: none;
             border-radius: 6px;
-            background: #ff9800;
+            background: #0004ff;
             color: white;
             font-weight: bold;
             cursor: pointer;
         }
 
-        /* ✅ CENTERED ERROR */
+        .logout-btn {
+            margin-top: 10px;
+            background: #e53935;
+        }
+
         .error-message {
             text-align: center;
             color: red;
@@ -53,19 +57,15 @@
             margin: 15px 0;
         }
 
-        .action-buttons button {
-            margin: 0 5px;
-        }
-
         #reportCard {
             width: 680px;
             margin: 10px auto;
             border: 2px solid black;
             padding: 15px;
-            padding-bottom: 30px;
+            padding-bottom: 40px; /* 🔥 increase this */
             text-align: left;
             box-sizing: border-box;
-            font-size: 13px;
+            font-size: 12.5px; /* 🔥 slightly smaller */
         }
 
         h2, h3, h4 { margin: 5px 0; }
@@ -101,6 +101,12 @@
             padding-top: 8px;
         }
 
+        .site-footer {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 13px;
+        }
+
         @media print {
             body * { visibility: hidden; }
 
@@ -130,15 +136,23 @@
 
     <div class="search-box">
         <input type="text" id="search" placeholder="Enter Student ID" onkeypress="handleEnter(event)">
-        <button onclick="searchStudent()">Check Results</button>
+        <button onclick="searchStudent()">Check Results</button><br>
+        <button class="logout-btn" onclick="logout()">Clear Search</button>
     </div>
 </div>
 
 <div id="result"></div>
 
+<div class="site-footer">
+    Powered by JangAfrica<br>
+    © <span id="year"></span> The Gambia Academy
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
+
+document.getElementById("year").textContent = new Date().getFullYear();
 
 const SHEET_URL = "https://opensheet.elk.sh/1PzkOivzdzAKTtfAqTDc4ZOUBDGFoKslvIAyJGoipHY8/1";
 
@@ -191,7 +205,6 @@ async function searchStudent() {
     const query = document.getElementById("search").value.trim().toLowerCase();
     const resultDiv = document.getElementById("result");
 
-    // ❌ EMPTY INPUT
     if (!query) {
         resultDiv.innerHTML = "<div class='error-message'>Invalid credentials</div>";
         return;
@@ -206,7 +219,6 @@ async function searchStudent() {
             (row["STUDENT_ID"] || "").toLowerCase() === query
         );
 
-        // ❌ WRONG ID
         if (!student) {
             resultDiv.innerHTML = "<div class='error-message'>Invalid credentials</div>";
             return;
@@ -246,8 +258,9 @@ async function searchStudent() {
             `;
         });
 
-        let avg = count > 0 ? (total / count).toFixed(2) : "-";
-        let overall = getGrade(avg);
+            let avgNumber = count > 0 ? (total / count) : 0;
+            let avg = count > 0 ? avgNumber.toFixed(2) + "%" : "-";
+            let overall = getGrade(avgNumber);
 
         resultDiv.innerHTML = `
         <div class="action-buttons">
@@ -257,8 +270,8 @@ async function searchStudent() {
 
         <div id="reportCard">
 
-            <h2 style="text-align:center;">TGA REPORT CARD</h2>
-            <h3 style="text-align:center;">THE GAMBIA ACADEMY</h3>
+            <h1 style="text-align:center;">THE GAMBIA ACADEMY</h1>
+            <h2 style="text-align:center;">Student Academic Report Card</h2>
 
             <p><strong>Academic Year:</strong> ${getYear()}</p>
             <p><strong>Print Date:</strong> ${getFullDate()}</p>
@@ -301,22 +314,22 @@ async function searchStudent() {
 
             <table class="no-border">
                 <tr>
-                    <td>Parent Sign: __________</td>
-                    <td>Head of School Sign: __________</td>
-                    <td>Director Sign: __________</td>
+                    <td>Parent Signature: __________</td>
+                    <td>Head Signature: __________</td>
+                    <td>Director Signature: __________</td>
                 </tr>
             </table>
 
             <div class="footer">
                 for more information, contact us at:<br>
                 Tel: + (220) 000 0000 / 000 0000<br>
-                Email: info@thegambiaacademy.org
+                Email: info@thegambiaacademy.org<br>
+                website: www.thegambiaacademy.org
             </div>
 
         </div>
         `;
     } catch (err) {
-        console.error(err);
         resultDiv.innerHTML = "<div class='error-message'>Error loading data</div>";
     }
 }
@@ -325,13 +338,29 @@ function downloadPDF() {
     const element = document.getElementById("reportCard");
 
     const opt = {
-        margin: [5,5,12,5],
+        margin: [8, 8, 15, 8], // 🔥 bigger bottom margin (critical)
         filename: 'report-card.pdf',
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            scrollY: 0
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+        },
+        pagebreak: { mode: ['avoid-all'] } // 🔥 prevents cutting
     };
 
     html2pdf().set(opt).from(element).save();
+}
+
+function logout() {
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("search").value = "";
+    window.scrollTo(0,0);
 }
 
 </script>
