@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TGA Report Card</title>
+    <style>
+        body { font-family: Arial; margin: 0; }
+
+        /* 🔥 HEADER STYLE (LIKE YOUR IMAGE) */
+        .header {
+            background: linear-gradient(90deg, #1f5f5b, #4b006e);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            margin: 10px 0;
+            font-size: 36px;
+        }
+
+        .header p {
+            margin: 5px 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* 🔥 SEARCH AREA */
+        .search-box {
+            margin-top: 25px;
+        }
+
+        .search-box input {
+            padding: 12px;
+            width: 280px;
+            border: none;
+            border-radius: 6px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-box button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            background: #ff9800;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: 0.3s;
+        }
+
+        .search-box button:hover {
+            background: #e68900;
+        }
+
+        #result {
+            text-align: center;
+        }
+
+        /* REPORT CARD (UNCHANGED CORE) */
+        #reportCard {
+            width: 680px;
+            margin: 20px auto;
+            border: 2px solid black;
+            padding: 15px;
+            padding-bottom: 30px;
+            text-align: left;
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .no-border td {
+            border: none;
+            text-align: left;
+        }
+
+        .grading-table {
+            width: 60%;
+            font-size: 11px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 11px;
+            border-top: 1px solid black;
+            padding-top: 8px;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #reportCard, #reportCard * { visibility: visible; }
+
+            #reportCard {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            button, input { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔥 HEADER -->
+<div class="header">
+    <h1>The Gambia Academy</h1>
+    <h3>Exam Results Checking</h3>
+    <p>Results Processing • Verification • Secure Printing</p>
+    <p>Enter a valid Student ID to retrieve and print the student's exam results.</p>
+
+    <!-- 🔥 SEARCH UNDER HEADER -->
+    <div class="search-box">
+        <input type="text" id="search" placeholder="Enter Student ID" onkeypress="handleEnter(event)">
+        <button onclick="searchStudent()">Check Results</button>
+    </div>
+</div>
+
+<div id="result"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+
+const SHEET_URL = "https://opensheet.elk.sh/1PzkOivzdzAKTtfAqTDc4ZOUBDGFoKslvIAyJGoipHY8/1";
+
+let cache = [];
+
+async function loadData() {
+    if (cache.length > 0) return cache;
+    const res = await fetch(SHEET_URL);
+    const data = await res.json();
+    cache = data;
+    return data;
+}
+
+function safe(v) {
+    return v && v.toString().trim() !== "" ? v : "-";
+}
+
+function get(student, key) {
+    return safe(student[key] || student[key + " "] || student[key.trim()]);
+}
+
+/* 🔥 ENTER KEY SUPPORT */
+function handleEnter(event) {
+    if (event.key === "Enter") {
+        searchStudent();
+    }
+}
+
+function getFullDate() {
+    const d = new Date();
+    return d.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+    });
+}
+
+function getYear() {
+    return new Date().getFullYear();
+}
+
+function getGrade(score) {
+    score = parseFloat(score);
+    if (score >= 85) return ["A", "EXCELLENT"];
+    if (score >= 75) return ["B", "VERY GOOD"];
+    if (score >= 65) return ["C", "GOOD"];
+    if (score >= 55) return ["D", "CREDIT"];
+    if (score >= 40) return ["E", "PASS"];
+    return ["F", "FAIL"];
+}
+
+async function searchStudent() {
+    const query = document.getElementById("search").value.trim().toLowerCase();
+    const resultDiv = document.getElementById("result");
+
+    resultDiv.innerHTML = "Loading...";
+
+    try {
+        const data = await loadData();
+
+        const student = data.find(row =>
+            (row["STUDENT_ID"] || "").toLowerCase() === query
+        );
+
+        if (!student) {
+            resultDiv.innerHTML = "<p>No record found</p>";
+            return;
+        }
+
+        const subjects = [
+            "ENGLISH LANGUAGE",
+            "MATHEMATICS",
+            "SCIENCE",
+            "BUSINESS STUDIES",
+            "AGRICULTURAL SCIENCE",
+            "HISTORY",
+            "FASHION & DESIGN",
+            "MUSIC BUSINESS"
+        ];
+
+        let rows = "";
+        let total = 0;
+        let count = 0;
+
+        subjects.forEach(sub => {
+            let score = parseFloat(get(student, sub));
+            if (!isNaN(score)) {
+                total += score;
+                count++;
+            }
+
+            let gradeData = getGrade(score);
+
+            rows += `
+                <tr>
+                    <td>${sub}</td>
+                    <td>${safe(score)}</td>
+                    <td>${gradeData[0]}</td>
+                    <td>${gradeData[1]}</td>
+                </tr>
+            `;
+        });
+
+        let avg = count > 0 ? (total / count).toFixed(2) : "-";
+        let overall = getGrade(avg);
+
+        resultDiv.innerHTML = `
+        <div style="margin:10px;">
+            <button onclick="window.print()">Print</button>
+            <button onclick="downloadPDF()">Download PDF</button>
+        </div>
+
+        <div id="reportCard">
+            <h2 style="text-align:center;">TGA REPORT CARD</h2>
+            <h3 style="text-align:center;">THE GAMBIA ACADEMY</h3>
+
+            <p><strong>Academic Year:</strong> ${getYear()}</p>
+            <p><strong>Print Date:</strong> ${getFullDate()}</p>
+
+            <h4>STUDENT INFORMATION</h4>
+            <table class="no-border">
+                <tr>
+                    <td><strong>NAME:</strong> ${get(student, "STUDENT NAME")}</td>
+                    <td><strong>CLASS:</strong> ${get(student, "CLASS")}</td>
+                    <td><strong>ID:</strong> ${get(student, "STUDENT_ID")}</td>
+                </tr>
+            </table>
+
+            <h4>SUBJECT RESULTS</h4>
+            <table>
+                <tr>
+                    <th>SUBJECT</th>
+                    <th>SCORE</th>
+                    <th>GRADE</th>
+                    <th>REMARK</th>
+                </tr>
+                ${rows}
+            </table>
+
+            <p><strong>AVERAGE:</strong> ${avg}</p>
+            <p><strong>GRADE:</strong> ${overall[0]}</p>
+            <p><strong>REMARK:</strong> ${overall[1]}</p>
+
+            <div class="footer">
+                Tel: + (220) 000 0000 / 000 0000<br>
+                Email: info@thegambiaacademy.org
+            </div>
+        </div>
+        `;
+    } catch (err) {
+        console.error(err);
+        resultDiv.innerHTML = "<p style='color:red;'>Error loading data</p>";
+    }
+}
+
+function downloadPDF() {
+    const element = document.getElementById("reportCard");
+
+    const opt = {
+        margin: [5,5,12,5],
+        filename: 'report-card.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+}
+
+</script>
+
+</body>
+</html>
