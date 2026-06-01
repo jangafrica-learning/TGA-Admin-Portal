@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Report</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #eef3f9;
+  color: #1d2b53;
+}
+
+/* MAIN PAGE */
+
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: white;
+  padding: 24px;
+}
+
+h2 {
+  font-size: 18px;
+  color: #17357a;
+  margin-bottom: 8px;
+}
+
+.legend {
+  margin-bottom: 18px;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* MAIN BUTTONS */
+
+.main-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s;
+  color: white;
+  min-width: 160px;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.student-btn,
+.view-btn {
+  background: linear-gradient(90deg, #0048d8, #0037ad);
+}
+
+.staff-btn {
+  background: linear-gradient(90deg, #17357a, #001d5c);
+}
+
+.print-btn {
+  background: linear-gradient(90deg, #189000, #0d7300);
+  display: none;
+}
+
+.clear-btn {
+  background: linear-gradient(90deg, #d62828, #b00020);
+}
+
+.close-btn {
+  background: #6c757d;
+  min-width: 150px;
+}
+
+/* FORM FIELDS */
+
+.field {
+  margin-bottom: 12px;
+  max-width: 260px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #17357a;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px 9px;
+  border-radius: 10px;
+  border: 1px solid #dce4ef;
+  font-size: 12px;
+  outline: none;
+  background: white;
+}
+
+input:focus,
+select:focus {
+  border: 1px solid #0037ad;
+}
+
+/* MODAL */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  z-index: 999;
+}
+
+.modal {
+  width: 82%;
+  max-width: 1080px;
+  background: white;
+  border-radius: 16px;
+  padding: 18px 20px;
+  max-height: 88vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.modal-title {
+  font-size: 18px;
+  color: #17357a;
+}
+
+/* ACTION BUTTONS */
+
+.buttons {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#message {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* REPORT AREA */
+
+.report {
+  margin-top: 18px;
+}
+
+/* PRINT REPORT DESIGN */
+
+.print-report {
+  margin-top: 18px;
+  border: 4px solid #111;
+  border-radius: 22px;
+  padding: 28px;
+  background: white;
+  position: relative;
+  overflow: hidden;
+  min-height: 900px;
+}
+
+.print-report::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px;
+  height: 520px;
+  background: url("logo.png") center center no-repeat;
+  background-size: contain;
+  opacity: 0.06;
+  z-index: 0;
+}
+
+.print-report > * {
+  position: relative;
+  z-index: 2;
+}
+
+.report-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.print-logo {
+  max-width: 85px;
+  margin-bottom: 10px;
+}
+
+.report-header h1 {
+  margin: 0;
+  font-size: 16px;
+  color: #111;
+}
+
+.report-header h2 {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #444;
+}
+
+.report-date {
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.section {
+  margin-top: 30px;
+}
+
+.section h3 {
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+  color: #222;
+  font-size: 15px;
+}
+
+.report-row {
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.signature-section {
+  margin-top: 70px;
+  text-align: left;
+}
+
+.signature-line {
+  width: 220px;
+  border-top: 2px solid #000;
+  margin-bottom: 8px;
+}
+
+.signature-section p {
+  font-size: 13px;
+}
+
+.footer {
+  margin-top: 70px;
+  text-align: center;
+  font-size: 12px;
+  color: #555;
+}
+
+.copyright {
+  margin-top: 15px;
+  font-weight: bold;
+}
+/* =====================================
+   PRINT FIX
+===================================== */
+
+@media print {
+
+    body *{
+        visibility:hidden;
+    }
+
+    .print-report,
+    .print-report *{
+        visibility:visible;
+    }
+
+    .print-report{
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        background:white;
+    }
+
+    .buttons,
+    .main-buttons,
+    .close-btn,
+    #printBtn{
+        display:none !important;
+    }
+}
+/* MOBILE */
+
+@media(max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .modal {
+    width: 96%;
+    padding: 14px;
+    border-radius: 14px;
+    max-height: 90vh;
+  }
+
+  .modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .main-buttons,
+  .buttons {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .close-btn {
+    min-width: unset;
+  }
+
+  .print-report {
+    padding: 20px;
+  }
+
+  .report-row {
+    font-size: 13px;
+  }
+}
+
+/* PRINT */
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+    background: white !important;
+    overflow: hidden;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    padding: 0;
+  }
+
+  .container > h2,
+  .legend,
+  .main-buttons,
+  .modal-header,
+  .field,
+  .buttons,
+  #message {
+    display: none !important;
+  }
+
+  .modal-overlay {
+    position: static;
+    display: block !important;
+    background: none;
+    padding: 0;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    max-height: none;
+    overflow: visible;
+    border-radius: 0;
+  }
+
+  .print-report {
+    width: 100%;
+    min-height: 277mm;
+    margin: 0;
+    padding: 18mm;
+    border: 3px solid #111;
+    border-radius: 0;
+    box-shadow: none;
+    page-break-inside: avoid;
+    overflow: hidden;
+  }
+
+  .report-header {
+    margin-bottom: 18px;
+  }
+
+  .print-logo {
+    max-width: 60px;
+  }
+
+  .report-header h1 {
+    font-size: 18px;
+  }
+
+  .report-header h2 {
+    font-size: 16px;
+  }
+
+  .report-date {
+    font-size: 14px;
+  }
+
+  .section {
+    margin-top: 18px;
+  }
+
+  .section h3 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .report-row {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .signature-section {
+    margin-top: 45px;
+  }
+
+  .footer {
+    margin-top: 40px;
+    font-size: 12px;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>Register Report</h2>
+
+  <p class="legend">
+    Generate a student register or a staff register report.
+  </p>
+
+  <div class="main-buttons">
+
+    <button class="staff-btn" onclick="openReport('staff')">
+      Staff Report
+    </button>
+
+    <button class="student-btn" onclick="openReport('student')">
+      Student Report
+    </button>
+
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <h2 class="modal-title" id="modalTitle">
+        Register Report
+      </h2>
+
+      <button class="close-btn" onclick="closeModal()">
+        Close
+      </button>
+
+    </div>
+
+    <div class="field" id="studentField">
+
+      <label>Student ID</label>
+
+      <input
+        type="text"
+        id="studentID"
+        placeholder="Enter Student ID"
+        oninput="autoSearchStudent(this)"
+        autocomplete="off">
+
+    </div>
+
+    <div class="field" id="staffField" style="display:none;">
+
+      <label>Staff Name</label>
+
+      <select id="staffSelect" onchange="loadReport()">
+        <option value="">Loading staff...</option>
+      </select>
+
+    </div>
+
+    <div class="buttons">
+
+      <button class="view-btn" onclick="loadReport()">
+        View Report
+      </button>
+
+      <button id="printBtn" class="print-btn" onclick="printReport()">
+        Print
+      </button>
+
+      <button class="clear-btn" onclick="clearReport()">
+        Clear
+      </button>
+
+    </div>
+
+    <div id="message"></div>
+
+    <div class="report" id="report"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbx70aP3mQ7QHnIeDU1vhdckv2UAo7T5F8U9GOgxY1fW8fxKDMFEEjR0P77v8NT90ulE/exec";
+
+let currentReportType = "";
+let autoSearchTimeout;
+let staffList = [];
+
+// =====================================
+// OPEN REPORT
+// =====================================
+
+function openReport(type) {
+
+    currentReportType =
+    type;
+
+    document.getElementById("modalOverlay").style.display =
+    "flex";
+
+    document.getElementById("message").innerText =
+    "";
+
+    document.getElementById("printBtn").style.display =
+    "none";
+
+    document.getElementById("report").innerHTML =
+    "";
+
+    if (type === "student") {
+
+        document.getElementById("modalTitle").innerText =
+        "Student Register Report";
+
+        document.getElementById("studentField").style.display =
+        "block";
+
+        document.getElementById("staffField").style.display =
+        "none";
+
+        document.getElementById("studentID").value =
+        "";
+    }
+
+    if (type === "staff") {
+
+        document.getElementById("modalTitle").innerText =
+        "Staff Register Report";
+
+        document.getElementById("studentField").style.display =
+        "none";
+
+        document.getElementById("staffField").style.display =
+        "block";
+
+        loadStaffList();
+    }
+}
+
+// =====================================
+// CLOSE MODAL
+// =====================================
+
+function closeModal() {
+
+    document.getElementById("modalOverlay").style.display =
+    "none";
+
+    clearReport();
+}
+
+// =====================================
+// LOAD STAFF LIST
+// =====================================
+
+async function loadStaffList() {
+
+    const staffSelect =
+    document.getElementById("staffSelect");
+
+    const message =
+    document.getElementById("message");
+
+    staffSelect.innerHTML =
+    `<option value="">Loading staff...</option>`;
+
+    try {
+
+        const response =
+        await fetch(
+            WEB_APP_URL +
+            "?action=getStaff"
+        );
+
+        const result =
+        await response.json();
+
+        if (result.status !== "SUCCESS") {
+
+            staffSelect.innerHTML =
+            `<option value="">No staff found</option>`;
+
+            message.style.color =
+            "red";
+
+            message.innerText =
+            result.message ||
+            "Failed to load staff";
+
+            return;
+        }
+
+        staffList =
+        result.data || [];
+
+        staffSelect.innerHTML =
+        `<option value="">Select Staff Name</option>`;
+
+        staffList.forEach((staff, index) => {
+
+            const option =
+            document.createElement("option");
+
+            option.value =
+            index;
+
+            option.textContent =
+            staff.staffName;
+
+            staffSelect.appendChild(option);
+        });
+
+        message.innerText =
+        "";
+
+    } catch (error) {
+
+        staffSelect.innerHTML =
+        `<option value="">Failed to load staff</option>`;
+
+        message.style.color =
+        "red";
+
+        message.innerText =
+        "Failed to load staff";
+    }
+}
+
+// =====================================
+// AUTO SEARCH STUDENT
+// =====================================
+
+function autoSearchStudent(input) {
+
+    clearTimeout(autoSearchTimeout);
+
+    input.value =
+    input.value.toUpperCase();
+
+    autoSearchTimeout =
+    setTimeout(() => {
+
+        if (
+            currentReportType === "student" &&
+            input.value.trim() !== ""
+        ) {
+
+            loadReport();
+        }
+
+    }, 500);
+}
+
+// =====================================
+// LOAD REPORT
+// =====================================
+
+function loadReport() {
+
+    if (currentReportType === "student") {
+        loadStudentReport();
+    }
+
+    if (currentReportType === "staff") {
+        loadStaffReport();
+    }
+}
+
+// =====================================
+// LOAD STUDENT REPORT
+// =====================================
+
+async function loadStudentReport() {
+
+    const studentID =
+    document.getElementById("studentID")
+    .value
+    .trim()
+    .toUpperCase();
+
+    const reportDiv =
+    document.getElementById("report");
+
+    const message =
+    document.getElementById("message");
+
+    if (!studentID) {
+
+        message.style.color =
+        "red";
+
+        message.innerText =
+        "Enter student ID";
+
+        return;
+    }
+
+    reportDiv.innerHTML =
+    "Loading...";
+
+    message.innerText =
+    "";
+
+    try {
+
+        const response =
+        await fetch(WEB_APP_URL, {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":
+                "text/plain;charset=utf-8"
+            },
+
+            body:JSON.stringify({
+
+                action:"studentReport",
+
+                studentID:studentID
+            })
+        });
+
+        const result =
+        await response.json();
+
+        if (result.status === "NOT_FOUND") {
+
+            reportDiv.innerHTML =
+            "<p style='color:red;font-size:14px;font-weight:bold;'>No student found</p>";
+
+            document.getElementById("printBtn").style.display =
+            "none";
+
+            return;
+        }
+
+        renderReport({
+
+            reportTitle:
+            "Student Register Summary",
+
+            detailsTitle:
+            "Student Details",
+
+            idLabel:
+            "Student ID",
+
+            idValue:
+            result.studentID,
+
+            name:
+            result.name,
+
+            groupLabel:
+            "Class",
+
+            groupValue:
+            result.className,
+
+            present:
+            result.present,
+
+            authorisedAbsent:
+            result.authorisedAbsent,
+
+            unauthorisedAbsent:
+            result.unauthorisedAbsent
+        });
+
+    } catch (error) {
+
+        reportDiv.innerHTML =
+        "<p style='color:red;font-size:14px;font-weight:bold;'>Failed to load student report</p>";
+    }
+}
+
+// =====================================
+// LOAD STAFF REPORT
+// =====================================
+
+async function loadStaffReport() {
+
+    const selectedIndex =
+    document.getElementById("staffSelect").value;
+
+    const reportDiv =
+    document.getElementById("report");
+
+    const message =
+    document.getElementById("message");
+
+    if (selectedIndex === "") {
+
+        message.style.color =
+        "red";
+
+        message.innerText =
+        "Select staff name";
+
+        return;
+    }
+
+    const staff =
+    staffList[selectedIndex];
+
+    reportDiv.innerHTML =
+    "Loading...";
+
+    message.innerText =
+    "";
+
+    try {
+
+        const response =
+        await fetch(WEB_APP_URL, {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":
+                "text/plain;charset=utf-8"
+            },
+
+            body:JSON.stringify({
+
+                action:"staffReport",
+
+                staffID:staff.staffID
+            })
+        });
+
+        const result =
+        await response.json();
+
+        if (result.status === "NOT_FOUND") {
+
+            reportDiv.innerHTML =
+            "<p style='color:red;font-size:14px;font-weight:bold;'>No staff report found</p>";
+
+            document.getElementById("printBtn").style.display =
+            "none";
+
+            return;
+        }
+
+        renderReport({
+
+            reportTitle:
+            "Staff Register Summary",
+
+            detailsTitle:
+            "Staff Details",
+
+            idLabel:
+            "Staff ID",
+
+            idValue:
+            result.staffID,
+
+            name:
+            result.name,
+
+            groupLabel:
+            "Role",
+
+            groupValue:
+            result.role,
+
+            present:
+            result.present,
+
+            authorisedAbsent:
+            result.authorisedAbsent,
+
+            unauthorisedAbsent:
+            result.unauthorisedAbsent
+        });
+
+    } catch (error) {
+
+        reportDiv.innerHTML =
+        "<p style='color:red;font-size:14px;font-weight:bold;'>Failed to load staff report</p>";
+    }
+}
+
+// =====================================
+// RENDER REPORT
+// =====================================
+
+function renderReport(data) {
+
+    document.getElementById("printBtn").style.display =
+    "inline-block";
+
+    document.getElementById("report").innerHTML = `
+
+    <div class="print-report">
+
+        <div class="report-header">
+
+            <img
+            src="logo.png"
+            class="print-logo">
+
+            <h1>The Gambia Academy</h1>
+
+            <h2>${data.reportTitle}</h2>
+
+            <p class="report-date">
+                Date:
+                ${new Date().toLocaleDateString()}
+            </p>
+
+        </div>
+
+        <div class="section">
+
+            <h3>${data.detailsTitle}</h3>
+
+            <div class="report-row">
+                <span class="label">${data.idLabel}:</span>
+                ${data.idValue || ""}
+            </div>
+
+            <div class="report-row">
+                <span class="label">Name:</span>
+                ${data.name || ""}
+            </div>
+
+            <div class="report-row">
+                <span class="label">${data.groupLabel}:</span>
+                ${data.groupValue || ""}
+            </div>
+
+        </div>
+
+        <div class="section">
+
+            <h3>Register Details</h3>
+
+            <div class="report-row">
+                <span class="label">Present:</span>
+                ${data.present || 0}
+            </div>
+
+            <div class="report-row">
+                <span class="label">Authorised Absent:</span>
+                ${data.authorisedAbsent || 0}
+            </div>
+
+            <div class="report-row">
+                <span class="label">Unauthorised Absent:</span>
+                ${data.unauthorisedAbsent || 0}
+            </div>
+
+        </div>
+
+        <div class="signature-section">
+
+            <div class="signature-line"></div>
+
+            <p>Director Signature</p>
+
+        </div>
+
+        <div class="footer">
+
+            <p>The Gambia Academy</p>
+
+            <p>
+                For more info:
+                Email: info@thegambiaacademy.com |
+                Phone: +220 212 2000
+            </p>
+
+            <p class="copyright">
+                © ${new Date().getFullYear()}
+                The Gambia Academy
+            </p>
+
+        </div>
+
+    </div>
+    `;
+}
+
+// =====================================
+// PRINT REPORT
+// Keeps original print style
+// =====================================
+
+function printReport() {
+
+    window.print();
+}
+
+// =====================================
+// CLEAR REPORT
+// =====================================
+
+function clearReport() {
+
+    document.getElementById("studentID").value =
+    "";
+
+    document.getElementById("staffSelect").value =
+    "";
+
+    document.getElementById("report").innerHTML =
+    "";
+
+    document.getElementById("message").innerText =
+    "";
+
+    document.getElementById("printBtn").style.display =
+    "none";
+}
+
+</script>
+
+</body>
+</html>

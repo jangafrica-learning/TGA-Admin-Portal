@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>agenda</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+    --blue-dark:#001d5c;
+    --blue:#0d47d9;
+    --bg:#eef4fb;
+    --card:#ffffff;
+    --border:#dbe4ef;
+    --text:#111827;
+    --muted:#64748b;
+    --danger:#dc2626;
+    --green:#16a34a;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-size:13px;
+    overflow:hidden;
+}
+
+/* FIXED TOP BUTTON BAR */
+
+.menu-bar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    background:var(--blue-dark);
+    padding:10px 15px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    z-index:1000;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.menu-bar button{
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    background:white;
+    color:#17357a;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.menu-bar button:hover{
+    background:#eef3ff;
+}
+
+.menu-bar button.active{
+    background:var(--blue) !important;
+    color:white !important;
+}
+
+/* MAIN */
+
+.container{
+    height:100vh;
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding:82px 20px 20px;
+    max-width:1200px;
+    margin:0 auto;
+}
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:18px;
+}
+
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+    gap:12px;
+}
+
+.page-header h2{
+    margin:0;
+    color:var(--blue-dark);
+    font-size:18px;
+}
+
+button{
+    height:38px;
+    border:none;
+    border-radius:8px;
+    padding:0 14px;
+    cursor:pointer;
+    background:var(--blue);
+    color:white;
+    font-weight:700;
+    font-size:13px;
+}
+
+button:hover{
+    background:var(--blue-dark);
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.btn-muted{
+    background:#e5e7eb;
+    color:var(--blue-dark);
+}
+
+.btn-danger{
+    background:var(--danger);
+}
+
+.btn-green{
+    background:var(--green);
+}
+
+.hidden{
+    display:none !important;
+}
+
+.search-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+    align-items:center;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:9px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:13px;
+    background:white;
+}
+
+textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+label{
+    display:block;
+    margin-bottom:6px;
+    color:var(--blue-dark);
+    font-weight:700;
+    font-size:13px;
+}
+
+.message-box{
+    display:none;
+    margin:0 0 15px;
+    padding:10px 12px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:13px;
+}
+
+.message-error{
+    display:block;
+    background:#fee2e2;
+    color:#991b1b;
+    border:1px solid #fecaca;
+}
+
+.message-success{
+    display:block;
+    background:#dcfce7;
+    color:#166534;
+    border:1px solid #bbf7d0;
+}
+
+.form-message{
+    display:none;
+    margin-top:10px;
+    padding:10px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:13px;
+}
+
+.form-error{
+    display:block;
+    color:#991b1b;
+    background:#fee2e2;
+    border:1px solid #fecaca;
+}
+
+.form-success{
+    display:block;
+    color:#166534;
+    background:#dcfce7;
+    border:1px solid #bbf7d0;
+}
+
+/* AGENDA LIST */
+
+.flat-agenda-list{
+    background:white;
+    padding:14px 18px;
+    border-radius:10px;
+    border:1px solid var(--border);
+}
+
+.flat-agenda{
+    padding:14px 0;
+    border-bottom:1px solid var(--border);
+    line-height:1.7;
+    color:#000;
+}
+
+.flat-agenda:last-child{
+    border-bottom:none;
+}
+
+.flat-line{
+    display:flex;
+    flex-wrap:wrap;
+    gap:40px;
+}
+
+.flat-label{
+    font-weight:700;
+    color:var(--blue-dark);
+}
+
+.flat-value{
+    color:#000;
+}
+
+.agenda-text{
+    margin-top:5px;
+    font-size:10pt;
+    color:#000;
+}
+
+#agendaFlatList .agenda-text .flat-value{
+    font-size:13pt;
+    color:#000;
+}
+
+/* TABLE */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border:1px solid var(--border);
+    font-size:13px;
+}
+
+th{
+    background:#f8fafc;
+    color:var(--blue-dark);
+    text-align:left;
+    padding:11px;
+    border-bottom:1px solid var(--border);
+    font-size:12px;
+}
+
+td{
+    padding:11px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+    color:#000;
+    font-size:13px;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+/* MODAL */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.5);
+    z-index:1200;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+}
+
+.modal-box{
+    width:500px;
+    max-width:100%;
+    background:white;
+    border-radius:14px;
+    padding:22px;
+}
+
+.modal-box h2{
+    margin-top:0;
+    color:var(--blue-dark);
+    font-size:18px;
+}
+
+.form-group{
+    margin-bottom:14px;
+}
+
+.print-title{
+    display:none;
+}
+
+.print-title img{
+    width:75px;
+    height:75px;
+    object-fit:contain;
+    margin-bottom:6px;
+}
+
+/* PRINT */
+
+@media print{
+    .menu-bar,
+    .search-row,
+    .page-header,
+    .no-print,
+    #viewTab,
+    #editTab,
+    #assemblyTab{
+        display:none !important;
+    }
+
+    body{
+        background:white;
+        overflow:visible;
+    }
+
+    .container{
+        max-width:none;
+        margin:0;
+        padding:0;
+        height:auto;
+        overflow:visible;
+    }
+
+    .card{
+        border:none;
+        padding:0;
+    }
+
+    .print-title{
+        display:block;
+        text-align:center;
+        margin-bottom:20px;
+    }
+
+    #reportTab{
+        display:block !important;
+    }
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+    .menu-bar{
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        white-space:nowrap;
+        padding:8px;
+    }
+
+    .menu-bar button{
+        flex-shrink:0;
+        font-size:11.5px;
+        padding:9px 12px;
+    }
+
+    .container{
+        padding:62px 12px 12px;
+    }
+
+    .search-row,
+    .page-header{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .flat-line{
+        gap:10px;
+        flex-direction:column;
+    }
+
+    table{
+        font-size:12px;
+    }
+
+    th,
+    td{
+        padding:9px;
+        font-size:12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="menu-bar">
+    <button class="active" id="viewTabBtn" onclick="showTab('view')">Read Agenda</button>
+    <button id="editTabBtn" onclick="showTab('edit')">Manage Agenda</button>
+    <button id="reportTabBtn" onclick="showTab('report')">Report</button>
+    <button id="assemblyTabBtn" onclick="showTab('assembly')">History</button>
+    <button onclick="loadAll()">Refresh</button>
+</div>
+
+<main class="container">
+
+<section id="viewTab" class="card">
+    <div class="page-header">
+        <h2>Read Agenda</h2>
+
+        <div class="actions">
+            <button onclick="openAddModal()">+ AGENDA</button>
+            <button class="btn-green" onclick="startAssembly()">Action: START</button>
+            <button class="btn-danger" onclick="endAssembly()">Action: END</button>
+        </div>
+    </div>
+
+    <div id="pageMessage" class="message-box"></div>
+
+    <div class="search-row">
+        <input type="text" id="viewSearch" placeholder="Search agenda, date, responsible staff..." onkeyup="renderFlatAgenda()">
+        <button class="btn-muted" onclick="clearViewSearch()">Clear</button>
+    </div>
+
+    <div id="agendaFlatList" class="flat-agenda-list"></div>
+</section>
+
+<section id="editTab" class="card hidden">
+    <div class="page-header">
+        <h2>Manage Agenda</h2>
+        <button onclick="loadAll()">Refresh</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date Added</th>
+                <th>Date to be Discussed</th>
+                <th>Agenda</th>
+                <th>By</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="editBody"></tbody>
+    </table>
+</section>
+
+<section id="reportTab" class="card hidden">
+    <div class="page-header">
+        <h2>Agenda Report</h2>
+        <button onclick="printReport()">Print</button>
+    </div>
+
+    <div class="print-title">
+        <img src="logo.png" alt="The Gambia Academy Logo">
+        <h2>The Gambia Academy</h2>
+        <h3>Assembly Agenda Report</h3>
+        <p id="printReportRange"></p>
+    </div>
+
+    <div class="search-row">
+        <select id="reportType" onchange="showReportOptions()">
+            <option value="">Select report type</option>
+            <option value="day">Specific Day</option>
+            <option value="month">Specific Month</option>
+            <option value="term">Specific Term / Quarter</option>
+        </select>
+
+        <input type="date" id="reportDay" class="report-option hidden">
+
+        <select id="reportMonth" class="report-option hidden">
+            <option value="">Select month</option>
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">April</option>
+            <option value="4">May</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+        </select>
+
+        <select id="reportTerm" class="report-option hidden">
+            <option value="">Select term / quarter</option>
+            <option value="1">Term 1 / Quarter 1: Jan - Mar</option>
+            <option value="2">Term 2 / Quarter 2: Apr - Jun</option>
+            <option value="3">Term 3 / Quarter 3: Jul - Sep</option>
+            <option value="4">Term 4 / Quarter 4: Oct - Dec</option>
+        </select>
+
+        <select id="reportYear">
+            <option value="">Select year</option>
+        </select>
+
+        <button class="btn-muted" onclick="generateReport()">Generate</button>
+    </div>
+
+    <div id="reportMessage" class="message-box"></div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Discussion Date</th>
+                <th>Agenda</th>
+                <th>By</th>
+            </tr>
+        </thead>
+
+        <tbody id="reportBody">
+            <tr>
+                <td colspan="3">Select a report type and click Generate.</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section id="assemblyTab" class="card hidden">
+    <div class="page-header">
+        <h2>Assembly History</h2>
+        <button onclick="loadAssemblyRecords()">Refresh</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Assembly</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+            </tr>
+        </thead>
+
+        <tbody id="assemblyBody"></tbody>
+    </table>
+</section>
+
+</main>
+
+<div id="agendaModal" class="modal">
+    <div class="modal-box">
+        <h2 id="modalTitle">New Agenda</h2>
+
+        <input type="hidden" id="editRow">
+
+        <div class="form-group">
+            <label>Date to be Discussed</label>
+            <input type="date" id="agendaDate">
+        </div>
+
+        <div class="form-group">
+            <label>Agenda</label>
+            <textarea id="agendaText" placeholder="Enter assembly agenda..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>By</label>
+            <select id="agendaSign">
+                <option value="">Select staff</option>
+            </select>
+        </div>
+
+        <div class="actions" id="modalActions">
+            <button id="submitBtn" onclick="submitAgenda()">Submit</button>
+            <button class="btn-muted" onclick="clearForm()">Clear</button>
+            <button class="btn-danger" onclick="closeModal()">Close</button>
+        </div>
+
+        <div id="formMessage" class="form-message"></div>
+    </div>
+</div>
+
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrmolFlm6QhB93H5c71Mn8-rjameC106mhZCwXvVuPG8xglDqB5sTroHdScZoinpyTdw/exec";
+
+let agendas = [];
+let staff = [];
+let reportGenerated = false;
+
+function jsonp(params, callback){
+    const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 99999);
+    params.callback = cbName;
+
+    window[cbName] = function(response){
+        delete window[cbName];
+        script.remove();
+        callback(response);
+    };
+
+    const script = document.createElement("script");
+    script.src = WEB_APP_URL + "?" + new URLSearchParams(params).toString();
+    document.body.appendChild(script);
+}
+
+function showTab(tab){
+    ["viewTab","editTab","reportTab","assemblyTab"].forEach(id => {
+        document.getElementById(id).classList.add("hidden");
+    });
+
+    ["viewTabBtn","editTabBtn","reportTabBtn","assemblyTabBtn"].forEach(id => {
+        document.getElementById(id).classList.remove("active");
+    });
+
+    if(tab === "view"){
+        document.getElementById("viewTab").classList.remove("hidden");
+        document.getElementById("viewTabBtn").classList.add("active");
+    }
+
+    if(tab === "edit"){
+        document.getElementById("editTab").classList.remove("hidden");
+        document.getElementById("editTabBtn").classList.add("active");
+    }
+
+    if(tab === "report"){
+        document.getElementById("reportTab").classList.remove("hidden");
+        document.getElementById("reportTabBtn").classList.add("active");
+    }
+
+    if(tab === "assembly"){
+        document.getElementById("assemblyTab").classList.remove("hidden");
+        document.getElementById("assemblyTabBtn").classList.add("active");
+        loadAssemblyRecords();
+    }
+}
+
+function loadAll(){
+    loadStaffOnce();
+    loadAgendasOnly();
+    loadAssemblyRecords();
+}
+
+function loadStaffOnce(){
+    if(staff.length) return;
+
+    jsonp({action:"staff"}, function(res){
+        if(res.success){
+            staff = res.data || [];
+            fillStaffDropdown();
+        }
+    });
+}
+
+function loadAgendasOnly(){
+    jsonp({action:"list"}, function(res){
+        if(res.success){
+            agendas = res.data || [];
+
+            agendas.sort(function(a,b){
+                return getSortDate(b) - getSortDate(a);
+            });
+
+            renderFlatAgenda();
+            renderEditTable();
+
+            if(reportGenerated){
+                generateReport();
+            }
+        }else{
+            showPageMessage(res.message || "Unable to load agenda records.","error");
+        }
+    });
+}
+
+function loadAssemblyRecords(){
+    const body = document.getElementById("assemblyBody");
+    if(!body) return;
+
+    body.innerHTML = `<tr><td colspan="4">Loading assembly records...</td></tr>`;
+
+    jsonp({action:"listAssembly"}, function(res){
+        body.innerHTML = "";
+
+        if(!res.success){
+            body.innerHTML = `<tr><td colspan="4">${escapeHtml(res.message || "Unable to load assembly records.")}</td></tr>`;
+            return;
+        }
+
+        const records = res.data || [];
+
+        if(!records.length){
+            body.innerHTML = `<tr><td colspan="4">No assembly records found.</td></tr>`;
+            return;
+        }
+
+        records.forEach(function(item){
+            body.innerHTML += `
+                <tr>
+                    <td>${escapeHtml(item.date)}</td>
+                    <td>${escapeHtml(item.assembly)}</td>
+                    <td>${escapeHtml(item.start)}</td>
+                    <td>${escapeHtml(item.end)}</td>
+                </tr>
+            `;
+        });
+    });
+}
+
+function getSortDate(item){
+    const timestampDate = new Date(item.timestamp);
+    if(!isNaN(timestampDate)) return timestampDate;
+
+    const discussionDate = new Date(item.date);
+    if(!isNaN(discussionDate)) return discussionDate;
+
+    return new Date(0);
+}
+
+function fillStaffDropdown(){
+    const select = document.getElementById("agendaSign");
+    select.innerHTML = '<option value="">Select staff</option>';
+
+    staff.forEach(function(name){
+        select.innerHTML += `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
+    });
+}
+
+function renderFlatAgenda(){
+    const box = document.getElementById("agendaFlatList");
+    const search = document.getElementById("viewSearch").value.toLowerCase();
+    box.innerHTML = "";
+
+    const filtered = agendas.filter(function(item){
+        const combined =
+        String(item.timestamp) + " " +
+        String(item.date) + " " +
+        String(item.agenda) + " " +
+        String(item.sign);
+
+        return combined.toLowerCase().includes(search);
+    });
+
+    if(!filtered.length){
+        box.innerHTML = `<div class="flat-agenda">No agenda found.</div>`;
+        return;
+    }
+
+    filtered.forEach(function(item){
+        box.innerHTML += `
+            <div class="flat-agenda">
+                <div class="flat-line">
+                    <div>
+                        <span class="flat-label">Date Added:</span>
+                        <span class="flat-value">${escapeHtml(item.timestamp)}</span>
+                    </div>
+
+                    <div>
+                        <span class="flat-label">Date to be Discussed:</span>
+                        <span class="flat-value">${escapeHtml(item.date)}</span>
+                    </div>
+                </div>
+
+                <div class="agenda-text">
+                    <span class="flat-label">Agenda:</span>
+                    <span class="flat-value">${escapeHtml(item.agenda)}</span>
+                </div>
+
+                <div>
+                    <span class="flat-label">By:</span>
+                    <span class="flat-value">${escapeHtml(item.sign)}</span>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function renderEditTable(){
+    const body = document.getElementById("editBody");
+    body.innerHTML = "";
+
+    if(!agendas.length){
+        body.innerHTML = `<tr><td colspan="5">No agenda found.</td></tr>`;
+        return;
+    }
+
+    agendas.forEach(function(item){
+        body.innerHTML += `
+            <tr>
+                <td>${escapeHtml(item.timestamp)}</td>
+                <td>${escapeHtml(item.date)}</td>
+                <td>${escapeHtml(item.agenda)}</td>
+                <td>${escapeHtml(item.sign)}</td>
+                <td><button onclick="openManageModal(${item.row})">Manage</button></td>
+            </tr>
+        `;
+    });
+}
+
+/* REPORT SECTION */
+
+function populateReportYears(){
+    const yearSelect = document.getElementById("reportYear");
+    const currentYear = new Date().getFullYear();
+
+    yearSelect.innerHTML = '<option value="">Select year</option>';
+
+    for(let y = currentYear - 3; y <= currentYear + 1; y++){
+        yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+    }
+}
+
+function showReportOptions(){
+    const type = document.getElementById("reportType").value;
+
+    document.getElementById("reportDay").classList.add("hidden");
+    document.getElementById("reportMonth").classList.add("hidden");
+    document.getElementById("reportTerm").classList.add("hidden");
+
+    document.getElementById("reportDay").value = "";
+    document.getElementById("reportMonth").value = "";
+    document.getElementById("reportTerm").value = "";
+
+    if(type === "day"){
+        document.getElementById("reportDay").classList.remove("hidden");
+    }
+
+    if(type === "month"){
+        document.getElementById("reportMonth").classList.remove("hidden");
+    }
+
+    if(type === "term"){
+        document.getElementById("reportTerm").classList.remove("hidden");
+    }
+
+    reportGenerated = false;
+    document.getElementById("reportBody").innerHTML =
+    `<tr><td colspan="3">Select report details and click Generate.</td></tr>`;
+    clearReportMessage();
+}
+
+function getCustomReportRange(){
+    const type = document.getElementById("reportType").value;
+    const year = Number(document.getElementById("reportYear").value);
+
+    if(!type){
+        throw new Error("Select report type.");
+    }
+
+    if(type === "day"){
+        const dayValue = document.getElementById("reportDay").value;
+
+        if(!dayValue){
+            throw new Error("Select report date.");
+        }
+
+        const start = new Date(dayValue);
+        const end = new Date(dayValue);
+
+        start.setHours(0,0,0,0);
+        end.setHours(23,59,59,999);
+
+        return {
+            start,
+            end,
+            label: dayValue
+        };
+    }
+
+    if(!year){
+        throw new Error("Select report year.");
+    }
+
+    if(type === "month"){
+        const month = document.getElementById("reportMonth").value;
+
+        if(month === ""){
+            throw new Error("Select report month.");
+        }
+
+        const start = new Date(year, Number(month), 1);
+        const end = new Date(year, Number(month) + 1, 0);
+
+        start.setHours(0,0,0,0);
+        end.setHours(23,59,59,999);
+
+        return {
+            start,
+            end,
+            label: start.toLocaleString("en-GB", {month:"long", year:"numeric"})
+        };
+    }
+
+    if(type === "term"){
+        const term = Number(document.getElementById("reportTerm").value);
+
+        if(!term){
+            throw new Error("Select term / quarter.");
+        }
+
+        const startMonth = (term - 1) * 3;
+        const start = new Date(year, startMonth, 1);
+        const end = new Date(year, startMonth + 3, 0);
+
+        start.setHours(0,0,0,0);
+        end.setHours(23,59,59,999);
+
+        return {
+            start,
+            end,
+            label: `Term ${term} / Quarter ${term} - ${year}`
+        };
+    }
+
+    throw new Error("Invalid report type.");
+}
+
+function generateReport(){
+    const body = document.getElementById("reportBody");
+
+    clearReportMessage();
+
+    let range;
+
+    try{
+        range = getCustomReportRange();
+    }catch(err){
+        reportGenerated = false;
+        body.innerHTML = `<tr><td colspan="3">Select report details and click Generate.</td></tr>`;
+        showReportMessage(err.message,"error");
+        return;
+    }
+
+    reportGenerated = true;
+    body.innerHTML = "";
+
+    let reportData = agendas.filter(function(item){
+        const d = new Date(item.date);
+        return d >= range.start && d <= range.end;
+    });
+
+    reportData.sort(function(a,b){
+        return new Date(b.date) - new Date(a.date);
+    });
+
+    document.getElementById("printReportRange").textContent = range.label;
+
+    if(!reportData.length){
+        body.innerHTML = `<tr><td colspan="3">No agenda found for this report.</td></tr>`;
+        return;
+    }
+
+    reportData.forEach(function(item){
+        body.innerHTML += `
+            <tr>
+                <td>${escapeHtml(item.date)}</td>
+                <td>${escapeHtml(item.agenda)}</td>
+                <td>${escapeHtml(item.sign)}</td>
+            </tr>
+        `;
+    });
+}
+
+function printReport(){
+    if(!reportGenerated){
+        showReportMessage("Generate a report before printing.","error");
+        return;
+    }
+
+    window.print();
+}
+
+function showReportMessage(message,type){
+    const box = document.getElementById("reportMessage");
+    box.textContent = message;
+    box.className = "message-box " + (type === "success" ? "message-success" : "message-error");
+}
+
+function clearReportMessage(){
+    const box = document.getElementById("reportMessage");
+    box.textContent = "";
+    box.className = "message-box";
+}
+
+/* FORM / CRUD */
+
+function clearViewSearch(){
+    document.getElementById("viewSearch").value = "";
+    renderFlatAgenda();
+}
+
+function openAddModal(){
+    clearFormError();
+    clearForm();
+    setFieldsDisabled(false);
+
+    document.getElementById("modalTitle").textContent = "New Agenda";
+
+    document.getElementById("modalActions").innerHTML = `
+        <button id="submitBtn" onclick="submitAgenda()">Submit</button>
+        <button class="btn-muted" onclick="clearForm()">Clear</button>
+        <button class="btn-danger" onclick="closeModal()">Close</button>
+    `;
+
+    document.getElementById("agendaModal").style.display = "flex";
+}
+
+function openManageModal(row){
+    clearFormError();
+
+    const item = agendas.find(a => Number(a.row) === Number(row));
+    if(!item) return;
+
+    document.getElementById("modalTitle").textContent = "Manage Agenda";
+    document.getElementById("editRow").value = item.row;
+    document.getElementById("agendaDate").value = item.date;
+    document.getElementById("agendaText").value = item.agenda;
+    document.getElementById("agendaSign").value = item.sign;
+
+    setFieldsDisabled(false);
+
+    document.getElementById("modalActions").innerHTML = `
+        <button onclick="submitAgenda()">Save</button>
+        <button class="btn-danger" onclick="deleteCurrentAgenda()">Delete</button>
+        <button class="btn-muted" onclick="closeModal()">Close</button>
+    `;
+
+    document.getElementById("agendaModal").style.display = "flex";
+}
+
+function closeModal(){
+    document.getElementById("agendaModal").style.display = "none";
+    clearFormError();
+}
+
+function clearForm(){
+    document.getElementById("editRow").value = "";
+    document.getElementById("agendaDate").value = "";
+    document.getElementById("agendaText").value = "";
+    document.getElementById("agendaSign").value = "";
+    clearFormError();
+}
+
+function setFieldsDisabled(state){
+    document.getElementById("agendaDate").disabled = state;
+    document.getElementById("agendaText").disabled = state;
+    document.getElementById("agendaSign").disabled = state;
+}
+
+function submitAgenda(){
+    clearFormError();
+
+    const submitButton = document.querySelector("#modalActions button");
+    if(submitButton) submitButton.disabled = true;
+
+    const row = document.getElementById("editRow").value;
+    const date = document.getElementById("agendaDate").value;
+    const agenda = document.getElementById("agendaText").value.trim();
+    const sign = document.getElementById("agendaSign").value;
+
+    if(!date || !agenda || !sign){
+        showFormError("Complete all required fields.");
+        if(submitButton) submitButton.disabled = false;
+        return;
+    }
+
+    const action = row ? "update" : "add";
+
+    if(!row){
+        showFormSuccess("Submitting...");
+        document.getElementById("agendaText").value = "";
+    }
+
+    jsonp({action,row,date,agenda,sign}, function(res){
+        if(submitButton) submitButton.disabled = false;
+
+        if(res.success){
+            showFormSuccess(row ? "Agenda updated." : "Agenda submitted.");
+            loadAgendasOnly();
+        }else{
+            showFormError(res.message || "Unable to save agenda.");
+        }
+    });
+}
+
+function deleteCurrentAgenda(){
+    const row = document.getElementById("editRow").value;
+
+    if(!row){
+        showFormError("No agenda selected.");
+        return;
+    }
+
+    deleteAgenda(row);
+}
+
+function deleteAgenda(row){
+    jsonp({action:"delete",row}, function(res){
+        if(res.success){
+            closeModal();
+            showPageMessage("Agenda deleted.","success");
+            loadAgendasOnly();
+        }else{
+            showFormError(res.message || "Unable to delete agenda.");
+        }
+    });
+}
+
+/* ASSEMBLY */
+
+function startAssembly(){
+    jsonp({action:"startAssembly"}, function(res){
+        showPageMessage(
+            res.message || "Unable to record start time.",
+            res.success ? "success" : "error"
+        );
+
+        if(res.success){
+            loadAssemblyRecords();
+        }
+    });
+}
+
+function endAssembly(){
+    jsonp({action:"endAssembly"}, function(res){
+        showPageMessage(
+            res.message || "Unable to record end time.",
+            res.success ? "success" : "error"
+        );
+
+        if(res.success){
+            loadAssemblyRecords();
+        }
+    });
+}
+
+/* MESSAGES / UTILITIES */
+
+function showFormError(message){
+    const box = document.getElementById("formMessage");
+    box.textContent = message;
+    box.className = "form-message form-error";
+}
+
+function showFormSuccess(message){
+    const box = document.getElementById("formMessage");
+    box.textContent = message;
+    box.className = "form-message form-success";
+
+    setTimeout(function(){
+        clearFormError();
+    },3000);
+}
+
+function clearFormError(){
+    const box = document.getElementById("formMessage");
+    if(!box) return;
+
+    box.textContent = "";
+    box.className = "form-message";
+}
+
+function showPageMessage(message,type){
+    const box = document.getElementById("pageMessage");
+    if(!box) return;
+
+    box.textContent = message;
+    box.className = "message-box " + (type === "success" ? "message-success" : "message-error");
+
+    setTimeout(function(){
+        box.className = "message-box";
+        box.textContent = "";
+    },5000);
+}
+
+function formatDate(date){
+    return date.toISOString().split("T")[0];
+}
+
+function escapeHtml(text){
+    return String(text || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+/* INITIAL LOAD */
+
+populateReportYears();
+loadAll();
+setInterval(loadAgendasOnly,120000);
+</script>
+
+</body>
+</html>

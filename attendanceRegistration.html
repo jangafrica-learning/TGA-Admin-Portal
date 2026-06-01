@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>attendancePortal</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#eef3f9;
+    color:#1d2b53;
+    overflow:hidden;
+}
+
+/* FIXED TOP BUTTON BAR */
+
+.menu-bar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    background:#001d5c;
+    padding:10px 15px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    z-index:1000;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.menu-bar button{
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    background:white;
+    color:#17357a;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.menu-bar button:hover{
+    background:#eef3ff;
+}
+
+.active-btn{
+    background:#0d47d9 !important;
+    color:white !important;
+}
+
+/* MAIN LAYOUT */
+
+.container{
+    min-height:100vh;
+}
+
+.main-content{
+    padding:82px 25px 25px 25px;
+    height:100vh;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+
+/* GREETING */
+
+.greeting{
+    margin-bottom:22px;
+}
+
+.greeting h1{
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.greeting p{
+    font-size:13px;
+    color:#666;
+    line-height:1.5;
+}
+
+/* CARDS */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:22px;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 3px 12px rgba(0,0,0,.07);
+    position:relative;
+    overflow:hidden;
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:4px;
+}
+
+.today::before,
+.students::before{
+    background:#0048d8;
+}
+
+.week::before{
+    background:#189000;
+}
+
+.month::before{
+    background:#7a32cc;
+}
+
+.card-title{
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:14px;
+    color:#21356b;
+}
+
+.stat{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+    font-size:13px;
+}
+
+.green{color:green;}
+.orange{color:#d18600;}
+.red{color:#cf2c2c;}
+
+.status{
+    margin-top:14px;
+    text-align:center;
+    font-size:12px;
+    font-weight:800;
+}
+
+.total-number{
+    text-align:center;
+    font-size:20px;
+    font-weight:800;
+    color:#0037ad;
+    margin-top:14px;
+}
+
+.total-label{
+    text-align:center;
+    margin-top:6px;
+    font-size:12px;
+    color:#666;
+}
+
+/* REPORT */
+
+.attendance-report-box,
+.calendar-box,
+.attendance-analysis-box{
+    background:white;
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 3px 12px rgba(0,0,0,.07);
+}
+
+.attendance-report-box{
+    margin-bottom:22px;
+}
+
+.attendance-report-box h2,
+.calendar-title,
+.attendance-analysis-box h2{
+    font-size:15px;
+    color:#17357a;
+    margin-bottom:10px;
+}
+
+.attendance-report-box p{
+    font-size:12.5px;
+    color:#666;
+    margin-bottom:14px;
+}
+
+.report-controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+}
+
+.report-controls select,
+.report-controls input{
+    padding:11px;
+    border-radius:12px;
+    border:1px solid #dce4ef;
+    font-size:12px;
+    min-width:190px;
+}
+
+.generate-btn,
+.print-report-btn,
+.clear-report-btn{
+    border:none;
+    border-radius:12px;
+    padding:11px 16px;
+    color:white;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.generate-btn{
+    background:linear-gradient(90deg,#0048d8,#0037ad);
+}
+
+.print-report-btn{
+    background:linear-gradient(90deg,#189000,#0d7300);
+}
+
+.clear-report-btn{
+    background:linear-gradient(90deg,#dc2626,#b91c1c);
+}
+
+#attendanceReportMessage{
+    margin-top:10px;
+    font-size:12.5px;
+    font-weight:800;
+}
+
+.report-summary{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-top:15px;
+}
+
+.report-card{
+    background:#f8fafc;
+    border-radius:14px;
+    padding:14px;
+    border:1px solid #e5e7eb;
+}
+
+.report-card h4{
+    font-size:11px;
+    color:#666;
+    margin-bottom:6px;
+}
+
+.report-card p{
+    font-size:18px;
+    font-weight:800;
+    color:#17357a;
+}
+
+/* BOTTOM SECTION */
+
+.bottom-section{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:16px;
+}
+
+.calendar-box iframe{
+    width:100%;
+    height:360px;
+    border:none;
+    border-radius:14px;
+}
+
+/* ANALYSIS */
+
+.analysis-subtitle{
+    font-size:12px;
+    color:#666;
+    margin-bottom:14px;
+}
+
+.pie-chart-wrap{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.pie-chart{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:conic-gradient(#189000 0deg,#d18600 0deg,#cf2c2c 360deg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 3px 12px rgba(0,0,0,.10);
+    position:relative;
+    flex-shrink:0;
+}
+
+.pie-chart::after{
+    content:"";
+    position:absolute;
+    width:66px;
+    height:66px;
+    background:white;
+    border-radius:50%;
+}
+
+.pie-chart span{
+    position:relative;
+    z-index:2;
+    font-size:16px;
+    font-weight:800;
+    color:#0037ad;
+}
+
+.pie-legend{
+    flex:1;
+}
+
+.legend-row{
+    display:flex;
+    gap:8px;
+    border-bottom:1px solid #edf1f7;
+    padding:8px 0;
+}
+
+.legend-row:last-child{
+    border-bottom:none;
+}
+
+.dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    margin-top:3px;
+}
+
+.present-dot{background:#189000;}
+.aa-dot{background:#d18600;}
+.ua-dot{background:#cf2c2c;}
+
+.legend-row strong{
+    display:block;
+    font-size:12px;
+}
+
+.legend-row p{
+    font-size:11.5px;
+    color:#666;
+}
+
+.analysis-total,
+.analysis-rate{
+    margin-top:12px;
+    border-radius:12px;
+    padding:10px;
+    font-size:12px;
+}
+
+.analysis-total{
+    background:#f4f8ff;
+    border:1px solid #cfe0ff;
+}
+
+.analysis-total strong{
+    display:block;
+    font-size:20px;
+    color:#0048d8;
+    margin-top:4px;
+}
+
+.analysis-rate{
+    background:#f0fff4;
+    border:1px solid #b8e6c4;
+}
+
+.analysis-rate strong{
+    color:#189000;
+}
+
+/* PAGE VIEWER */
+
+.page-viewer{
+    display:none;
+}
+
+#pageFrame{
+    width:100%;
+    height:calc(100vh - 82px);
+    border:none;
+    background:white;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+    .cards{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .bottom-section{
+        grid-template-columns:1fr;
+    }
+
+    .report-summary{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:768px){
+
+    .menu-bar{
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        white-space:nowrap;
+        padding:8px;
+    }
+
+    .menu-bar button{
+        flex-shrink:0;
+        font-size:11.5px;
+        padding:9px 12px;
+    }
+
+    .main-content{
+        padding:62px 14px 14px 14px;
+    }
+
+    .cards,
+    .bottom-section,
+    .report-summary{
+        grid-template-columns:1fr;
+    }
+
+    .report-controls{
+        flex-direction:column;
+    }
+
+    .report-controls select,
+    .report-controls input,
+    .generate-btn,
+    .print-report-btn,
+    .clear-report-btn{
+        width:100%;
+    }
+
+    .pie-chart-wrap{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    #pageFrame{
+        height:calc(100vh - 62px);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="menu-bar">
+
+    <button id="dashboardBtn" class="active-btn" onclick="showDashboard()">
+        <i class="fas fa-home"></i>
+        Student Register Overview
+    </button>
+
+    <button onclick="openPage('staffOverview.html', this)">
+        <i class="fas fa-users"></i>
+        Staff Register Overview
+    </button>
+
+    <button onclick="openPage('registerAttendance.html', this)">
+        <i class="fas fa-calendar-check"></i>
+        + Register
+    </button>
+
+    <button onclick="openPage('viewAttendance.html', this)">
+        <i class="fas fa-table"></i>
+        Monitor Register
+    </button>
+
+    <button onclick="openPage('studentReport.html', this)">
+        <i class="fas fa-user-graduate"></i>
+        Report Register
+    </button>
+
+</div>
+
+<div class="container">
+
+    <div class="main-content">
+
+        <div id="dashboardHome">
+
+            <div class="greeting">
+                <h1>Register Overview</h1>
+
+                <p>
+                    Overview of student register records<br>
+                    P = Present, AA = Authorised Absent, UA = Unauthorised Absent
+                </p>
+            </div>
+
+            <div class="cards">
+
+                <div class="card today">
+                    <div class="card-title">TODAY</div>
+
+                    <div class="stat green">
+                        <span>P</span>
+                        <strong id="todayP">0</strong>
+                    </div>
+
+                    <div class="stat orange">
+                        <span>AA</span>
+                        <strong id="todayAA">0</strong>
+                    </div>
+
+                    <div class="stat red">
+                        <span>UA</span>
+                        <strong id="todayUA">0</strong>
+                    </div>
+
+                    <div class="status" id="todayStatus">
+                        NOT REGISTERED
+                    </div>
+                </div>
+
+                <div class="card week">
+                    <div class="card-title">THIS WEEK</div>
+
+                    <div class="stat green">
+                        <span>P</span>
+                        <strong id="weekP">0</strong>
+                    </div>
+
+                    <div class="stat orange">
+                        <span>AA</span>
+                        <strong id="weekAA">0</strong>
+                    </div>
+
+                    <div class="stat red">
+                        <span>UA</span>
+                        <strong id="weekUA">0</strong>
+                    </div>
+                </div>
+
+                <div class="card month">
+                    <div class="card-title">THIS MONTH</div>
+
+                    <div class="stat green">
+                        <span>P</span>
+                        <strong id="monthP">0</strong>
+                    </div>
+
+                    <div class="stat orange">
+                        <span>AA</span>
+                        <strong id="monthAA">0</strong>
+                    </div>
+
+                    <div class="stat red">
+                        <span>UA</span>
+                        <strong id="monthUA">0</strong>
+                    </div>
+                </div>
+
+                <div class="card students">
+                    <div class="card-title">TOTAL STUDENTS</div>
+
+                    <div class="total-number">23</div>
+
+                    <div class="total-label">
+                        Total Enrolled Students
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="attendance-report-box">
+
+                <h2>Report Student Register</h2>
+
+                <p>Select a report type and date to generate a report.</p>
+
+                <div class="report-controls">
+
+                    <select id="reportPeriod">
+                        <option value="">Select Report Type</option>
+                        <option value="monthly">Monthly Register</option>
+                        <option value="quarterly">Quarterly Register</option>
+                        <option value="annual">Annual Register</option>
+                    </select>
+
+                    <input type="month" id="reportDate">
+
+                    <button class="generate-btn" onclick="generateAttendanceReport()">
+                        Generate
+                    </button>
+
+                    <button class="print-report-btn" onclick="printAttendanceReport()">
+                        Print
+                    </button>
+
+                    <button class="clear-report-btn" onclick="clearAttendanceReport()">
+                        Clear
+                    </button>
+
+                </div>
+
+                <div id="attendanceReportMessage"></div>
+
+                <div id="attendanceReportResult"></div>
+
+            </div>
+
+            <div class="bottom-section">
+
+                <div class="calendar-box">
+                    <div class="calendar-title">Register Calendar</div>
+
+                    <iframe
+                    src="https://calendar.google.com/calendar/embed?src=en.gm%23holiday%40group.v.calendar.google.com&ctz=Africa%2FBanjul"
+                    frameborder="0">
+                    </iframe>
+                </div>
+
+                <div class="attendance-analysis-box">
+
+                    <h2>Register Analysis</h2>
+
+                    <p class="analysis-subtitle">
+                        Summary of student register records this month
+                    </p>
+
+                    <div class="pie-chart-wrap">
+
+                        <div class="pie-chart" id="attendancePieChart">
+                            <span id="pieCenterText">0%</span>
+                        </div>
+
+                        <div class="pie-legend">
+
+                            <div class="legend-row">
+                                <span class="dot present-dot"></span>
+                                <div>
+                                    <strong>P</strong>
+                                    <p><span id="analysisPresentPercent">0%</span> (<span id="analysisPresent">0</span>)</p>
+                                </div>
+                            </div>
+
+                            <div class="legend-row">
+                                <span class="dot aa-dot"></span>
+                                <div>
+                                    <strong>AA</strong>
+                                    <p><span id="analysisAAPercent">0%</span> (<span id="analysisAA">0</span>)</p>
+                                </div>
+                            </div>
+
+                            <div class="legend-row">
+                                <span class="dot ua-dot"></span>
+                                <div>
+                                    <strong>UA</strong>
+                                    <p><span id="analysisUAPercent">0%</span> (<span id="analysisUA">0</span>)</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="analysis-total">
+                        <span>Total Records</span>
+                        <strong id="analysisTotal">0</strong>
+                    </div>
+
+                    <div class="analysis-rate">
+                        Register rate:
+                        <strong id="analysisRate">0%</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="page-viewer">
+            <iframe id="pageFrame" src=""></iframe>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbx70aP3mQ7QHnIeDU1vhdckv2UAo7T5F8U9GOgxY1fW8fxKDMFEEjR0P77v8NT90ulE/exec";
+
+let latestAttendanceReport = null;
+
+function loadDashboard(){
+
+    fetch(WEB_APP_URL, {
+        method:"POST",
+        headers:{
+            "Content-Type":"text/plain;charset=utf-8"
+        },
+        body:JSON.stringify({
+            action:"dashboardStats"
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+
+        document.getElementById("todayP").textContent =
+        result.today.present;
+
+        document.getElementById("todayAA").textContent =
+        result.today.aa;
+
+        document.getElementById("todayUA").textContent =
+        result.today.ua;
+
+        const todayStatus =
+        document.getElementById("todayStatus");
+
+        if(result.today.marked){
+            todayStatus.innerHTML = "REGISTERED";
+            todayStatus.style.color = "green";
+        }else{
+            todayStatus.innerHTML = "NOT REGISTERED";
+            todayStatus.style.color = "red";
+        }
+
+        document.getElementById("weekP").textContent =
+        result.week.present;
+
+        document.getElementById("weekAA").textContent =
+        result.week.aa;
+
+        document.getElementById("weekUA").textContent =
+        result.week.ua;
+
+        document.getElementById("monthP").textContent =
+        result.month.present;
+
+        document.getElementById("monthAA").textContent =
+        result.month.aa;
+
+        document.getElementById("monthUA").textContent =
+        result.month.ua;
+
+        updateAttendanceAnalysis(
+            Number(result.month.present || 0),
+            Number(result.month.aa || 0),
+            Number(result.month.ua || 0)
+        );
+    })
+    .catch(error => {
+        console.log(error);
+        updateAttendanceAnalysis(0,0,0);
+    });
+}
+
+function updateAttendanceAnalysis(present, aa, ua){
+
+    const total = present + aa + ua;
+
+    const presentPercent =
+    total > 0 ? Math.round((present / total) * 100) : 0;
+
+    const aaPercent =
+    total > 0 ? Math.round((aa / total) * 100) : 0;
+
+    const uaPercent =
+    total > 0 ? 100 - presentPercent - aaPercent : 0;
+
+    const presentDeg =
+    total > 0 ? (present / total) * 360 : 0;
+
+    const aaDeg =
+    total > 0 ? (aa / total) * 360 : 0;
+
+    const pieChart =
+    document.getElementById("attendancePieChart");
+
+    if(!pieChart){
+        return;
+    }
+
+    pieChart.style.background =
+    `conic-gradient(
+        #189000 0deg ${presentDeg}deg,
+        #d18600 ${presentDeg}deg ${presentDeg + aaDeg}deg,
+        #cf2c2c ${presentDeg + aaDeg}deg 360deg
+    )`;
+
+    document.getElementById("pieCenterText").textContent =
+    presentPercent + "%";
+
+    document.getElementById("analysisPresent").textContent = present;
+    document.getElementById("analysisAA").textContent = aa;
+    document.getElementById("analysisUA").textContent = ua;
+    document.getElementById("analysisTotal").textContent = total;
+    document.getElementById("analysisPresentPercent").textContent = presentPercent + "%";
+    document.getElementById("analysisAAPercent").textContent = aaPercent + "%";
+    document.getElementById("analysisUAPercent").textContent = uaPercent + "%";
+    document.getElementById("analysisRate").textContent = presentPercent + "%";
+}
+
+loadDashboard();
+
+function clearActiveButtons(){
+    document
+    .querySelectorAll(".menu-bar button")
+    .forEach(button => {
+        button.classList.remove("active-btn");
+    });
+}
+
+function openPage(page, button){
+
+    document.getElementById("dashboardHome").style.display = "none";
+    document.querySelector(".page-viewer").style.display = "block";
+    document.getElementById("pageFrame").src = page;
+
+    clearActiveButtons();
+
+    if(button){
+        button.classList.add("active-btn");
+    }
+}
+
+function showDashboard(){
+
+    document.getElementById("dashboardHome").style.display = "block";
+    document.querySelector(".page-viewer").style.display = "none";
+    document.getElementById("pageFrame").src = "";
+
+    clearActiveButtons();
+
+    document
+    .getElementById("dashboardBtn")
+    .classList
+    .add("active-btn");
+
+    loadDashboard();
+}
+
+function getReportLabel(period, dateValue){
+
+    const parts = dateValue.split("-");
+    const date = new Date(parts[0], parts[1] - 1, 1);
+
+    if(period === "monthly"){
+        return date.toLocaleDateString("en-GB", {
+            month:"long",
+            year:"numeric"
+        });
+    }
+
+    if(period === "quarterly"){
+        const quarter = Math.floor(date.getMonth() / 3) + 1;
+        return "Quarter " + quarter + " - " + date.getFullYear();
+    }
+
+    if(period === "annual"){
+        return "Annual Report - " + date.getFullYear();
+    }
+
+    return "";
+}
+
+async function generateAttendanceReport(){
+
+    const period = document.getElementById("reportPeriod").value;
+    const reportDate = document.getElementById("reportDate").value;
+    const message = document.getElementById("attendanceReportMessage");
+    const resultBox = document.getElementById("attendanceReportResult");
+
+    if(!period || !reportDate){
+        message.style.color = "red";
+        message.innerText = "Please select report type and month.";
+        return;
+    }
+
+    message.style.color = "#0037ad";
+    message.innerText = "Generating report...";
+    resultBox.innerHTML = "";
+
+    try{
+
+        const response =
+        await fetch(WEB_APP_URL, {
+            method:"POST",
+            headers:{
+                "Content-Type":"text/plain;charset=utf-8"
+            },
+            body:JSON.stringify({
+                action:"attendancePeriodReport",
+                period:period,
+                reportDate:reportDate
+            })
+        });
+
+        const result = await response.json();
+
+        if(result.status !== "SUCCESS"){
+            message.style.color = "red";
+            message.innerText =
+            result.message || "Report failed. Contact Admin.";
+            return;
+        }
+
+        const label = getReportLabel(period, reportDate);
+        const present = Number(result.present || 0);
+        const authorisedAbsent = Number(result.authorisedAbsent || 0);
+        const unauthorisedAbsent = Number(result.unauthorisedAbsent || 0);
+        const total = Number(result.total || 0);
+
+        latestAttendanceReport = {
+            label,
+            present,
+            authorisedAbsent,
+            unauthorisedAbsent,
+            total
+        };
+
+        resultBox.innerHTML = `
+        <div class="report-summary">
+            <div class="report-card">
+                <h4>Total Present</h4>
+                <p>${present}</p>
+            </div>
+
+            <div class="report-card">
+                <h4>Total Authorised Absent</h4>
+                <p>${authorisedAbsent}</p>
+            </div>
+
+            <div class="report-card">
+                <h4>Total Unauthorised Absent</h4>
+                <p>${unauthorisedAbsent}</p>
+            </div>
+
+            <div class="report-card">
+                <h4>Total Records</h4>
+                <p>${total}</p>
+            </div>
+        </div>
+        `;
+
+        message.style.color = "green";
+        message.innerText = label + " report generated. Print or save as PDF.";
+
+    }catch(err){
+        console.error(err);
+        message.style.color = "red";
+        message.innerText = "Failed to generate report.";
+    }
+}
+
+function clearAttendanceReport(){
+    document.getElementById("reportPeriod").value = "";
+    document.getElementById("reportDate").value = "";
+    document.getElementById("attendanceReportMessage").innerText = "";
+    document.getElementById("attendanceReportResult").innerHTML = "";
+    latestAttendanceReport = null;
+}
+
+function printAttendanceReport(){
+
+    if(!latestAttendanceReport){
+        document.getElementById("attendanceReportMessage").style.color = "red";
+        document.getElementById("attendanceReportMessage").innerText =
+        "Please generate a report first.";
+        return;
+    }
+
+    const report = latestAttendanceReport;
+    const printWindow =
+    window.open("", "StudentRegistrationReport", "width=900,height=900");
+
+    printWindow.document.write(`
+    <html>
+    <head>
+    <title>Student Registration Report</title>
+
+    <style>
+    @page{
+        size:A4;
+        margin:12mm;
+    }
+
+    body{
+        font-family:Arial,sans-serif;
+        margin:0;
+        padding:0;
+        color:#111;
+    }
+
+    .watermark{
+        position:fixed;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        opacity:0.08;
+        z-index:0;
+    }
+
+    .watermark img{
+        width:420px;
+    }
+
+    .content{
+        position:relative;
+        z-index:2;
+    }
+
+    .header{
+        text-align:center;
+        margin-bottom:25px;
+    }
+
+    .logo{
+        width:80px;
+        margin-bottom:8px;
+    }
+
+    h1{
+        font-size:22px;
+        margin:0;
+    }
+
+    h2{
+        font-size:17px;
+        margin:6px 0;
+    }
+
+    .summary{
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:14px;
+        margin-top:25px;
+    }
+
+    .box{
+        border:1px solid #111;
+        border-radius:12px;
+        padding:12px;
+        overflow:hidden;
+    }
+
+    .box h4{
+        font-size:18px;
+        margin-bottom:8px;
+    }
+
+    .box p{
+        font-size:18px;
+        font-weight:bold;
+    }
+
+    .footer{
+        margin-top:60px;
+        font-size:13px;
+    }
+
+    .print-btn{
+        background:#0037ad;
+        color:white;
+        border:none;
+        padding:10px 18px;
+        border-radius:8px;
+        margin-bottom:15px;
+    }
+
+    @media print{
+        .print-btn{
+            display:none;
+        }
+    }
+    </style>
+    </head>
+
+    <body>
+
+    <button class="print-btn" onclick="window.print()">
+        Print / Save PDF
+    </button>
+
+    <div class="watermark">
+        <img src="logo.png">
+    </div>
+
+    <div class="content">
+
+        <div class="header">
+            <img src="logo.png" class="logo">
+            <h1>THE GAMBIA ACADEMY</h1>
+            <h2>REGISTER REPORT</h2>
+            <p>${report.label}</p>
+        </div>
+
+        <div class="summary">
+            <div class="box">
+                <h4>Total Present</h4>
+                <p>${report.present}</p>
+            </div>
+
+            <div class="box">
+                <h4>Total Authorised Absent</h4>
+                <p>${report.authorisedAbsent}</p>
+            </div>
+
+            <div class="box">
+                <h4>Total Unauthorised Absent</h4>
+                <p>${report.unauthorisedAbsent}</p>
+            </div>
+
+            <div class="box">
+                <h4>Total Records</h4>
+                <p>${report.total}</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><b>Prepared By:</b> ____________________</p>
+            <p><b>Approved By:</b> ____________________</p>
+            <p><b>Date:</b> ____________________</p>
+        </div>
+
+    </div>
+
+    </body>
+    </html>
+    `);
+
+    printWindow.document.close();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>ViewRegister</title>
+
+<style>
+
+/* =====================================
+   GLOBAL
+===================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#eef3f9;
+    color:#1d2b53;
+}
+
+/* =====================================
+   MAIN PAGE
+===================================== */
+
+.container{
+    width:100%;
+    min-height:100vh;
+    background:white;
+    padding:24px;
+}
+
+h2{
+    font-size:18px;
+    color:#17357a;
+    margin-bottom:8px;
+}
+
+.legend{
+    margin-bottom:18px;
+    color:#555;
+    font-size:13px;
+}
+
+/* =====================================
+   MAIN BUTTONS
+===================================== */
+
+.main-buttons{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+button{
+    border:none;
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.25s;
+    color:white;
+    min-width:160px;
+}
+
+button:hover{
+    transform:translateY(-1px);
+}
+
+.student-btn,
+.view-btn{
+    background:linear-gradient(90deg,#0048d8,#0037ad);
+}
+
+.staff-btn{
+    background:linear-gradient(90deg,#17357a,#001d5c);
+}
+
+.clear-btn{
+    background:linear-gradient(90deg,#d62828,#b00020);
+}
+
+.close-btn{
+    background:#6c757d;
+    min-width:110px;
+    padding:9px 12px;
+}
+
+/* =====================================
+   FIELD
+===================================== */
+
+.field{
+    margin-bottom:12px;
+    max-width:260px;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    font-size:12px;
+    font-weight:700;
+    color:#17357a;
+}
+
+input{
+    width:100%;
+    padding:8px 9px;
+    border-radius:10px;
+    border:1px solid #dce4ef;
+    font-size:12px;
+    outline:none;
+}
+
+input:focus{
+    border:1px solid #0037ad;
+}
+
+/* =====================================
+   FLAT MODAL
+===================================== */
+
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.28);
+    display:none;
+    justify-content:center;
+    padding:24px 14px;
+    z-index:999;
+    overflow-y:auto;
+}
+
+.modal-box{
+    width:92%;
+    max-width:980px;
+    background:white;
+    border-radius:14px;
+    padding:18px;
+    margin:auto;
+    box-shadow:none;
+}
+
+/* =====================================
+   MODAL HEADER
+===================================== */
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+}
+
+.modal-title{
+    font-size:18px;
+    color:#17357a;
+}
+
+/* =====================================
+   BUTTON AREA
+===================================== */
+
+.buttons{
+    margin-top:12px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.view-btn,
+.clear-btn{
+    min-width:150px;
+}
+
+#message{
+    margin-top:10px;
+    font-size:12px;
+    font-weight:700;
+}
+
+/* =====================================
+   TABLE WRAPPER
+===================================== */
+
+.table-wrapper{
+    width:100%;
+    overflow:visible;
+    border-radius:10px;
+    border:1px solid #e5ebf3;
+    background:white;
+    margin-top:14px;
+}
+
+/* =====================================
+   TABLE
+===================================== */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+}
+
+thead{
+    background:linear-gradient(90deg,#17357a,#001d5c);
+    color:white;
+    position:sticky;
+    top:0;
+    z-index:2;
+}
+
+th{
+    padding:10px 12px;
+    text-align:left;
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+td{
+    padding:10px 12px;
+    border-bottom:1px solid #eef2f7;
+    font-size:12px;
+    white-space:nowrap;
+}
+
+tbody tr:nth-child(even){
+    background:#f8fbff;
+}
+
+tbody tr:hover{
+    background:#eef6ff;
+}
+
+/* =====================================
+   BADGES
+===================================== */
+
+.badge{
+    display:inline-block;
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.badge-p{
+    background:#e8f7ed;
+    color:#137333;
+}
+
+.badge-aa{
+    background:#fff4df;
+    color:#b36b00;
+}
+
+.badge-ua{
+    background:#fdeaea;
+    color:#c5221f;
+}
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media(max-width:768px){
+
+    .container{
+        padding:16px;
+    }
+
+    .modal-overlay{
+        padding:14px;
+        align-items:flex-start;
+    }
+
+    .modal-box{
+        width:100%;
+        padding:14px;
+        border-radius:12px;
+    }
+
+    .modal-header{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    /* KEEP BUTTONS HORIZONTAL */
+
+    .main-buttons,
+    .buttons{
+        display:flex;
+        flex-direction:row;
+        gap:8px;
+        flex-wrap:nowrap;
+    }
+
+    button{
+        flex:1;
+        width:auto;
+        min-width:0;
+        font-size:11px;
+        padding:10px 8px;
+    }
+
+    .close-btn{
+        flex:1;
+    }
+
+    .field{
+        max-width:100%;
+    }
+
+    /* RESPONSIVE TABLE */
+
+    table{
+        width:100%;
+        table-layout:fixed;
+    }
+
+    th,
+    td{
+        font-size:10.5px;
+        padding:8px 6px;
+        white-space:normal;
+        word-break:break-word;
+    }
+
+    /* STUDENT TABLE */
+
+    th:nth-child(1),
+    td:nth-child(1){
+        width:22%;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2){
+        width:34%;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3){
+        width:24%;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4){
+        width:20%;
+    }
+
+    /* STAFF TABLE */
+
+    .staff-view th:nth-child(1),
+    .staff-view td:nth-child(1){
+        width:45%;
+    }
+
+    .staff-view th:nth-child(2),
+    .staff-view td:nth-child(2){
+        width:35%;
+    }
+
+    .staff-view th:nth-child(3),
+    .staff-view td:nth-child(3){
+        width:20%;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>View Register</h2>
+
+    <p class="legend">
+        View Student and Staff Register Records <br>P = Present, AA = Absent with Approval, UA = Unapproved Absence
+    </p>
+
+    <div class="main-buttons">
+
+        <button
+        class="student-btn"
+        onclick="openAttendance('student')">
+
+            View Students Register
+
+        </button>
+
+        <button
+        class="staff-btn"
+        onclick="openAttendance('staff')">
+
+            View Staff Register
+
+        </button>
+
+    </div>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2
+            class="modal-title"
+            id="modalTitle">
+                Register
+            </h2>
+
+            <button
+            class="close-btn"
+            onclick="closeModal()">
+
+                Close
+
+            </button>
+
+        </div>
+
+        <div class="field">
+            <p>P = Present</p>
+            <p>AA = Absent with Approval</p>
+            <p>UA = Unapproved Absence</p>
+            <label>Select Date</label>
+
+            <input
+            type="date"
+            id="date">
+
+        </div>
+
+        <div class="buttons">
+
+            <button
+            class="view-btn"
+            onclick="viewAttendance()">
+
+                View Register
+   
+            </button>
+
+            <button
+            class="clear-btn"
+            onclick="clearAttendance()">
+
+                Clear
+
+            </button>
+
+        </div>
+
+        <div id="message"></div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead id="tableHead"></thead>
+
+                <tbody id="attendanceTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbx70aP3mQ7QHnIeDU1vhdckv2UAo7T5F8U9GOgxY1fW8fxKDMFEEjR0P77v8NT90ulE/exec";
+
+let currentViewType = "";
+
+/* =====================================
+   OPEN MODAL
+===================================== */
+
+function openAttendance(type){
+
+    currentViewType = type;
+
+    document.getElementById("modalOverlay").style.display =
+    "flex";
+
+    document.getElementById("date").value =
+    new Date().toISOString().split("T")[0];
+
+    document.getElementById("attendanceTable").innerHTML =
+    "";
+
+    document.getElementById("message").innerText =
+    "";
+
+    if(type === "student"){
+
+        document.getElementById("modalTitle").innerText =
+        "Student Register";
+
+    }else{
+
+        document.getElementById("modalTitle").innerText =
+        "Staff Register";
+    }
+
+    viewAttendance();
+}
+
+/* =====================================
+   CLOSE MODAL
+===================================== */
+
+function closeModal(){
+
+    document.getElementById("modalOverlay").style.display =
+    "none";
+
+    clearAttendance();
+}
+
+/* =====================================
+   VIEW ATTENDANCE
+===================================== */
+
+async function viewAttendance(){
+
+    const date =
+    document.getElementById("date").value;
+
+    const message =
+    document.getElementById("message");
+
+    const tableHead =
+    document.getElementById("tableHead");
+
+    const tbody =
+    document.getElementById("attendanceTable");
+
+    tbody.innerHTML =
+    "";
+
+    if(!date){
+
+        message.style.color =
+        "red";
+
+        message.innerText =
+        "Please select a date";
+
+        return;
+    }
+
+    let action =
+    "";
+
+    if(currentViewType === "student"){
+
+        action =
+        "view";
+
+        tableHead.innerHTML =
+        `
+        <tr>
+            <th>Student ID</th>
+            <th>Student Name</th>
+            <th>Class</th>
+            <th>Attendance</th>
+        </tr>
+        `;
+
+    }else{
+
+        action =
+        "viewStaffAttendance";
+
+        tableHead.innerHTML =
+        `
+        <tr>
+            <th>Staff Name</th>
+            <th>Role</th>
+            <th>Attendance</th>
+        </tr>
+        `;
+    }
+
+    message.style.color =
+    "#0037ad";
+
+    message.innerText =
+    "Loading register...";
+
+    try{
+
+        const response =
+        await fetch(WEB_APP_URL,{
+            method:"POST",
+            headers:{
+                "Content-Type":"text/plain;charset=utf-8"
+            },
+            body:JSON.stringify({
+                action:action,
+                date:date
+            })
+        });
+
+        const result =
+        await response.json();
+
+        if(result.status === "ERROR"){
+
+            message.style.color =
+            "red";
+
+            message.innerText =
+            result.message || "Script error";
+
+            return;
+        }
+
+        if(result.status === "EMPTY"){
+
+            message.style.color =
+            "red";
+
+            message.innerText =
+            "No register found";
+
+            return;
+        }
+
+        renderRows(result.data || []);
+
+        message.style.color =
+        "green";
+
+        message.innerText =
+        (result.data || []).length +
+        " register records found.";
+
+    }catch(error){
+
+        console.error(error);
+
+        message.style.color =
+        "red";
+
+        message.innerText =
+        "Failed to load register";
+    }
+}
+
+/* =====================================
+   RENDER ROWS
+===================================== */
+
+function renderRows(data){
+
+    const tbody =
+    document.getElementById("attendanceTable");
+
+    tbody.innerHTML =
+    "";
+
+    data.forEach(row => {
+
+        const attendance =
+        String(row.attendance || "")
+        .trim()
+        .toUpperCase();
+
+        let badgeClass =
+        "badge-p";
+
+        if(attendance === "AA"){
+            badgeClass =
+            "badge-aa";
+        }
+
+        if(attendance === "UA"){
+            badgeClass =
+            "badge-ua";
+        }
+
+        const tr =
+        document.createElement("tr");
+
+        if(currentViewType === "student"){
+
+            tr.innerHTML =
+            `
+            <td>${row.studentID || ""}</td>
+            <td>${row.name || row.studentName || ""}</td>
+            <td>${row.className || ""}</td>
+            <td>
+                <span class="badge ${badgeClass}">
+                    ${attendance}
+                </span>
+            </td>
+            `;
+
+        }else{
+
+            tr.innerHTML =
+            `
+            <td>${row.staffName || row.name || ""}</td>
+            <td>${row.role || ""}</td>
+            <td>
+                <span class="badge ${badgeClass}">
+                    ${attendance}
+                </span>
+            </td>
+            `;
+        }
+
+        tbody.appendChild(tr);
+    });
+}
+
+/* =====================================
+   CLEAR
+===================================== */
+
+function clearAttendance(){
+
+    document.getElementById("attendanceTable").innerHTML =
+    "";
+
+    document.getElementById("message").innerText =
+    "";
+}
+
+</script>
+
+</body>
+
+</html>
