@@ -61,27 +61,6 @@ body{
     color:#666;
 }
 
-.live-time-card{
-    background:#fff;
-    border-radius:14px;
-    padding:10px 16px;
-    box-shadow:0 3px 12px rgba(0,0,0,.07);
-    text-align:center;
-    min-width:190px;
-}
-
-#liveTime{
-    font-size:14px;
-    font-weight:700;
-    color:#0037ad;
-    margin-bottom:4px;
-}
-
-#todayDate{
-    font-size:12px;
-    color:#666;
-}
-
 /* =====================================
    TOP STAT CARDS
 ===================================== */
@@ -277,7 +256,6 @@ body{
 
 /* =====================================
    BOTTOM SECTION
-   Calendar left, analysis right
 ===================================== */
 
 .bottom-section{
@@ -491,11 +469,6 @@ body{
         align-items:flex-start;
     }
 
-    .live-time-card{
-        width:100%;
-        min-width:unset;
-    }
-
     .report-controls{
         flex-direction:column;
     }
@@ -530,11 +503,6 @@ body{
             <h1>Staff Register</h1>
             <p>Overview of staff register records.</p>
             <p>P = Present, AA = Authorised Absence, UA = Unauthorised Absence</p>
-        </div>
-
-        <div class="live-time-card">
-            <div id="liveTime">00:00:00</div>
-            <div id="todayDate"></div>
         </div>
     </div>
 
@@ -619,6 +587,7 @@ body{
 
         <h2>Report Staff Register</h2>
         <p>Select a report type and date to generate a report.</p>
+
         <div class="report-controls">
 
             <select id="reportPeriod">
@@ -630,18 +599,15 @@ body{
 
             <input type="month" id="reportDate">
 
-            <button class="generate-btn"
-            onclick="generateStaffAttendanceReport()">
+            <button class="generate-btn" onclick="generateStaffAttendanceReport()">
                 Generate
             </button>
 
-            <button class="print-report-btn"
-            onclick="printStaffAttendanceReport()">
+            <button class="print-report-btn" onclick="printStaffAttendanceReport()">
                 Print
             </button>
 
-            <button class="clear-report-btn"
-            onclick="clearStaffAttendanceReport()">
+            <button class="clear-report-btn" onclick="clearStaffAttendanceReport()">
                 Clear
             </button>
 
@@ -678,13 +644,8 @@ body{
 
             <div class="pie-chart-wrap">
 
-                <div class="pie-chart"
-                id="attendancePieChart">
-
-                    <span id="pieCenterText">
-                        0%
-                    </span>
-
+                <div class="pie-chart" id="attendancePieChart">
+                    <span id="pieCenterText">0%</span>
                 </div>
 
                 <div class="pie-legend">
@@ -694,15 +655,9 @@ body{
 
                         <div>
                             <strong>P</strong>
-
                             <p>
-                                <span id="analysisPresentPercent">
-                                    0%
-                                </span>
-
-                                (<span id="analysisPresent">
-                                    0
-                                </span>)
+                                <span id="analysisPresentPercent">0%</span>
+                                (<span id="analysisPresent">0</span>)
                             </p>
                         </div>
                     </div>
@@ -712,15 +667,9 @@ body{
 
                         <div>
                             <strong>AA</strong>
-
                             <p>
-                                <span id="analysisAAPercent">
-                                    0%
-                                </span>
-
-                                (<span id="analysisAA">
-                                    0
-                                </span>)
+                                <span id="analysisAAPercent">0%</span>
+                                (<span id="analysisAA">0</span>)
                             </p>
                         </div>
                     </div>
@@ -730,15 +679,9 @@ body{
 
                         <div>
                             <strong>UA</strong>
-
                             <p>
-                                <span id="analysisUAPercent">
-                                    0%
-                                </span>
-
-                                (<span id="analysisUA">
-                                    0
-                                </span>)
+                                <span id="analysisUAPercent">0%</span>
+                                (<span id="analysisUA">0</span>)
                             </p>
                         </div>
                     </div>
@@ -749,10 +692,7 @@ body{
 
             <div class="analysis-total">
                 <span>Total Register</span>
-
-                <strong id="analysisTotal">
-                    0
-                </strong>
+                <strong id="analysisTotal">0</strong>
             </div>
 
             <div class="analysis-rate">
@@ -771,30 +711,6 @@ const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbx70aP3mQ7QHnIeDU1vhdckv2UAo7T5F8U9GOgxY1fW8fxKDMFEEjR0P77v8NT90ulE/exec";
 
 let latestStaffAttendanceReport = null;
-
-function updateDateTime() {
-
-    const now =
-    new Date();
-
-    document.getElementById("todayDate").innerHTML =
-    now.toLocaleDateString("en-GB", {
-        weekday:"long",
-        day:"numeric",
-        month:"long",
-        year:"numeric"
-    });
-
-    document.getElementById("liveTime").innerHTML =
-    now.toLocaleTimeString("en-GB", {
-        hour:"2-digit",
-        minute:"2-digit",
-        second:"2-digit"
-    });
-}
-
-setInterval(updateDateTime, 1000);
-updateDateTime();
 
 async function loadTotalStaff() {
 
@@ -926,11 +842,7 @@ async function loadDashboard() {
     loadTotalStaff();
 }
 
-function updateAttendanceAnalysis(
-    present,
-    aa,
-    ua
-) {
+function updateAttendanceAnalysis(present, aa, ua) {
 
     const total =
     present + aa + ua;
@@ -961,9 +873,7 @@ function updateAttendanceAnalysis(
     : 0;
 
     const pieChart =
-    document.getElementById(
-        "attendancePieChart"
-    );
+    document.getElementById("attendancePieChart");
 
     pieChart.style.background =
     `conic-gradient(
@@ -1043,24 +953,16 @@ function getStaffReportLabel(period, dateValue) {
 async function generateStaffAttendanceReport() {
 
     const period =
-    document.getElementById(
-        "reportPeriod"
-    ).value;
+    document.getElementById("reportPeriod").value;
 
     const reportDate =
-    document.getElementById(
-        "reportDate"
-    ).value;
+    document.getElementById("reportDate").value;
 
     const message =
-    document.getElementById(
-        "staffAttendanceReportMessage"
-    );
+    document.getElementById("staffAttendanceReportMessage");
 
     const resultBox =
-    document.getElementById(
-        "staffAttendanceReportResult"
-    );
+    document.getElementById("staffAttendanceReportResult");
 
     if (
         !period ||
@@ -1199,21 +1101,10 @@ async function generateStaffAttendanceReport() {
 
 function clearStaffAttendanceReport() {
 
-    document.getElementById(
-        "reportPeriod"
-    ).value = "";
-
-    document.getElementById(
-        "reportDate"
-    ).value = "";
-
-    document.getElementById(
-        "staffAttendanceReportMessage"
-    ).innerText = "";
-
-    document.getElementById(
-        "staffAttendanceReportResult"
-    ).innerHTML = "";
+    document.getElementById("reportPeriod").value = "";
+    document.getElementById("reportDate").value = "";
+    document.getElementById("staffAttendanceReportMessage").innerText = "";
+    document.getElementById("staffAttendanceReportResult").innerHTML = "";
 
     latestStaffAttendanceReport = null;
 }
