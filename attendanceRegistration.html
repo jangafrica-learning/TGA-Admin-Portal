@@ -50,7 +50,9 @@ body{
     cursor:pointer;
     display:flex;
     align-items:center;
+    justify-content:center;
     gap:8px;
+    text-align:center;
 }
 
 .menu-bar button:hover{
@@ -427,23 +429,30 @@ body{
     }
 }
 
-@media(max-width:768px){
+@media(max-width:600px){
 
     .menu-bar{
-        flex-wrap:nowrap;
-        overflow-x:auto;
-        white-space:nowrap;
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:8px;
         padding:8px;
     }
 
     .menu-bar button{
-        flex-shrink:0;
-        font-size:11.5px;
-        padding:9px 12px;
+        width:100%;
+        min-height:30px;
+        font-size:9px;
+        padding:8px 6px;
+        text-align:center;
+        white-space:normal;
+        line-height:1.3;
+        display:flex;
+        justify-content:center;
+        align-items:center;
     }
 
     .main-content{
-        padding:62px 14px 14px 14px;
+        padding:120px 12px 12px 12px;
     }
 
     .cards,
@@ -466,11 +475,19 @@ body{
 
     .pie-chart-wrap{
         flex-direction:column;
-        align-items:flex-start;
+        align-items:center;
+    }
+
+    .pie-legend{
+        width:100%;
+    }
+
+    .calendar-box iframe{
+        height:280px;
     }
 
     #pageFrame{
-        height:calc(100vh - 62px);
+        height:calc(100vh - 120px);
     }
 }
 </style>
