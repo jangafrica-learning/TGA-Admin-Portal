@@ -258,10 +258,10 @@ iframe{
    MOBILE
 ================================ */
 
-@media(max-width:768px){
+@media(max-width:600px){
 
     .topbar{
-        min-height:150px;
+        min-height:120px;
         grid-template-columns:auto auto 1fr;
         align-items:center;
         gap:8px;
@@ -304,7 +304,7 @@ iframe{
         grid-column:1 / -1;
         width:100%;
         min-width:unset;
-        padding:7px 10px;
+        padding:4px 8px;
         border-radius:12px;
     }
 
@@ -346,27 +346,27 @@ iframe{
     }
 
     iframe{
-        height:calc(100vh - 150px);
+        height:calc(75vh - 100px);
     }
 }
 
 @media(max-width:420px){
 
     .topbar{
-        min-height:160px;
+        min-height:100px;
     }
 
     .top-menu{
-        top:160px;
-        height:calc(100vh - 160px);
+        top:100px;
+        height:calc(100vh - 100px);
     }
 
     .content{
-        padding-top:160px;
+        padding-top:100px;
     }
 
     iframe{
-        height:calc(100vh - 160px);
+        height:calc(100vh - 100px);
     }
 
     .school-name{
