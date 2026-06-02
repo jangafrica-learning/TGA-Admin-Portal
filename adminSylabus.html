@@ -1,0 +1,3315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- =========================================================
+       1. BASIC PAGE SETTINGS
+  ========================================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syllabus</title>
+
+  <!-- =========================================================
+       2. ICON + EXCEL READER LIBRARIES
+  ========================================================== -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+  /* =========================================================
+     3. GLOBAL RESET
+  ========================================================== */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #eef3f9;
+    color: #1d2b53;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .app {
+    min-height: 100vh;
+  }
+
+  /* =========================================================
+     4. MOBILE MENU
+  ========================================================== */
+  .mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1200;
+    background: #0037ad;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 900;
+  }
+
+  /* =========================================================
+     5. SIDEBAR
+  ========================================================== */
+  .sidebar {
+    width: 230px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, #001d5c, #012a7a);
+    color: white;
+    padding: 25px 18px;
+    z-index: 1000;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.25) transparent;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.25);
+    border-radius: 20px;
+  }
+
+  .logo-section {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .logo {
+    width: 90px;
+    max-height: 90px;
+    object-fit: contain;
+    margin-bottom: 15px;
+  }
+
+  .school-name {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .portal-text {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #d9e5ff;
+  }
+
+  .menu {
+    margin-top: 20px;
+    padding-bottom: 65px;
+  }
+
+  .menu button {
+    width: 100%;
+    border: none;
+    background: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 15px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.25s;
+    text-align: left;
+  }
+
+  .menu button:hover {
+    background: rgba(255,255,255,0.10);
+  }
+
+  .active-btn {
+    background: #0d47d9 !important;
+  }
+
+  /* =========================================================
+     6. MAIN CONTENT
+  ========================================================== */
+  .main {
+    margin-left: 230px;
+    padding: 25px;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .header-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+  }
+
+  .header-box h1 {
+    font-size: 19px;
+    font-weight: 700;
+    color: #17357a;
+    margin-bottom: 8px;
+  }
+
+  .header-box p {
+    font-size: 13px;
+    color: #666;
+  }
+
+  .view-label {
+    background: white;
+    border-radius: 18px;
+    padding: 14px 22px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    min-width: 220px;
+    text-align: center;
+  }
+
+  .view-label strong {
+    display: block;
+    font-size: 14px;
+    color: #0037ad;
+    margin-bottom: 5px;
+  }
+
+  .view-label span {
+    font-size: 12px;
+    color: #666;
+  }
+
+  /* =========================================================
+     7. GENERAL BLOCKS
+  ========================================================== */
+  .control-box {
+    background: white;
+    border-radius: 20px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    overflow-x: auto;
+  }
+
+  .table-box,
+  .panel-box {
+    background: white;
+    border-radius: 24px;
+    padding: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+  }
+
+  .topbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  select,
+  input,
+  textarea {
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 1px solid #dce4ef;
+    font-size: 13px;
+    min-width: 240px;
+    background: white;
+    color: #1d2b53;
+    font-family: Arial, sans-serif;
+  }
+
+  textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
+
+  .message {
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    min-height: 18px;
+  }
+
+  .error {
+    color: #b00020;
+  }
+
+  .success {
+    color: #0b6b2f;
+  }
+
+  .info {
+    color: #0037ad;
+  }
+
+  .action-message {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    min-height: 18px;
+  }
+
+  /* =========================================================
+     8. ORIGINAL TABLE SYSTEM — PRESERVED
+  ========================================================== */
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    max-height: none;
+    border-radius: 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 900px;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  th,
+  td {
+    border: 1px solid #e5e7eb;
+    padding: 8px;
+    font-size: 12.5px;
+    vertical-align: top;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  th {
+    background: #0037ad;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    font-size: 12px;
+  }
+
+  tr:nth-child(even) {
+    background: #f8fafc;
+  }
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 24%;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 30%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 9%;
+    text-align: center;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 8%;
+    text-align: center;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 8%;
+    text-align: center;
+  }
+
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 11%;
+    text-align: center;
+  }
+
+  th:last-child,
+  td:last-child {
+    width: 10%;
+    text-align: center;
+  }
+
+  td select {
+    width: 100%;
+    min-width: unset;
+    padding: 6px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+
+  .status-pending {
+    background: #fff2cc;
+    font-weight: bold;
+    text-align: center;
+    color: #7a5700;
+  }
+
+  .status-complete {
+    background: #d9ead3;
+    font-weight: bold;
+    text-align: center;
+    color: #0b6b2f;
+  }
+
+  /* =========================================================
+     9. COMPLETION SWITCH — PRESERVED
+  ========================================================== */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #d1d5db;
+    transition: 0.3s;
+    border-radius: 34px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    top: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+
+  .switch input:checked + .slider {
+    background-color: #16a34a;
+  }
+
+  .switch input:checked + .slider:before {
+    transform: translateX(18px);
+  }
+
+  .completion-label {
+    display: block;
+    margin-top: 2px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #64748b;
+    text-align: center;
+  }
+
+  /* =========================================================
+     10. BUTTONS
+  ========================================================== */
+  .action-btn {
+    background: linear-gradient(90deg,#0048d8,#0037ad);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .action-btn:hover {
+    filter: brightness(0.95);
+  }
+
+  .danger-btn {
+    background: linear-gradient(90deg,#dc2626,#991b1b);
+  }
+
+  .warning-btn {
+    background: linear-gradient(90deg,#f59e0b,#b45309);
+  }
+
+  .neutral-btn {
+    background: linear-gradient(90deg,#64748b,#334155);
+  }
+
+  .success-btn {
+    background: linear-gradient(90deg,#16a34a,#15803d);
+  }
+
+  /* =========================================================
+     11. MODALS
+  ========================================================== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-box {
+    background: white;
+    border-radius: 24px;
+    padding: 20px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+  }
+
+  .large-modal {
+    max-width: 1200px;
+  }
+
+  .medium-modal {
+    max-width: 650px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 10px;
+  }
+
+  .modal-header h3 {
+    color: #0037ad;
+    font-size: 18px;
+  }
+
+  .modal-header button {
+    border: none;
+    background: #0037ad;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  /* =========================================================
+     12. FEEDBACK COMMENT STYLE
+  ========================================================== */
+  .feedback-comments {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .feedback-comment {
+    display: flex;
+    gap: 14px;
+    background: #f8fafc;
+    border: 1px solid #dce4ef;
+    border-radius: 18px;
+    padding: 14px;
+  }
+
+  .comment-avatar {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 50%;
+    background: #0037ad;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .comment-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .comment-header strong {
+    display: block;
+    color: #0037ad;
+    font-size: 15px;
+  }
+
+  .comment-header span {
+    display: block;
+    margin-top: 3px;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .comment-header small {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  .comment-topic {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    line-height: 1.45;
+  }
+
+  .comment-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
+  }
+
+  .comment-grid label,
+  .comment-note label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+
+  .comment-grid p,
+  .comment-note p {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 9px;
+    min-height: 38px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: #1d2b53;
+  }
+
+  .comment-note {
+    margin-top: 10px;
+  }
+
+  .comment-footer {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0037ad;
+  }
+
+  .feedback-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(240px,1fr));
+    gap: 12px;
+  }
+
+  .feedback-form-grid input,
+  .feedback-form-grid textarea,
+  .feedback-form-grid select {
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* =========================================================
+     13. SUBJECT + MANAGE PANELS
+  ========================================================== */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    gap: 14px;
+  }
+
+  .subjects-card,
+  .manage-card {
+    background: #f8fafc;
+    border: 1px solid #dce4ef;
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  .subjects-card strong,
+  .manage-card strong {
+    display: block;
+    color: #0037ad;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .subjects-card span,
+  .manage-card span {
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .subjects-actions,
+  .manage-actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .subject-status {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .subject-active {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .subject-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .manage-note,
+  .upload-note {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  .manage-control-grid {
+    display: grid;
+    grid-template-columns: minmax(260px,1fr) auto;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .teacher-primary-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .teacher-primary-actions .action-btn {
+    min-width: 150px;
+    justify-content: center;
+  }
+
+
+  /* =========================================================
+     TEACHERS + TEACHER SUBJECTS
+  ========================================================== */
+  .teacher-card,
+  .assignment-card {
+    background:#f8fafc;
+    border:1px solid #dce4ef;
+    border-radius:18px;
+    padding:16px;
+  }
+
+  .teacher-card strong,
+  .assignment-card strong {
+    display:block;
+    color:#0037ad;
+    font-size:14px;
+    margin-bottom:6px;
+  }
+
+  .teacher-card span,
+  .assignment-card span,
+  .assignment-card p {
+    font-size:12px;
+    color:#64748b;
+    line-height:1.6;
+  }
+
+  .teacher-actions,
+  .assignment-actions {
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .teacher-assignment-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .teacher-assignment-item {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 10px;
+  }
+
+  .teacher-assignment-item p {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  .teacher-assignment-item .assignment-actions {
+    margin-top: 8px;
+  }
+
+  .teacher-assignment-item .action-btn {
+    font-size: 10.5px;
+    padding: 6px 8px;
+  }
+
+  .teacher-form-grid,
+  .assignment-form-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(240px,1fr));
+    gap:12px;
+  }
+
+  .teacher-form-grid input,
+  .teacher-form-grid select,
+  .assignment-form-grid input,
+  .assignment-form-grid select {
+    width:100%;
+    min-width:unset;
+  }
+
+  .form-field {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .form-field label {
+    font-size:12px;
+    font-weight:700;
+    color:#475569;
+  }
+
+  .required-star {
+    color:#b00020;
+    font-weight:900;
+    margin-left:3px;
+  }
+
+  .field-error {
+    display:none;
+    font-size:11px;
+    font-weight:700;
+    color:#b00020;
+    line-height:1.4;
+  }
+
+  .form-field.has-error input,
+  .form-field.has-error select,
+  .form-field.has-error textarea {
+    border-color:#b00020;
+    background:#fff7f7;
+  }
+
+  .form-field.has-error .field-error {
+    display:block;
+  }
+
+  .subject-checkbox-list {
+    grid-column: 1 / -1;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:10px;
+    background:white;
+    border:1px solid #dce4ef;
+    border-radius:16px;
+    padding:12px;
+    max-height:260px;
+    overflow-y:auto;
+  }
+
+  .subject-check-item {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12.5px;
+    color:#1d2b53;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:9px 10px;
+  }
+
+  .subject-check-item input {
+    width:auto;
+    min-width:unset;
+  }
+
+  /* =========================================================
+     CUSTOM CONFIRM MODAL
+  ========================================================== */
+  .confirm-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+    padding:20px;
+  }
+
+  .confirm-box{
+    width:100%;
+    max-width:430px;
+    background:white;
+    border-radius:28px;
+    padding:28px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.20);
+  }
+
+  .confirm-header h3{
+    color:#0037ad;
+    font-size:22px;
+    margin-bottom:12px;
+  }
+
+  .confirm-body p{
+    color:#475569;
+    font-size:15px;
+    line-height:1.7;
+  }
+
+  .confirm-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-top:24px;
+  }
+
+  .confirm-cancel-btn,
+  .confirm-ok-btn{
+    border:none;
+    padding:12px 22px;
+    border-radius:14px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  .confirm-cancel-btn{
+    background:#e2e8f0;
+    color:#334155;
+  }
+
+  .confirm-ok-btn{
+    background:#0037ad;
+    color:white;
+  }
+
+  .confirm-danger{
+    background:#b91c1c !important;
+  }
+
+  /* =========================================================
+     14. RESPONSIVE DESIGN
+  ========================================================== */
+  @media(max-width: 900px) {
+    .header-box {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .view-label {
+      width: 100%;
+    }
+
+    .topbar,
+    .manage-control-grid {
+      grid-template-columns: 1fr;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      min-width: unset;
+    }
+
+    .comment-grid,
+    .feedback-form-grid,
+    .teacher-form-grid,
+    .assignment-form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media(max-width: 768px) {
+    .mobile-menu-btn {
+      display: block;
+    }
+
+    .mobile-overlay.show {
+      display: block;
+    }
+
+    .sidebar {
+      transform: translateX(-100%);
+      transition: 0.3s;
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+    .main {
+      margin-left: 0;
+      padding: 70px 12px 20px 12px;
+    }
+
+    .table-box,
+    .panel-box {
+      padding: 12px;
+    }
+
+    th,
+    td {
+      min-width: 70px;
+      font-size: 9.5px;
+      padding: 4px;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+      min-width: 180px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      min-width: 220px;
+    }
+
+    td select {
+      font-size: 9.5px;
+      padding: 4px;
+    }
+
+    .action-btn {
+      font-size: 9.5px;
+      padding: 6px 8px;
+    }
+  }
+
+
+/* =========================================================
+   AGENDA-SYSTEM TOP BAR LAYOUT OVERRIDE
+   This makes this program use the same structure as the agenda program.
+========================================================== */
+body{
+  overflow:hidden !important;
+  background:#eef4fb !important;
+  color:#111827 !important;
+  font-size:13px !important;
+}
+
+.mobile-menu-btn,
+.mobile-overlay,
+.sidebar{
+  display:none !important;
+}
+
+.menu-bar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  background:#001d5c;
+  padding:10px 15px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  z-index:1000;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.menu-bar button{
+  border:none;
+  border-radius:8px;
+  padding:10px 14px;
+  background:white;
+  color:#17357a;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  height:auto;
+}
+
+.menu-bar button:hover{
+  background:#eef3ff;
+}
+
+.menu-bar button.active-btn{
+  background:#0d47d9 !important;
+  color:white !important;
+}
+
+.app{
+  min-height:100vh;
+}
+
+.main{
+  margin-left:0 !important;
+  height:100vh;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:82px 20px 20px !important;
+  max-width:1200px;
+  margin-right:auto;
+}
+
+.header-box,
+.control-box,
+.table-box,
+.panel-box{
+  background:#ffffff !important;
+  border:1px solid #dbe4ef !important;
+  border-radius:14px !important;
+  box-shadow:none !important;
+}
+
+.header-box{
+  padding:20px;
+}
+
+.view-label{
+  border:1px solid #dbe4ef !important;
+  border-radius:10px !important;
+  box-shadow:none !important;
+}
+
+.topbar{
+  gap:10px !important;
+}
+
+select,
+input,
+textarea{
+  border-radius:8px !important;
+  padding:9px !important;
+  border:1px solid #dbe4ef !important;
+  font-size:13px !important;
+}
+
+table{
+  width:100% !important;
+  border-collapse:collapse !important;
+  background:white !important;
+  border:1px solid #dbe4ef !important;
+  font-size:13px !important;
+}
+
+th{
+  background:#f8fafc !important;
+  color:#001d5c !important;
+  text-align:left !important;
+  padding:11px !important;
+  border-bottom:1px solid #dbe4ef !important;
+  font-size:12px !important;
+  position:static !important;
+}
+
+td{
+  padding:11px !important;
+  border-bottom:1px solid #dbe4ef !important;
+  vertical-align:top !important;
+  color:#000 !important;
+  font-size:13px !important;
+}
+
+.action-btn,
+.confirm-cancel-btn,
+.confirm-ok-btn{
+  height:38px;
+  border:none;
+  border-radius:8px !important;
+  padding:0 14px !important;
+  cursor:pointer;
+  font-weight:700;
+  font-size:13px !important;
+  white-space:nowrap;
+}
+
+.modal-box,
+.confirm-box{
+  border-radius:14px !important;
+}
+
+@media(max-width:800px){
+  .menu-bar{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    white-space:nowrap;
+    padding:8px;
+  }
+
+  .menu-bar button{
+    flex-shrink:0;
+    font-size:11.5px;
+    padding:9px 12px;
+  }
+
+  .main{
+    padding:62px 12px 12px !important;
+  }
+
+  .header-box,
+  .topbar,
+  .manage-control-grid{
+    flex-direction:column !important;
+    align-items:stretch !important;
+    grid-template-columns:1fr !important;
+  }
+
+  select,
+  input,
+  textarea{
+    width:100% !important;
+    min-width:unset !important;
+  }
+
+  th,
+  td{
+    padding:9px !important;
+    font-size:12px !important;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="menu-bar">
+  <button id="allBtn" class="active-btn" onclick="setView('all')">All Topics</button>
+  <button id="approvedBtn" onclick="setView('approved')">Approved Topics</button>
+  <button id="feedbackBtn" onclick="setView('feedback')">Feedback</button>
+  <button id="subjectsBtn" onclick="setView('subjects')">Available Subjects</button>
+  <button id="manageSyllabusBtn" onclick="setView('manageSyllabus')">Manage Syllabus</button>
+  <button id="teachersBtn" onclick="setView('teachers')">Teachers</button>
+</div>
+
+<div class="app">
+    <!-- =======================================================
+         MAIN CONTENT
+    ======================================================== -->
+    <main class="main">
+      <div class="header-box">
+        <div>
+          <h1>Curriculum</h1>
+          <p>Manage and track syllabus content across all subjects</p>
+        </div>
+
+        <div class="view-label">
+          <strong id="currentViewLabel">All Topics</strong>
+          <span id="currentSubjectLabel">Loading subject...</span>
+        </div>
+      </div>
+
+      <!-- SYLLABUS FILTER CONTROLS -->
+      <div class="control-box" id="syllabusControls">
+        <div class="topbar">
+          <select id="subjectSelect">
+            <option value="">Loading subjects...</option>
+          </select>
+
+          <input type="text" id="searchBox" placeholder="Search topic, subtopic, objective...">
+        </div>
+
+        <div id="message" class="message"></div>
+      </div>
+
+      <!-- SYLLABUS TABLE -->
+      <div class="table-box" id="syllabusBox">
+        <div class="table-wrapper">
+          <table id="syllabusTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FEEDBACK TAB -->
+      <div class="panel-box" id="feedbackBox" style="display:none;">
+        <div class="topbar">
+          <button class="action-btn" onclick="openFeedbackViewModal()">View Feedback</button>
+          <button class="action-btn" onclick="openFeedbackFormModal()">Submit Feedback</button>
+        </div>
+        <div id="feedbackActionMessage" class="action-message"></div>
+      </div>
+
+      <!-- TGA SUBJECTS TAB -->
+      <div class="panel-box" id="subjectsBox" style="display:none;">
+        <div class="topbar" style="margin-bottom:16px;">
+          <button class="action-btn" onclick="loadTgaSubjects()">Refresh</button>
+          <button class="action-btn success-btn" onclick="openAddSubjectModal()">+ Add Subject</button>
+        </div>
+
+        <div id="subjectsActionMessage" class="action-message"></div>
+        <div id="subjectsContent" class="cards-grid" style="margin-top:14px;">
+          <p style="font-size:13px;color:#666;">Refresh to see available subjects</p>
+        </div>
+      </div>
+
+      <!-- MANAGE SYLLABUS TAB -->
+      <div class="panel-box" id="manageSyllabusBox" style="display:none;">
+        <div class="manage-control-grid">
+          <select id="manageSyllabusSubject">
+            <option value="">Select Subject</option>
+          </select>
+          <button class="action-btn" onclick="loadManageSyllabusDropdown()">Refresh</button>
+        </div>
+
+        <div class="cards-grid">
+          <div class="manage-card">
+            <strong>Upload Syllabus</strong>
+            <span>Adds new syllabus rows to the selected subject.</span>
+            <div class="manage-actions">
+              <button class="action-btn" onclick="openManageSyllabusModal('uploadTopics')">Upload Syllabus</button>
+            </div>
+          </div>
+
+          <div class="manage-card">
+            <strong>Replace Syllabus</strong>
+            <span>Clears old syllabus rows first, then uploads the new file.</span>
+            <div class="manage-actions">
+              <button class="action-btn warning-btn" onclick="openManageSyllabusModal('replaceSyllabus')">Replace Syllabus</button>
+            </div>
+          </div>
+
+          <div class="manage-card">
+            <strong>Clear Syllabus</strong>
+            <span>Removes all syllabus rows but keeps the subject sheet and headers.</span>
+            <div class="manage-actions">
+              <button class="action-btn neutral-btn" onclick="clearManagedSyllabus()">Clear Syllabus</button>
+            </div>
+          </div>
+
+          <div class="manage-card">
+            <strong>Delete Subject Permanently</strong>
+            <span>Deletes a custom subject and its sheet permanently. Protected subjects cannot be deleted.</span>
+            <div class="manage-actions">
+              <button class="action-btn danger-btn" onclick="deleteManagedSubjectPermanently()">Delete Subject</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="manage-note">
+          Select a subject first. Upload and Replace require a CSV or Excel file with these exact headers: Topic, Subtopics, Hours / Duration, Completion, Status, Approval.
+        </p>
+        <div id="manageActionMessage" class="action-message"></div>
+      </div>
+
+      <!-- TEACHERS TAB -->
+      <div class="panel-box" id="teachersBox" style="display:none;">
+
+        <div class="teacher-primary-actions">
+          <button class="action-btn success-btn" onclick="openTeacherFormModal('add')">+ TEACHER</button>
+          <button class="action-btn" onclick="openAssignmentFormModal('add')">ASSIGN SUBJECT</button>
+        </div>
+
+        <div class="manage-control-grid">
+          <input
+            type="text"
+            id="teacherSearchBox"
+            placeholder="Search teacher..."
+            onkeyup="filterTeachers()"
+          >
+          <button class="action-btn" onclick="loadTeachers()">Refresh</button>
+        </div>
+
+        <div id="teachersContent">
+          <p style="font-size:13px;color:#666;">Click Refresh to load registered teachers.</p>
+        </div>
+
+        <div id="teachersActionMessage" class="action-message"></div>
+
+        <!-- Hidden assignment container used internally after assigning/editing subjects. -->
+        <div id="assignmentsContent" style="display:none;"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================
+       18. FEEDBACK VIEW MODAL
+  ========================================================== -->
+  <div id="feedbackViewModal" class="modal-overlay">
+    <div class="modal-box large-modal">
+      <div class="modal-header">
+        <h3>View Curriculum Feedback</h3>
+        <button onclick="closeFeedbackViewModal()">×</button>
+      </div>
+
+      <div class="topbar" style="margin-bottom:16px;">
+        <input id="feedbackSearch" placeholder="Search teacher, subject, class, topic...">
+        <button class="action-btn" onclick="filterFeedback()">Search</button>
+        <button class="action-btn neutral-btn" onclick="clearFeedbackSearch()">Clear</button>
+      </div>
+
+      <div id="feedbackContent"></div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       19. FEEDBACK FORM MODAL
+  ========================================================== -->
+  <div id="feedbackFormModal" class="modal-overlay">
+    <div class="modal-box large-modal">
+      <div class="modal-header">
+        <h3>Submit Curriculum Feedback</h3>
+        <button onclick="closeFeedbackFormModal()">×</button>
+      </div>
+
+      <div class="feedback-form-grid">
+        <input id="teacherName" placeholder="Teacher Name">
+        <input id="className" placeholder="Class">
+
+        <select id="feedbackSubject">
+          <option value="">Select Subject</option>
+        </select>
+
+        <input id="feedbackTopic" placeholder="Topic">
+        <textarea id="curriculum" placeholder="Curriculum"></textarea>
+
+        <select id="curriculumAlignment">
+          <option value="">Curriculum Alignment</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+
+        <textarea id="weakness" placeholder="Weakness"></textarea>
+        <textarea id="actionsForAdjustment" placeholder="Actions for Adjustment"></textarea>
+
+        <select id="teachingLearningEffectiveness">
+          <option value="">Teaching & Learning Effectiveness</option>
+          <option value="1">1 - Not Effective</option>
+          <option value="2">2 - Slightly Effective</option>
+          <option value="3">3 - Moderately Effective</option>
+          <option value="4">4 - Effective</option>
+          <option value="5">5 - Very Effective</option>
+        </select>
+
+        <textarea id="observerComments" placeholder="Observer’s Comments"></textarea>
+        <input id="nextSchedule" type="date">
+        <input id="by" placeholder="By">
+      </div>
+
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="action-btn success-btn" onclick="submitFeedback()">Submit Feedback</button>
+        <button class="action-btn neutral-btn" onclick="closeFeedbackFormModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       20. ADD SUBJECT MODAL
+  ========================================================== -->
+  <div id="addSubjectModal" class="modal-overlay">
+    <div class="modal-box medium-modal">
+      <div class="modal-header">
+        <h3>Add New Subject</h3>
+        <button onclick="closeAddSubjectModal()">×</button>
+      </div>
+
+      <input id="newSubjectName" placeholder="Enter subject name" style="width:100%;">
+      <div id="addSubjectMessage" class="action-message"></div>
+
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="action-btn success-btn" onclick="addNewSubject()">Create Subject</button>
+        <button class="action-btn neutral-btn" onclick="closeAddSubjectModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       21. RENAME SUBJECT MODAL
+  ========================================================== -->
+  <div id="renameSubjectModal" class="modal-overlay">
+    <div class="modal-box medium-modal">
+      <div class="modal-header">
+        <h3>Rename Subject</h3>
+        <button onclick="closeRenameSubjectModal()">×</button>
+      </div>
+
+      <p class="upload-note">Current Subject: <strong id="renameOldSubjectLabel" style="color:#0037ad;"></strong></p>
+      <input id="renameSubjectInput" placeholder="Enter new subject name" style="width:100%;">
+      <div id="renameSubjectMessage" class="action-message"></div>
+
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="action-btn success-btn" onclick="renameSelectedSubject()">Rename Subject</button>
+        <button class="action-btn neutral-btn" onclick="closeRenameSubjectModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================
+       TEACHER FORM MODAL
+  ========================================================== -->
+  <div id="teacherFormModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="teacherFormTitle">Register Teacher</h3>
+        <button onclick="closeTeacherFormModal()">×</button>
+      </div>
+
+      <div class="teacher-form-grid">
+        <div class="form-field" id="teacherNameField">
+          <label for="teacherNameInput">Teacher Name<span class="required-star">*</span></label>
+          <input id="teacherNameInput" placeholder="Enter teacher name">
+          <small class="field-error" id="teacherNameError">Teacher name is required.</small>
+        </div>
+
+        <div class="form-field" id="teacherStatusField">
+          <label for="teacherStatusInput">Status<span class="required-star">*</span></label>
+          <select id="teacherStatusInput">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <small class="field-error" id="teacherStatusError">Status is required.</small>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="action-btn" onclick="submitTeacherForm()">Save Teacher</button>
+        <button class="action-btn" onclick="closeTeacherFormModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       TEACHER SUBJECT ASSIGNMENT MODAL
+  ========================================================== -->
+  <div id="assignmentFormModal" class="modal-overlay">
+    <div class="modal-box large-modal">
+      <div class="modal-header">
+        <h3 id="assignmentFormTitle">Assign Subject</h3>
+        <button onclick="closeAssignmentFormModal()">×</button>
+      </div>
+
+      <div class="assignment-form-grid">
+        <div class="form-field" id="assignmentTeacherField">
+          <label for="assignmentTeacherSelect">Teacher<span class="required-star">*</span></label>
+          <select id="assignmentTeacherSelect">
+            <option value="">Select Teacher</option>
+          </select>
+          <small class="field-error" id="assignmentTeacherError">Please select a teacher.</small>
+        </div>
+
+        <div class="form-field" id="assignmentSubjectField">
+          <label for="assignmentSubjectSelect">Subject<span class="required-star">*</span></label>
+          <select id="assignmentSubjectSelect">
+            <option value="">Select Subject</option>
+          </select>
+          <small class="field-error" id="assignmentSubjectError">Please select a subject.</small>
+        </div>
+
+        <div class="form-field" id="assignmentClassField">
+          <label for="assignmentClassInput">Class<span class="required-star">*</span></label>
+          <input id="assignmentClassInput" placeholder="Enter class">
+          <small class="field-error" id="assignmentClassError">Class is required.</small>
+        </div>
+
+        <div class="form-field" id="assignmentByField">
+          <label for="assignmentByInput">Assigned By</label>
+          <input id="assignmentByInput" placeholder="Assigned by">
+          <small class="field-error" id="assignmentByError"></small>
+        </div>
+
+        <div class="form-field" id="assignmentStatusField">
+          <label for="assignmentStatusInput">Status<span class="required-star">*</span></label>
+          <select id="assignmentStatusInput">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <small class="field-error" id="assignmentStatusError">Status is required.</small>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="action-btn" onclick="submitAssignmentForm()">Save Assignment</button>
+        <button class="action-btn" onclick="closeAssignmentFormModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       22. UPLOAD / REPLACE SYLLABUS MODAL
+  ========================================================== -->
+  <div id="uploadSyllabusModal" class="modal-overlay">
+    <div class="modal-box medium-modal">
+      <div class="modal-header">
+        <h3 id="uploadSyllabusTitle">Upload Syllabus</h3>
+        <button onclick="closeUploadSyllabusModal()">×</button>
+      </div>
+
+      <p class="upload-note">Selected Subject: <strong id="uploadSubjectLabel" style="color:#0037ad;"></strong></p>
+      <input id="syllabusUploadFile" type="file" accept=".csv,.xlsx,.xls" style="width:100%;">
+      <p id="uploadSyllabusMessage" class="upload-note">Upload CSV or Excel file with headers: Topic, Subtopics, Hours / Duration, Completion, Status, Approval.</p>
+
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="action-btn success-btn" onclick="submitSyllabusFile()">Continue</button>
+        <button class="action-btn neutral-btn" onclick="closeUploadSyllabusModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       CUSTOM CONFIRM MODAL
+  ========================================================== -->
+  <div id="confirmModal" class="confirm-overlay">
+    <div class="confirm-box">
+      <div class="confirm-header">
+        <h3 id="confirmTitle">Confirm Action</h3>
+      </div>
+
+      <div class="confirm-body">
+        <p id="confirmMessage">Are you sure?</p>
+      </div>
+
+      <div class="confirm-actions">
+        <button class="confirm-cancel-btn" onclick="closeConfirmModal(false)">Cancel</button>
+        <button id="confirmOkButton" class="confirm-ok-btn" onclick="closeConfirmModal(true)">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       23. API CONFIGURATION + GLOBAL STATE
+    ========================================================== */
+    const API = "https://script.google.com/macros/s/AKfycbzTN96acrndi2oiibHPvPu3tpHJJEx2xNDQa_f0JhChg3XlPFr5qIk8gD3H_ZLPo-8fKA/exec";
+
+    let currentData = [];
+    let currentView = "all";
+    let feedbackData = [];
+    let tgaSubjects = [];
+    let selectedUploadSubject = "";
+    let selectedUploadMode = "uploadTopics";
+    let selectedRenameSubject = "";
+    let confirmResolver = null;
+
+    let teachersData = [];
+    let assignmentsData = [];
+    let teacherFormMode = "add";
+    let selectedTeacherName = "";
+    let assignmentFormMode = "add";
+    let selectedAssignmentRowNumber = "";
+
+    /* =========================================================
+       24. REQUEST HELPERS
+    ========================================================== */
+    function jsonpRequest(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = "jsonpCallback_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+        const script = document.createElement("script");
+        const separator = url.includes("?") ? "&" : "?";
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("The server did not respond in time."));
+        }, 25000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          if (script.parentNode) document.body.removeChild(script);
+          delete window[callbackName];
+        }
+
+        window[callbackName] = function(data) {
+          cleanup();
+          resolve(data);
+        };
+
+        script.src = url + separator + "callback=" + callbackName;
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("Unable to connect to the server."));
+        };
+
+        document.body.appendChild(script);
+      });
+    }
+
+    async function postToApi(payload) {
+      /*
+        Offline HTML is loaded with file://, so Apps Script responses cannot be
+        read directly because of browser CORS restrictions. We still send the
+        request using no-cors. Some Chrome versions report Google Apps Script
+        redirects as ERR_CONNECTION_CLOSED even when the request is accepted,
+        so write actions refresh the relevant lists after submission.
+      */
+      try {
+        await fetch(API, {
+          method: "POST",
+          mode: "no-cors",
+          cache: "no-store",
+          body: JSON.stringify(payload)
+        });
+        return { submitted: true };
+      } catch (error) {
+        console.warn("Apps Script write request could not be confirmed by the browser.", error);
+        return { submitted: false, warning: error };
+      }
+    }
+
+
+    /* =========================================================
+       CUSTOM CONFIRM SYSTEM
+    ========================================================== */
+    function customConfirm(message,title="Confirm Action",danger=false) {
+      return new Promise(resolve => {
+        confirmResolver = resolve;
+
+        document.getElementById("confirmTitle").textContent = title;
+        document.getElementById("confirmMessage").textContent = message;
+
+        const okButton = document.getElementById("confirmOkButton");
+
+        if (danger) {
+          okButton.classList.add("confirm-danger");
+        } else {
+          okButton.classList.remove("confirm-danger");
+        }
+
+        document.getElementById("confirmModal").style.display = "flex";
+      });
+    }
+
+    function closeConfirmModal(result) {
+      document.getElementById("confirmModal").style.display = "none";
+
+      if (confirmResolver) {
+        confirmResolver(result);
+        confirmResolver = null;
+      }
+    }
+
+    function setTextMessage(elementId, text, type = "info") {
+      const box = document.getElementById(elementId);
+      if (!box) return;
+      box.textContent = text;
+      box.className = "action-message " + type;
+    }
+
+    function showMessage(text, type = "") {
+      const box = document.getElementById("message");
+      box.textContent = text;
+      box.className = "message " + type;
+    }
+
+    function professionalError(action) {
+      return action + " could not be completed. Please check your internet connection, Apps Script deployment permissions, and try again.";
+    }
+
+    /* =========================================================
+       25. MOBILE SIDEBAR
+    ========================================================== */
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".mobile-overlay");
+      if (sidebar) sidebar.classList.toggle("show");
+      if (overlay) overlay.classList.toggle("show");
+    }
+
+    function closeSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".mobile-overlay");
+      if (sidebar) sidebar.classList.remove("show");
+      if (overlay) overlay.classList.remove("show");
+    }
+
+    /* =========================================================
+       26. LOAD SUBJECTS
+    ========================================================== */
+    async function loadSubjects() {
+      try {
+        showMessage("Loading subjects...", "info");
+        const subjects = await jsonpRequest(API + "?action=subjects");
+        const select = document.getElementById("subjectSelect");
+        select.innerHTML = "";
+
+        subjects.forEach(subject => {
+          const option = document.createElement("option");
+          option.value = subject;
+          option.textContent = subject;
+          select.appendChild(option);
+        });
+
+        showMessage("");
+        await loadData();
+      } catch (error) {
+        console.error(error);
+        showMessage(professionalError("Subject loading"), "error");
+      }
+    }
+
+    /* =========================================================
+       27. VIEW SWITCHER
+    ========================================================== */
+    function setView(view) {
+      currentView = view;
+
+      document.getElementById("allBtn").classList.remove("active-btn");
+      document.getElementById("approvedBtn").classList.remove("active-btn");
+      document.getElementById("feedbackBtn").classList.remove("active-btn");
+      document.getElementById("subjectsBtn").classList.remove("active-btn");
+      document.getElementById("manageSyllabusBtn").classList.remove("active-btn");
+      document.getElementById("teachersBtn").classList.remove("active-btn");
+
+      document.getElementById("syllabusControls").style.display = "none";
+      document.getElementById("syllabusBox").style.display = "none";
+      document.getElementById("feedbackBox").style.display = "none";
+      document.getElementById("subjectsBox").style.display = "none";
+      document.getElementById("manageSyllabusBox").style.display = "none";
+      document.getElementById("teachersBox").style.display = "none";
+
+      if (view === "all") {
+        document.getElementById("allBtn").classList.add("active-btn");
+        document.getElementById("currentViewLabel").textContent = "All Topics";
+        document.getElementById("syllabusControls").style.display = "block";
+        document.getElementById("syllabusBox").style.display = "block";
+        loadData();
+      }
+
+      else if (view === "approved") {
+        document.getElementById("approvedBtn").classList.add("active-btn");
+        document.getElementById("currentViewLabel").textContent = "Approved Topics";
+        document.getElementById("syllabusControls").style.display = "block";
+        document.getElementById("syllabusBox").style.display = "block";
+        loadData();
+      }
+
+      else if (view === "feedback") {
+        document.getElementById("feedbackBtn").classList.add("active-btn");
+        document.getElementById("currentViewLabel").textContent = "Feedback";
+        document.getElementById("currentSubjectLabel").textContent = "Curriculum Feedback";
+        document.getElementById("feedbackBox").style.display = "block";
+      }
+
+      else if (view === "subjects") {
+        document.getElementById("subjectsBtn").classList.add("active-btn");
+        document.getElementById("currentViewLabel").textContent = "TGA Subjects";
+        document.getElementById("currentSubjectLabel").textContent = "Manage Subjects";
+        document.getElementById("subjectsBox").style.display = "block";
+        loadTgaSubjects();
+      }
+
+      else if (view === "manageSyllabus") {
+        document.getElementById("manageSyllabusBtn").classList.add("active-btn");
+        document.getElementById("currentViewLabel").textContent = "Manage Syllabus";
+        document.getElementById("currentSubjectLabel").textContent = "Upload, replace, clear, or delete";
+        document.getElementById("manageSyllabusBox").style.display = "block";
+        loadManageSyllabusDropdown();
+      }
+
+      else if (view === "teachers") {
+        document.getElementById("teachersBtn").classList.add("active-btn");
+        document.getElementById("currentViewLabel").textContent = "Teachers";
+        document.getElementById("currentSubjectLabel").textContent = "Register teachers and assign subjects";
+        document.getElementById("teachersBox").style.display = "block";
+        loadTeachers();
+        loadTeacherAssignments(false);
+      }
+
+      closeSidebar();
+    }
+
+    /* =========================================================
+       28. LOAD SYLLABUS DATA
+    ========================================================== */
+    async function loadData() {
+      try {
+        const subject = document.getElementById("subjectSelect").value;
+        if (!subject) return;
+
+        document.getElementById("currentSubjectLabel").textContent = subject;
+        showMessage("Loading data...", "info");
+
+        const action = currentView === "approved" ? "approved" : "syllabus";
+        currentData = await jsonpRequest(API + "?action=" + action + "&subject=" + encodeURIComponent(subject));
+
+        renderTable(currentData);
+        showMessage("");
+      } catch (error) {
+        console.error(error);
+        showMessage(professionalError("Data loading"), "error");
+      }
+    }
+
+    /* =========================================================
+       29. ORIGINAL RENDER TABLE — PRESERVED
+    ========================================================== */
+    function renderTable(data) {
+      const thead = document.querySelector("#syllabusTable thead");
+      const tbody = document.querySelector("#syllabusTable tbody");
+
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="20" style="text-align:center;padding:30px;">
+              No records found.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let headers = Object.keys(data[0]).filter(header => header !== "rowNumber");
+
+      if (!headers.includes("Status")) {
+        headers.push("Status");
+      }
+
+      const headerRow = document.createElement("tr");
+
+      headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+      });
+
+      if (currentView === "all") {
+        const actionHeader = document.createElement("th");
+        actionHeader.textContent = "Action";
+        headerRow.appendChild(actionHeader);
+      }
+
+      thead.appendChild(headerRow);
+
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+
+        headers.forEach(header => {
+          const td = document.createElement("td");
+          const cleanHeader = header.toLowerCase().trim();
+          const value = row[header] || "";
+
+          if (currentView === "approved") {
+
+            if (
+              cleanHeader === "completion" ||
+              cleanHeader === "completion status"
+            ) {
+              td.innerHTML = `
+                <span style="
+                  display:inline-block;
+                  background:#dcfce7;
+                  color:#166534;
+                  padding:4px 10px;
+                  border-radius:999px;
+                  font-size:11px;
+                  font-weight:700;
+                ">
+                  Completed
+                </span>
+              `;
+            }
+
+            else if (cleanHeader === "approval") {
+              td.innerHTML = `
+                <span style="
+                  display:inline-block;
+                  background:#dbeafe;
+                  color:#1d4ed8;
+                  padding:4px 10px;
+                  border-radius:999px;
+                  font-size:11px;
+                  font-weight:700;
+                ">
+                  Approved
+                </span>
+              `;
+            }
+
+            else if (cleanHeader === "status") {
+              td.innerHTML = `
+                <span style="
+                  display:inline-block;
+                  background:#dcfce7;
+                  color:#166534;
+                  padding:4px 10px;
+                  border-radius:999px;
+                  font-size:11px;
+                  font-weight:700;
+                ">
+                  Complete
+                </span>
+              `;
+            }
+
+            else {
+              td.textContent = value;
+            }
+          }
+
+          else {
+            if (
+              cleanHeader === "completion" ||
+              cleanHeader === "completion status"
+            ) {
+              const checked = value === "Completed" ? "checked" : "";
+              const label = value === "Completed" ? "ON" : "OFF";
+
+              td.innerHTML = `
+                <label class="switch">
+                  <input type="checkbox" id="completion-${row.rowNumber}" ${checked}>
+                  <span class="slider"></span>
+                </label>
+                <span class="completion-label">${label}</span>
+              `;
+            }
+
+            else if (cleanHeader === "approval") {
+              td.innerHTML = `
+                <select id="approval-${row.rowNumber}">
+                  <option value="">Select</option>
+                  <option value="Approved" ${value === "Approved" ? "selected" : ""}>Approved</option>
+                  <option value="Not Approved" ${value === "Not Approved" ? "selected" : ""}>Not Approved</option>
+                  <option value="Pending" ${value === "Pending" ? "selected" : ""}>Pending</option>
+                </select>
+              `;
+            }
+
+            else if (cleanHeader === "status") {
+              const status = row.Status || "Pending";
+              td.textContent = status;
+
+              if (status === "Complete") {
+                td.className = "status-complete";
+              } else {
+                td.className = "status-pending";
+              }
+            }
+
+            else {
+              td.textContent = value;
+            }
+          }
+
+          tr.appendChild(td);
+        });
+
+        if (currentView === "all") {
+          const actionTd = document.createElement("td");
+          actionTd.innerHTML = `<button class="action-btn" onclick="saveRow(${row.rowNumber})">Save</button>`;
+          tr.appendChild(actionTd);
+        }
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* =========================================================
+       30. SAVE + SEARCH
+    ========================================================== */
+    async function saveRow(rowNumber) {
+      try {
+        const subject = document.getElementById("subjectSelect").value;
+        const completionChecked = document.getElementById("completion-" + rowNumber)?.checked;
+        const completion = completionChecked ? "Completed" : "Not Completed";
+        const approval = document.getElementById("approval-" + rowNumber)?.value || "";
+
+        if (approval === "Approved" && completion !== "Completed") {
+          showMessage("Only completed topics can be approved.", "error");
+          return;
+        }
+
+        showMessage("Saving changes...", "info");
+        await postToApi({ subject, rowNumber, completion, approval });
+
+        showMessage("Changes submitted successfully. Refreshing data...", "success");
+        setTimeout(() => {
+          showMessage("");
+          loadData();
+        }, 900);
+      } catch (error) {
+        console.error(error);
+        showMessage(professionalError("Saving"), "error");
+      }
+    }
+
+    function filterTable() {
+      const search = document.getElementById("searchBox").value.toLowerCase();
+      const filtered = currentData.filter(row => Object.values(row).join(" ").toLowerCase().includes(search));
+      renderTable(filtered);
+    }
+
+    /* =========================================================
+       31. FEEDBACK FUNCTIONS
+    ========================================================== */
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatDateOnly(dateValue) {
+      if (!dateValue) return "—";
+
+      const date = new Date(dateValue);
+
+      if (isNaN(date.getTime())) {
+        return dateValue;
+      }
+
+      return date.toLocaleDateString("en-GB");
+    }
+
+    function populateFeedbackSubjectDropdown() {
+      const mainSubjectSelect = document.getElementById("subjectSelect");
+      const feedbackSubjectSelect = document.getElementById("feedbackSubject");
+      if (!mainSubjectSelect || !feedbackSubjectSelect) return;
+
+      feedbackSubjectSelect.innerHTML = `<option value="">Select Subject</option>`;
+      Array.from(mainSubjectSelect.options).forEach(option => {
+        if (!option.value) return;
+        const newOption = document.createElement("option");
+        newOption.value = option.value;
+        newOption.textContent = option.textContent;
+        feedbackSubjectSelect.appendChild(newOption);
+      });
+    }
+
+    function openFeedbackViewModal() {
+      document.getElementById("feedbackViewModal").style.display = "flex";
+      loadFeedback();
+    }
+
+    function closeFeedbackViewModal() {
+      document.getElementById("feedbackViewModal").style.display = "none";
+    }
+
+    function openFeedbackFormModal() {
+      document.getElementById("feedbackFormModal").style.display = "flex";
+      populateFeedbackSubjectDropdown();
+    }
+
+    function closeFeedbackFormModal() {
+      document.getElementById("feedbackFormModal").style.display = "none";
+    }
+
+    async function loadFeedback() {
+      try {
+        feedbackData = await jsonpRequest(API + "?action=feedback");
+        renderFeedback(feedbackData);
+      } catch (error) {
+        console.error(error);
+        document.getElementById("feedbackContent").innerHTML = `<p class="error">${professionalError("Feedback loading")}</p>`;
+      }
+    }
+
+    function renderFeedback(data) {
+      const box = document.getElementById("feedbackContent");
+
+      if (!data || data.length === 0) {
+        box.innerHTML = `<p style="font-size:13px;color:#666;">No feedback found.</p>`;
+        return;
+      }
+
+      let html = `<div class="feedback-comments">`;
+
+      data.forEach(row => {
+        const dateValue = formatDateOnly(row["Date"]);
+
+        html += `
+          <div class="feedback-comment">
+            <div class="comment-avatar">${(row["Teacher Name"] || "?").charAt(0).toUpperCase()}</div>
+            <div class="comment-body">
+              <div class="comment-header">
+                <div>
+                  <strong>${row["Teacher Name"] || "Unknown Teacher"}</strong>
+                  <span>${row["Class"] || "No Class"} • ${row["Subject"] || "No Subject"}</span>
+                </div>
+                <small>${dateValue}</small>
+              </div>
+              <div class="comment-topic"><strong>Topic:</strong> ${row["Topic"] || ""}</div>
+              <div class="comment-grid">
+                <div><label>Curriculum</label><p>${row["Curriculum"] || "—"}</p></div>
+                <div><label>Alignment</label><p>${row["Curriculum Alignment"] || "—"}</p></div>
+                <div><label>Weakness</label><p>${row["Weakness"] || "—"}</p></div>
+                <div><label>Adjustment</label><p>${row["Actions for Adjustment"] || "—"}</p></div>
+                <div><label>Effectiveness</label><p>${row["Teaching & Learning Effectiveness"] || "—"} / 5</p></div>
+                <div><label>Next Schedule</label><p>${formatDateOnly(row["Next Schedule"])}</p></div>
+              </div>
+              <div class="comment-note"><label>Observer’s Comments</label><p>${row["Observer’s Comments"] || "—"}</p></div>
+              <div class="comment-footer">By: ${row["By"] || "—"}</div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      box.innerHTML = html;
+    }
+
+    function filterFeedback() {
+      const search = document.getElementById("feedbackSearch").value.toLowerCase();
+      const filtered = feedbackData.filter(row => Object.values(row).join(" ").toLowerCase().includes(search));
+      renderFeedback(filtered);
+    }
+
+    function clearFeedbackSearch() {
+      document.getElementById("feedbackSearch").value = "";
+      renderFeedback(feedbackData);
+    }
+
+    async function submitFeedback() {
+      try {
+        setTextMessage("feedbackActionMessage", "Submitting feedback...", "info");
+        await postToApi({
+          action: "submitFeedback",
+          teacherName: document.getElementById("teacherName").value,
+          className: document.getElementById("className").value,
+          subject: document.getElementById("feedbackSubject").value,
+          topic: document.getElementById("feedbackTopic").value,
+          curriculum: document.getElementById("curriculum").value,
+          curriculumAlignment: document.getElementById("curriculumAlignment").value,
+          weakness: document.getElementById("weakness").value,
+          actionsForAdjustment: document.getElementById("actionsForAdjustment").value,
+          teachingLearningEffectiveness: document.getElementById("teachingLearningEffectiveness").value,
+          observerComments: document.getElementById("observerComments").value,
+          nextSchedule: document.getElementById("nextSchedule").value,
+          by: document.getElementById("by").value
+        });
+
+        closeFeedbackFormModal();
+        setTextMessage("feedbackActionMessage", "Feedback submitted successfully.", "success");
+      } catch (error) {
+        console.error(error);
+        setTextMessage("feedbackActionMessage", professionalError("Feedback submission"), "error");
+      }
+    }
+
+    /* =========================================================
+       32. SUBJECT MANAGEMENT
+    ========================================================== */
+    async function getSubjectRegistry(){
+      try {
+        return await jsonpRequest(API + "?action=subjectRegistry");
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+
+    async function getAllSubjectObjects(){
+      const registry = await getSubjectRegistry();
+
+      return registry.map(item => ({
+        subjectName:item.subjectName,
+        sheetName:item.sheetName,
+        status:item.status || "Active",
+        protectedStatus:item.protectedStatus || "NO",
+        builtIn:String(item.protectedStatus || "NO").toUpperCase() === "YES"
+      }));
+    }
+
+    async function loadTgaSubjects() {
+      try {
+        setTextMessage("subjectsActionMessage", "Loading subjects...", "info");
+
+        tgaSubjects = await getAllSubjectObjects();
+
+        renderTgaSubjects(tgaSubjects);
+        setTextMessage("subjectsActionMessage", "Subjects loaded successfully.", "success");
+      } catch (error) {
+        console.error(error);
+        setTextMessage("subjectsActionMessage", professionalError("Subject loading"), "error");
+      }
+    }
+
+    function renderTgaSubjects(subjects) {
+      const box = document.getElementById("subjectsContent");
+
+      if (!subjects || subjects.length === 0) {
+        box.innerHTML = `<p style="font-size:13px;color:#666;">No subjects found.</p>`;
+        return;
+      }
+
+      let html = "";
+
+      subjects.forEach((subject, index) => {
+        const status = subject.status || "Active";
+        const statusClass = status === "Inactive" ? "subject-inactive" : "subject-active";
+
+        html += `
+          <div class="subjects-card">
+            <strong>${index + 1}. ${subject.subjectName}</strong>
+            <span>Sheet: ${subject.sheetName || "—"}</span><br>
+            <span class="subject-status ${statusClass}">${status}</span>
+            <span style="display:block;margin-top:8px;">Protected: ${subject.builtIn ? "YES" : "NO"}</span>
+
+            <div class="subjects-actions">
+              <button class="action-btn" onclick="openRenameSubjectModal(${index})">Rename</button>
+        `;
+
+        if (status === "Inactive") {
+          html += `<button class="action-btn success-btn" onclick="restoreSubject(${index})">Restore</button>`;
+        } else {
+          html += `<button class="action-btn warning-btn" onclick="removeSubjectTemporarily(${index})">Temporarily Remove</button>`;
+        }
+
+        html += `</div></div>`;
+      });
+
+      box.innerHTML = html;
+    }
+
+    function openAddSubjectModal() {
+      document.getElementById("newSubjectName").value = "";
+      setTextMessage("addSubjectMessage", "");
+      document.getElementById("addSubjectModal").style.display = "flex";
+    }
+
+    function closeAddSubjectModal() {
+      document.getElementById("addSubjectModal").style.display = "none";
+    }
+
+    async function addNewSubject() {
+      const subjectName = document.getElementById("newSubjectName").value.trim();
+
+      if (!subjectName) {
+        setTextMessage("addSubjectMessage", "Please enter a subject name before continuing.", "error");
+        return;
+      }
+
+      try {
+        setTextMessage("addSubjectMessage", "Creating subject. Please wait...", "info");
+        await postToApi({ action: "addSubject", subjectName });
+        setTextMessage("addSubjectMessage", "Subject creation request submitted successfully.", "success");
+
+        setTimeout(() => {
+          closeAddSubjectModal();
+          loadSubjects();
+          loadTgaSubjects();
+          loadManageSyllabusDropdown();
+        }, 1000);
+      } catch (error) {
+        console.error(error);
+        setTextMessage("addSubjectMessage", professionalError("Subject creation"), "error");
+      }
+    }
+
+    function openRenameSubjectModal(index) {
+      selectedRenameSubject = tgaSubjects[index].subjectName;
+      document.getElementById("renameOldSubjectLabel").textContent = selectedRenameSubject;
+      document.getElementById("renameSubjectInput").value = selectedRenameSubject;
+      setTextMessage("renameSubjectMessage", "");
+      document.getElementById("renameSubjectModal").style.display = "flex";
+    }
+
+    function closeRenameSubjectModal() {
+      document.getElementById("renameSubjectModal").style.display = "none";
+    }
+
+    async function renameSelectedSubject() {
+      const newSubjectName = document.getElementById("renameSubjectInput").value.trim();
+
+      if (!selectedRenameSubject || !newSubjectName) {
+        setTextMessage("renameSubjectMessage", "Please enter a valid new subject name.", "error");
+        return;
+      }
+
+      try {
+        setTextMessage("renameSubjectMessage", "Renaming subject. Please wait...", "info");
+        await postToApi({ action: "renameSubject", oldSubjectName: selectedRenameSubject, newSubjectName });
+        setTextMessage("renameSubjectMessage", "Subject rename request submitted successfully.", "success");
+
+        setTimeout(() => {
+          closeRenameSubjectModal();
+          loadSubjects();
+          loadTgaSubjects();
+          loadManageSyllabusDropdown();
+        }, 1000);
+      } catch (error) {
+        console.error(error);
+        setTextMessage("renameSubjectMessage", professionalError("Subject renaming"), "error");
+      }
+    }
+
+    async function removeSubjectTemporarily(index) {
+      const subject = tgaSubjects[index].subjectName;
+      const proceed = await customConfirm(
+        "Temporarily remove this subject from the app? The sheet and data will remain.",
+        "Temporarily Remove Subject"
+      );
+
+      if (!proceed) return;
+
+      try {
+        setTextMessage("subjectsActionMessage", "Submitting temporary removal request...", "info");
+        await postToApi({ action: "removeSubject", subjectName: subject });
+        setTextMessage("subjectsActionMessage", "Temporary removal request submitted successfully.", "success");
+
+        setTimeout(() => {
+          loadSubjects();
+          loadTgaSubjects();
+          loadManageSyllabusDropdown();
+        }, 1000);
+      } catch (error) {
+        console.error(error);
+        setTextMessage("subjectsActionMessage", professionalError("Temporary removal"), "error");
+      }
+    }
+
+    async function restoreSubject(index) {
+      const subject = tgaSubjects[index].subjectName;
+
+      try {
+        setTextMessage("subjectsActionMessage", "Submitting restore request...", "info");
+        await postToApi({ action: "restoreSubject", subjectName: subject });
+        setTextMessage("subjectsActionMessage", "Restore request submitted successfully.", "success");
+
+        setTimeout(() => {
+          loadSubjects();
+          loadTgaSubjects();
+          loadManageSyllabusDropdown();
+        }, 1000);
+      } catch (error) {
+        console.error(error);
+        setTextMessage("subjectsActionMessage", professionalError("Subject restore"), "error");
+      }
+    }
+
+    /* =========================================================
+       33. MANAGE SYLLABUS
+    ========================================================== */
+    async function loadManageSyllabusDropdown() {
+      try {
+        setTextMessage("manageActionMessage", "Loading subject list...", "info");
+
+        tgaSubjects = await getAllSubjectObjects();
+
+        const select = document.getElementById("manageSyllabusSubject");
+        select.innerHTML = `<option value="">Select Subject</option>`;
+
+        tgaSubjects.forEach(subject => {
+          const option = document.createElement("option");
+          option.value = subject.subjectName;
+          option.textContent = subject.builtIn
+            ? subject.subjectName + " (Protected)"
+            : subject.subjectName;
+          option.dataset.builtIn = subject.builtIn ? "true" : "false";
+          select.appendChild(option);
+        });
+
+        setTextMessage("manageActionMessage", "Subject list loaded successfully.", "success");
+      } catch (error) {
+        console.error(error);
+        setTextMessage("manageActionMessage", professionalError("Subject list loading"), "error");
+      }
+    }
+
+    function selectedManageSubject() {
+      return document.getElementById("manageSyllabusSubject").value;
+    }
+
+    function selectedManageSubjectIsBuiltIn() {
+      const select = document.getElementById("manageSyllabusSubject");
+      const selectedOption = select.options[select.selectedIndex];
+      return selectedOption?.dataset?.builtIn === "true";
+    }
+
+    function openManageSyllabusModal(mode) {
+      const subject = selectedManageSubject();
+
+      if (!subject) {
+        setTextMessage("manageActionMessage", "Please select a subject before continuing.", "error");
+        return;
+      }
+
+      selectedUploadSubject = subject;
+      selectedUploadMode = mode;
+
+      document.getElementById("uploadSyllabusTitle").textContent = mode === "replaceSyllabus" ? "Replace Syllabus" : "Upload Syllabus";
+      document.getElementById("uploadSubjectLabel").textContent = subject;
+      document.getElementById("syllabusUploadFile").value = "";
+      document.getElementById("uploadSyllabusMessage").textContent = "Upload CSV or Excel file with headers: Topic, Subtopics, Hours / Duration, Completion, Status, Approval.";
+      document.getElementById("uploadSyllabusModal").style.display = "flex";
+    }
+
+    async function clearManagedSyllabus() {
+      const subject = selectedManageSubject();
+
+      if (!subject) {
+        setTextMessage("manageActionMessage", "Please select a subject before clearing syllabus data.", "error");
+        return;
+      }
+
+      const proceed = await customConfirm(
+        "This will remove all syllabus rows for the selected subject. The subject sheet and headers will remain.",
+        "Clear Syllabus",
+        true
+      );
+
+      if (!proceed) return;
+
+      try {
+        setTextMessage("manageActionMessage", "Submitting clear syllabus request...", "info");
+        await postToApi({ action: "clearSyllabus", subject });
+        setTextMessage("manageActionMessage", "Clear syllabus request submitted successfully.", "success");
+
+        setTimeout(() => {
+          if (document.getElementById("subjectSelect").value === subject) loadData();
+        }, 1000);
+      } catch (error) {
+        console.error(error);
+        setTextMessage("manageActionMessage", professionalError("Clear syllabus"), "error");
+      }
+    }
+
+    async function deleteManagedSubjectPermanently() {
+      const subject = selectedManageSubject();
+
+      if (!subject) {
+        setTextMessage("manageActionMessage", "Please select a subject before deleting.", "error");
+        return;
+      }
+
+      if (selectedManageSubjectIsBuiltIn()) {
+        setTextMessage("manageActionMessage", "Protected subjects cannot be deleted permanently.", "error");
+        return;
+      }
+
+      const firstConfirm = await customConfirm(
+        "This will permanently delete the selected subject and its sheet. This action cannot be undone.",
+        "Delete Subject Permanently",
+        true
+      );
+
+      if (!firstConfirm) return;
+
+      const secondConfirm = await customConfirm(
+        "Final confirmation: permanently delete this subject?",
+        "Final Delete Confirmation",
+        true
+      );
+
+      if (!secondConfirm) return;
+
+      try {
+        setTextMessage("manageActionMessage", "Submitting permanent deletion request...", "info");
+        await postToApi({ action: "deleteSubject", subjectName: subject });
+        setTextMessage("manageActionMessage", "Permanent deletion request submitted successfully.", "success");
+
+        setTimeout(() => {
+          loadSubjects();
+          loadManageSyllabusDropdown();
+          loadTgaSubjects();
+        }, 1000);
+      } catch (error) {
+        console.error(error);
+        setTextMessage("manageActionMessage", professionalError("Permanent deletion"), "error");
+      }
+    }
+
+    /* =========================================================
+       34. UPLOAD / REPLACE SYLLABUS
+    ========================================================== */
+    function closeUploadSyllabusModal() {
+      document.getElementById("uploadSyllabusModal").style.display = "none";
+    }
+
+    async function submitSyllabusFile() {
+      const fileInput = document.getElementById("syllabusUploadFile");
+      const file = fileInput.files[0];
+
+      if (!selectedUploadSubject) {
+        document.getElementById("uploadSyllabusMessage").textContent = "No subject has been selected.";
+        return;
+      }
+
+      if (!file) {
+        document.getElementById("uploadSyllabusMessage").textContent = "Please choose a CSV or Excel file before continuing.";
+        return;
+      }
+
+      if (selectedUploadMode === "replaceSyllabus") {
+        const proceed = await customConfirm(
+          "This will clear the existing syllabus rows first, then upload the new file.",
+          "Replace Syllabus",
+          true
+        );
+
+        if (!proceed) return;
+      }
+
+      try {
+        document.getElementById("uploadSyllabusMessage").textContent = "Reading file...";
+        const rows = await readSyllabusFile(file);
+
+        if (!rows || rows.length === 0) {
+          document.getElementById("uploadSyllabusMessage").textContent = "No syllabus data was found in the selected file.";
+          return;
+        }
+
+        const requiredHeaders = ["Topic", "Subtopics", "Hours / Duration", "Completion", "Status", "Approval"];
+        const missingHeaders = requiredHeaders.filter(header => !(header in rows[0]));
+
+        if (missingHeaders.length > 0) {
+          document.getElementById("uploadSyllabusMessage").textContent = "Missing required headers: " + missingHeaders.join(", ");
+          return;
+        }
+
+        document.getElementById("uploadSyllabusMessage").textContent = selectedUploadMode === "replaceSyllabus" ? "Submitting replacement request..." : "Submitting upload request...";
+        await postToApi({ action: selectedUploadMode, subject: selectedUploadSubject, rows });
+
+        document.getElementById("uploadSyllabusMessage").textContent = selectedUploadMode === "replaceSyllabus"
+          ? "Syllabus replacement request submitted. Loading the selected subject..."
+          : "Syllabus upload request submitted. Loading the selected subject...";
+
+        const uploadedSubject = selectedUploadSubject;
+
+        setTimeout(async () => {
+          closeUploadSyllabusModal();
+
+          await loadSubjects();
+
+          const mainSelect = document.getElementById("subjectSelect");
+          if (mainSelect) mainSelect.value = uploadedSubject;
+
+          setView("all");
+          await loadData();
+
+          await loadManageSyllabusDropdown();
+
+          const manageSelect = document.getElementById("manageSyllabusSubject");
+          if (manageSelect) manageSelect.value = uploadedSubject;
+        }, 1800);
+      } catch (error) {
+        console.error(error);
+        document.getElementById("uploadSyllabusMessage").textContent = professionalError("File processing");
+      }
+    }
+
+    function readSyllabusFile(file) {
+      const fileName = file.name.toLowerCase();
+      if (fileName.endsWith(".csv")) return readCsvFile(file);
+      if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) return readExcelFile(file);
+      document.getElementById("uploadSyllabusMessage").textContent = "Only CSV and Excel files are supported.";
+      return Promise.resolve([]);
+    }
+
+    function readCsvFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = event => {
+          try {
+            resolve(parseCsv(event.target.result));
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+    }
+
+    function parseCsv(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length < 2) return [];
+
+      const headers = splitCsvLine(lines[0]).map(header => header.trim());
+
+      return lines.slice(1).map(line => {
+        const values = splitCsvLine(line);
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] || "";
+        });
+        return row;
+      });
+    }
+
+    function splitCsvLine(line) {
+      const result = [];
+      let current = "";
+      let insideQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const nextChar = line[i + 1];
+
+        if (char === '"' && insideQuotes && nextChar === '"') {
+          current += '"';
+          i++;
+        }
+        else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        }
+        else if (char === "," && !insideQuotes) {
+          result.push(current.trim());
+          current = "";
+        }
+        else {
+          current += char;
+        }
+      }
+
+      result.push(current.trim());
+      return result;
+    }
+
+    function readExcelFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = event => {
+          try {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+            resolve(rows);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+
+    /* =========================================================
+       TEACHER MANAGEMENT
+    ========================================================== */
+    async function loadTeachers() {
+      try {
+        setTextMessage("teachersActionMessage", "Loading teachers...", "info");
+
+        teachersData = await jsonpRequest(API + "?action=teachers");
+        assignmentsData = await jsonpRequest(API + "?action=teacherAssignments");
+        renderTeachers(teachersData);
+
+        setTextMessage("teachersActionMessage", "Teacher list loaded successfully.", "success");
+      } catch (error) {
+        console.error(error);
+        setTextMessage("teachersActionMessage", professionalError("Teacher loading"), "error");
+      }
+    }
+
+    function renderTeachers(data) {
+      const box = document.getElementById("teachersContent");
+
+      if (!data || data.length === 0) {
+        box.innerHTML = `<p style="font-size:13px;color:#666;">No teachers registered yet.</p>`;
+        return;
+      }
+
+      let html = `<div class="cards-grid">`;
+
+      data.forEach((teacher, index) => {
+        const teacherName = teacher["Teacher Name"] || "";
+        const status = teacher["Status"] || "Active";
+        const statusClass = status === "Inactive" ? "subject-inactive" : "subject-active";
+
+        const teacherAssignments = assignmentsData
+          .map((assignment, assignmentIndex) => ({ assignment, assignmentIndex }))
+          .filter(entry =>
+            String(entry.assignment["Teacher Name"] || "").trim().toLowerCase() ===
+            teacherName.trim().toLowerCase()
+          );
+
+        html += `
+          <div class="teacher-card">
+            <strong>${teacherName}</strong>
+            <span class="subject-status ${statusClass}">${status}</span>
+
+            <div class="teacher-assignment-list">
+        `;
+
+        if (teacherAssignments.length === 0) {
+          html += `
+            <div class="teacher-assignment-item">
+              <p>No subject assignment recorded for this teacher.</p>
+            </div>
+          `;
+        } else {
+          teacherAssignments.forEach(entry => {
+            const item = entry.assignment;
+            const assignmentIndex = entry.assignmentIndex;
+            const assignmentStatus = item["Status"] || "Active";
+            const assignmentStatusClass = assignmentStatus === "Inactive" ? "subject-inactive" : "subject-active";
+
+            html += `
+              <div class="teacher-assignment-item">
+                <p><b>Subject:</b> ${item["Subject"] || "—"}</p>
+                <p><b>Class:</b> ${item["Class"] || "—"}</p>
+                <p><b>Assigned By:</b> ${item["Assigned By"] || "—"}</p>
+                <p><b>Date:</b> ${formatDateOnly(item["Date"])}</p>
+                <span class="subject-status ${assignmentStatusClass}">${assignmentStatus}</span>
+
+                <div class="assignment-actions">
+                  <button class="action-btn" onclick="openAssignmentFormModal('edit', ${assignmentIndex})">Edit Assignment</button>
+            `;
+
+            if (assignmentStatus === "Inactive") {
+              html += `<button class="action-btn success-btn" onclick="restoreAssignment(${assignmentIndex})">Restore</button>`;
+            } else {
+              html += `<button class="action-btn warning-btn" onclick="deactivateAssignment(${assignmentIndex})">Deactivate</button>`;
+            }
+
+            html += `
+                  <button class="action-btn danger-btn" onclick="deleteAssignment(${assignmentIndex})">Delete</button>
+                </div>
+              </div>
+            `;
+          });
+        }
+
+        html += `
+            </div>
+
+            <div class="teacher-actions">
+              <button class="action-btn" onclick="openTeacherFormModal('edit', ${index})">Edit Teacher</button>
+        `;
+
+        if (status === "Inactive") {
+          html += `<button class="action-btn success-btn" onclick="restoreTeacher(${index})">Restore Teacher</button>`;
+        } else {
+          html += `<button class="action-btn warning-btn" onclick="deactivateTeacher(${index})">Deactivate Teacher</button>`;
+        }
+
+        html += `
+              <button class="action-btn danger-btn" onclick="deleteTeacher(${index})">Delete Teacher</button>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      box.innerHTML = html;
+    }
+
+    function filterTeachers() {
+      const search = document.getElementById("teacherSearchBox").value.toLowerCase();
+
+      const filtered = teachersData.filter(teacher =>
+        Object.values(teacher).join(" ").toLowerCase().includes(search)
+      );
+
+      renderTeachers(filtered);
+    }
+
+    function clearFieldError(fieldId) {
+      const field = document.getElementById(fieldId);
+      if(field) field.classList.remove("has-error");
+    }
+
+    function setFieldError(fieldId, errorId, message) {
+      const field = document.getElementById(fieldId);
+      const error = document.getElementById(errorId);
+
+      if(field) field.classList.add("has-error");
+      if(error) error.textContent = message;
+    }
+
+    function clearTeacherFormErrors() {
+      clearFieldError("teacherNameField");
+      clearFieldError("teacherStatusField");
+    }
+
+    function clearAssignmentFormErrors() {
+      clearFieldError("assignmentTeacherField");
+      clearFieldError("assignmentSubjectField");
+      clearFieldError("assignmentClassField");
+      clearFieldError("assignmentStatusField");
+      clearFieldError("assignmentByField");
+    }
+
+    function openTeacherFormModal(mode,index=null) {
+      teacherFormMode = mode;
+      selectedTeacherName = "";
+
+      clearTeacherFormErrors();
+      document.getElementById("teacherNameInput").value = "";
+      document.getElementById("teacherStatusInput").value = "Active";
+      document.getElementById("teacherFormTitle").textContent =
+        mode === "edit" ? "Edit Teacher" : "Register Teacher";
+
+      if (mode === "edit" && index !== null) {
+        const teacher = teachersData[index];
+
+        selectedTeacherName = teacher["Teacher Name"];
+        document.getElementById("teacherNameInput").value = teacher["Teacher Name"] || "";
+        document.getElementById("teacherStatusInput").value = teacher["Status"] || "Active";
+      }
+
+      document.getElementById("teacherFormModal").style.display = "flex";
+    }
+
+    function closeTeacherFormModal() {
+      document.getElementById("teacherFormModal").style.display = "none";
+    }
+
+    async function submitTeacherForm() {
+      const teacherName = document.getElementById("teacherNameInput").value.trim();
+      const status = document.getElementById("teacherStatusInput").value;
+
+      clearTeacherFormErrors();
+
+      if (!teacherName) {
+        setFieldError("teacherNameField", "teacherNameError", "Teacher name is required.");
+        document.getElementById("teacherNameInput").focus();
+        return;
+      }
+
+      const action = teacherFormMode === "edit" ? "updateTeacher" : "addTeacher";
+
+      try {
+        setTextMessage("teachersActionMessage", "Submitting teacher record...", "info");
+
+        await postToApi({
+          action:action,
+          oldTeacherName:selectedTeacherName,
+          newTeacherName:teacherName,
+          teacherName:teacherName,
+          status:status
+        });
+
+        closeTeacherFormModal();
+
+        setTimeout(async () => {
+          await loadTeachers();
+          await loadTeacherAssignments(false);
+          setTextMessage("teachersActionMessage", "Teacher record submitted successfully.", "success");
+        }, 1200);
+
+      } catch (error) {
+        console.error(error);
+        setTextMessage("teachersActionMessage", professionalError("Teacher record submission"), "error");
+      }
+    }
+
+    async function deactivateTeacher(index) {
+      const teacher = teachersData[index];
+
+      const proceed = await customConfirm(
+        "Deactivate this teacher? Existing records will remain.",
+        "Deactivate Teacher"
+      );
+
+      if (!proceed) return;
+
+      setTextMessage("teachersActionMessage", "Submitting deactivate request...", "info");
+
+      await postToApi({
+        action:"deactivateTeacher",
+        teacherName:teacher["Teacher Name"]
+      });
+
+      setTimeout(loadTeachers, 1200);
+    }
+
+    async function restoreTeacher(index) {
+      const teacher = teachersData[index];
+
+      const proceed = await customConfirm(
+        "Restore this teacher as active?",
+        "Restore Teacher"
+      );
+
+      if (!proceed) return;
+
+      setTextMessage("teachersActionMessage", "Submitting restore request...", "info");
+
+      await postToApi({
+        action:"restoreTeacher",
+        teacherName:teacher["Teacher Name"]
+      });
+
+      setTimeout(loadTeachers, 1200);
+    }
+
+    async function deleteTeacher(index) {
+      const teacher = teachersData[index];
+
+      const proceed = await customConfirm(
+        "Delete this teacher? This will only work if the teacher has no active subject assignments.",
+        "Delete Teacher",
+        true
+      );
+
+      if (!proceed) return;
+
+      setTextMessage("teachersActionMessage", "Submitting delete request...", "info");
+
+      await postToApi({
+        action:"deleteTeacher",
+        teacherName:teacher["Teacher Name"]
+      });
+
+      setTimeout(async () => {
+        await loadTeachers();
+        await loadTeacherAssignments(false);
+        setTextMessage("teachersActionMessage", "Delete request submitted. If the teacher had active assignments, Apps Script will block deletion.", "success");
+      }, 1200);
+    }
+
+
+    /* =========================================================
+       TEACHER SUBJECT ASSIGNMENTS
+    ========================================================== */
+    async function loadTeacherAssignments(showMessage=true) {
+      try {
+        if (showMessage) {
+          setTextMessage("teachersActionMessage", "Loading teacher subject assignments...", "info");
+        }
+
+        teachersData = await jsonpRequest(API + "?action=teachers");
+        tgaSubjects = await getAllSubjectObjects();
+        assignmentsData = await jsonpRequest(API + "?action=teacherAssignments");
+
+        renderAssignments(assignmentsData);
+
+        if (showMessage) {
+          setTextMessage("teachersActionMessage", "Teacher subject assignments loaded successfully.", "success");
+        }
+      } catch (error) {
+        console.error(error);
+        if (showMessage) {
+          setTextMessage("teachersActionMessage", professionalError("Teacher subject assignment loading"), "error");
+        }
+      }
+    }
+
+    function renderAssignments(data) {
+      const box = document.getElementById("assignmentsContent");
+
+      if (!data || data.length === 0) {
+        box.innerHTML = `<p style="font-size:13px;color:#666;">No subject assignments found.</p>`;
+        return;
+      }
+
+      let html = `<div class="cards-grid">`;
+
+      data.forEach((item, index) => {
+        const status = item["Status"] || "Active";
+        const statusClass = status === "Inactive" ? "subject-inactive" : "subject-active";
+
+        html += `
+          <div class="assignment-card">
+            <strong>${item["Teacher Name"] || "Unknown Teacher"}</strong>
+            <p><b>Subject:</b> ${item["Subject"] || "—"}</p>
+            <p><b>Class:</b> ${item["Class"] || "—"}</p>
+            <p><b>Assigned By:</b> ${item["Assigned By"] || "—"}</p>
+            <p><b>Date:</b> ${formatDateOnly(item["Date"])}</p>
+            <span class="subject-status ${statusClass}">${status}</span>
+
+            <div class="assignment-actions">
+              <button class="action-btn" onclick="openAssignmentFormModal('edit', ${index})">Edit</button>
+        `;
+
+        if (status === "Inactive") {
+          html += `<button class="action-btn success-btn" onclick="restoreAssignment(${index})">Restore</button>`;
+        } else {
+          html += `<button class="action-btn warning-btn" onclick="deactivateAssignment(${index})">Deactivate</button>`;
+        }
+
+        html += `
+              <button class="action-btn danger-btn" onclick="deleteAssignment(${index})">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      box.innerHTML = html;
+    }
+
+    function filterAssignments() {
+      const search = document.getElementById("assignmentSearchBox").value.toLowerCase();
+
+      const filtered = assignmentsData.filter(item =>
+        Object.values(item).join(" ").toLowerCase().includes(search)
+      );
+
+      renderAssignments(filtered);
+    }
+
+    async function openAssignmentFormModal(mode,index=null) {
+      assignmentFormMode = mode;
+      selectedAssignmentRowNumber = "";
+
+      teachersData = await jsonpRequest(API + "?action=teachers");
+      tgaSubjects = await getAllSubjectObjects();
+
+      populateAssignmentDropdowns();
+      clearAssignmentFormErrors();
+
+      document.getElementById("assignmentTeacherSelect").value = "";
+      document.getElementById("assignmentSubjectSelect").value = "";
+      document.getElementById("assignmentClassInput").value = "";
+      document.getElementById("assignmentStatusInput").value = "Active";
+      document.getElementById("assignmentByInput").value = "";
+
+      document.getElementById("assignmentFormTitle").textContent =
+        mode === "edit" ? "Edit Subject Assignment" : "Assign Subject";
+
+      /*
+        Add mode assigns one subject per submission.
+        The Teachers tab will still group all assignments under the same teacher.
+      */
+      document.getElementById("assignmentSubjectSelect").style.display = "block";
+
+      /*
+        IMPORTANT:
+        Do not hide assignmentStatusInput.parentElement because the parent is
+        the full assignment-form-grid. Hiding the parent hides the entire form.
+        In add mode, hide only the Status field itself. In edit mode, show it.
+      */
+      document.getElementById("assignmentStatusField").style.display =
+        mode === "edit" ? "flex" : "none";
+
+      if (mode === "edit" && index !== null) {
+        const item = assignmentsData[index];
+
+        selectedAssignmentRowNumber = item.rowNumber;
+        document.getElementById("assignmentTeacherSelect").value = item["Teacher Name"] || "";
+        document.getElementById("assignmentSubjectSelect").value = item["Subject"] || "";
+        document.getElementById("assignmentClassInput").value = item["Class"] || "";
+        document.getElementById("assignmentStatusInput").value = item["Status"] || "Active";
+        document.getElementById("assignmentByInput").value = item["Assigned By"] || "";
+      }
+
+      document.getElementById("assignmentFormModal").style.display = "flex";
+    }
+
+    function populateAssignmentDropdowns() {
+      const teacherSelect = document.getElementById("assignmentTeacherSelect");
+      const subjectSelect = document.getElementById("assignmentSubjectSelect");
+
+      teacherSelect.innerHTML = `<option value="">Select Teacher</option>`;
+      subjectSelect.innerHTML = `<option value="">Select Subject</option>`;
+
+      teachersData
+        .filter(teacher => String(teacher["Status"] || "Active").toLowerCase() === "active")
+        .forEach(teacher => {
+          const option = document.createElement("option");
+          option.value = teacher["Teacher Name"];
+          option.textContent = teacher["Teacher Name"];
+          teacherSelect.appendChild(option);
+        });
+
+      tgaSubjects
+        .filter(subject => String(subject.status || "Active").toLowerCase() === "active")
+        .forEach(subject => {
+          const option = document.createElement("option");
+          option.value = subject.subjectName;
+          option.textContent = subject.subjectName;
+          subjectSelect.appendChild(option);
+        });
+    }
+
+    function closeAssignmentFormModal() {
+      document.getElementById("assignmentFormModal").style.display = "none";
+    }
+
+    async function submitAssignmentForm() {
+      const teacherName = document.getElementById("assignmentTeacherSelect").value;
+      const subject = document.getElementById("assignmentSubjectSelect").value;
+      const className = document.getElementById("assignmentClassInput").value.trim();
+      const status = document.getElementById("assignmentStatusInput").value;
+      const assignedBy = document.getElementById("assignmentByInput").value.trim();
+
+      clearAssignmentFormErrors();
+
+      if (!teacherName || !subject || !className) {
+        if (!teacherName) {
+          setFieldError("assignmentTeacherField", "assignmentTeacherError", "Please select a teacher.");
+        }
+
+        if (!subject) {
+          setFieldError("assignmentSubjectField", "assignmentSubjectError", "Please select a subject.");
+        }
+
+        if (!className) {
+          setFieldError("assignmentClassField", "assignmentClassError", "Class is required.");
+        }
+
+        if (!teacherName) {
+          document.getElementById("assignmentTeacherSelect").focus();
+        } else if (!subject) {
+          document.getElementById("assignmentSubjectSelect").focus();
+        } else {
+          document.getElementById("assignmentClassInput").focus();
+        }
+
+        return;
+      }
+
+      try {
+        setTextMessage("teachersActionMessage", "Submitting subject assignment...", "info");
+
+        if (assignmentFormMode === "edit") {
+          await postToApi({
+            action:"updateAssignment",
+            rowNumber:selectedAssignmentRowNumber,
+            teacherName:teacherName,
+            subject:subject,
+            className:className,
+            status:status,
+            assignedBy:assignedBy
+          });
+        } else {
+          await postToApi({
+            action:"assignSubject",
+            teacherName:teacherName,
+            subject:subject,
+            className:className,
+            assignedBy:assignedBy
+          });
+        }
+
+        closeAssignmentFormModal();
+
+        setTimeout(async () => {
+          await loadTeachers();
+          await loadTeacherAssignments(false);
+          setTextMessage("teachersActionMessage", "Subject assignment request submitted successfully.", "success");
+        }, 1200);
+
+      } catch (error) {
+        console.error(error);
+        setTextMessage("teachersActionMessage", professionalError("Subject assignment submission"), "error");
+      }
+    }
+
+    async function deactivateAssignment(index) {
+      const item = assignmentsData[index];
+
+      const proceed = await customConfirm(
+        "Deactivate this subject assignment?",
+        "Deactivate Assignment"
+      );
+
+      if (!proceed) return;
+
+      setTextMessage("teachersActionMessage", "Submitting deactivate request...", "info");
+
+      await postToApi({
+        action:"deactivateAssignment",
+        rowNumber:item.rowNumber
+      });
+
+      setTimeout(async () => {
+        await loadTeachers();
+        await loadTeacherAssignments(false);
+      }, 1200);
+    }
+
+    async function restoreAssignment(index) {
+      const item = assignmentsData[index];
+
+      const proceed = await customConfirm(
+        "Restore this subject assignment?",
+        "Restore Assignment"
+      );
+
+      if (!proceed) return;
+
+      setTextMessage("teachersActionMessage", "Submitting restore request...", "info");
+
+      await postToApi({
+        action:"restoreAssignment",
+        rowNumber:item.rowNumber
+      });
+
+      setTimeout(async () => {
+        await loadTeachers();
+        await loadTeacherAssignments(false);
+      }, 1200);
+    }
+
+    async function deleteAssignment(index) {
+      const item = assignmentsData[index];
+
+      const proceed = await customConfirm(
+        "Delete this subject assignment permanently?",
+        "Delete Assignment",
+        true
+      );
+
+      if (!proceed) return;
+
+      setTextMessage("teachersActionMessage", "Submitting delete request...", "info");
+
+      await postToApi({
+        action:"deleteAssignment",
+        rowNumber:item.rowNumber
+      });
+
+      setTimeout(async () => {
+        await loadTeachers();
+        await loadTeacherAssignments(false);
+      }, 1200);
+    }
+
+
+    /* =========================================================
+       35. START PROGRAM
+    ========================================================== */
+    document.getElementById("subjectSelect").addEventListener("change", loadData);
+    document.getElementById("searchBox").addEventListener("keyup", filterTable);
+    loadSubjects();
+  </script>
+</body>
+</html>
