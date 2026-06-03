@@ -19,8 +19,6 @@ body {
   color: #1d2b53;
 }
 
-/* MAIN PAGE */
-
 .container {
   width: 100%;
   min-height: 100vh;
@@ -40,8 +38,6 @@ h2 {
   font-size: 13px;
   line-height: 1.5;
 }
-
-/* MAIN BUTTONS */
 
 .main-buttons {
   display: flex;
@@ -89,8 +85,6 @@ button:hover {
   min-width: 150px;
 }
 
-/* FORM FIELDS */
-
 .field {
   margin-bottom: 12px;
   max-width: 260px;
@@ -119,8 +113,6 @@ input:focus,
 select:focus {
   border: 1px solid #0037ad;
 }
-
-/* MODAL */
 
 .modal-overlay {
   position: fixed;
@@ -158,8 +150,6 @@ select:focus {
   color: #17357a;
 }
 
-/* ACTION BUTTONS */
-
 .buttons {
   margin-top: 12px;
   display: flex;
@@ -173,13 +163,9 @@ select:focus {
   font-weight: 700;
 }
 
-/* REPORT AREA */
-
 .report {
   margin-top: 18px;
 }
-
-/* PRINT REPORT DESIGN */
 
 .print-report {
   margin-top: 18px;
@@ -285,37 +271,6 @@ select:focus {
   margin-top: 15px;
   font-weight: bold;
 }
-/* =====================================
-   PRINT FIX
-===================================== */
-
-@media print {
-
-    body *{
-        visibility:hidden;
-    }
-
-    .print-report,
-    .print-report *{
-        visibility:visible;
-    }
-
-    .print-report{
-        position:absolute;
-        left:0;
-        top:0;
-        width:100%;
-        background:white;
-    }
-
-    .buttons,
-    .main-buttons,
-    .close-btn,
-    #printBtn{
-        display:none !important;
-    }
-}
-/* MOBILE */
 
 @media(max-width: 768px) {
   .container {
@@ -357,8 +312,6 @@ select:focus {
   }
 }
 
-/* PRINT */
-
 @media print {
   html,
   body {
@@ -371,6 +324,15 @@ select:focus {
   body {
     margin: 0;
     padding: 0;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-report,
+  .print-report * {
+    visibility: visible;
   }
 
   .container {
@@ -404,6 +366,9 @@ select:focus {
   }
 
   .print-report {
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
     min-height: 277mm;
     margin: 0;
@@ -413,6 +378,7 @@ select:focus {
     box-shadow: none;
     page-break-inside: avoid;
     overflow: hidden;
+    background: white;
   }
 
   .report-header {
@@ -473,7 +439,8 @@ select:focus {
   <h2>Register Report</h2>
 
   <p class="legend">
-    Generate a student register or a staff register report.
+    Generate a student register or a staff register report.<br>
+    P = Present, AA = Authorised Absence, UA = Unauthorised Absence, S = Sick
   </p>
 
   <div class="main-buttons">
@@ -554,34 +521,21 @@ select:focus {
 </div>
 
 <script>
-
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbx70aP3mQ7QHnIeDU1vhdckv2UAo7T5F8U9GOgxY1fW8fxKDMFEEjR0P77v8NT90ulE/exec";
+"https://script.google.com/macros/s/AKfycbyTZqMJJ_i2D1D1hKogYHtxJj37pQnnHp36LkEDEwkNBQEd19uPwrcK8-kwryXPZMYo/exec";
 
 let currentReportType = "";
 let autoSearchTimeout;
 let staffList = [];
 
-// =====================================
-// OPEN REPORT
-// =====================================
-
 function openReport(type) {
 
-    currentReportType =
-    type;
+    currentReportType = type;
 
-    document.getElementById("modalOverlay").style.display =
-    "flex";
-
-    document.getElementById("message").innerText =
-    "";
-
-    document.getElementById("printBtn").style.display =
-    "none";
-
-    document.getElementById("report").innerHTML =
-    "";
+    document.getElementById("modalOverlay").style.display = "flex";
+    document.getElementById("message").innerText = "";
+    document.getElementById("printBtn").style.display = "none";
+    document.getElementById("report").innerHTML = "";
 
     if (type === "student") {
 
@@ -613,21 +567,10 @@ function openReport(type) {
     }
 }
 
-// =====================================
-// CLOSE MODAL
-// =====================================
-
 function closeModal() {
-
-    document.getElementById("modalOverlay").style.display =
-    "none";
-
+    document.getElementById("modalOverlay").style.display = "none";
     clearReport();
 }
-
-// =====================================
-// LOAD STAFF LIST
-// =====================================
 
 async function loadStaffList() {
 
@@ -643,10 +586,7 @@ async function loadStaffList() {
     try {
 
         const response =
-        await fetch(
-            WEB_APP_URL +
-            "?action=getStaff"
-        );
+        await fetch(WEB_APP_URL + "?action=getStaff");
 
         const result =
         await response.json();
@@ -702,10 +642,6 @@ async function loadStaffList() {
     }
 }
 
-// =====================================
-// AUTO SEARCH STUDENT
-// =====================================
-
 function autoSearchStudent(input) {
 
     clearTimeout(autoSearchTimeout);
@@ -720,16 +656,11 @@ function autoSearchStudent(input) {
             currentReportType === "student" &&
             input.value.trim() !== ""
         ) {
-
             loadReport();
         }
 
     }, 500);
 }
-
-// =====================================
-// LOAD REPORT
-// =====================================
 
 function loadReport() {
 
@@ -741,10 +672,6 @@ function loadReport() {
         loadStaffReport();
     }
 }
-
-// =====================================
-// LOAD STUDENT REPORT
-// =====================================
 
 async function loadStudentReport() {
 
@@ -785,14 +712,11 @@ async function loadStudentReport() {
             method:"POST",
 
             headers:{
-                "Content-Type":
-                "text/plain;charset=utf-8"
+                "Content-Type":"text/plain;charset=utf-8"
             },
 
             body:JSON.stringify({
-
                 action:"studentReport",
-
                 studentID:studentID
             })
         });
@@ -813,35 +737,17 @@ async function loadStudentReport() {
 
         renderReport({
 
-            reportTitle:
-            "Student Register Summary",
-
-            detailsTitle:
-            "Student Details",
-
-            idLabel:
-            "Student ID",
-
-            idValue:
-            result.studentID,
-
-            name:
-            result.name,
-
-            groupLabel:
-            "Class",
-
-            groupValue:
-            result.className,
-
-            present:
-            result.present,
-
-            authorisedAbsent:
-            result.authorisedAbsent,
-
-            unauthorisedAbsent:
-            result.unauthorisedAbsent
+            reportTitle:"Student Register Summary",
+            detailsTitle:"Student Details",
+            idLabel:"Student ID",
+            idValue:result.studentID,
+            name:result.name,
+            groupLabel:"Class",
+            groupValue:result.className,
+            present:result.present,
+            authorisedAbsent:result.authorisedAbsent,
+            unauthorisedAbsent:result.unauthorisedAbsent,
+            sick:result.sick
         });
 
     } catch (error) {
@@ -850,10 +756,6 @@ async function loadStudentReport() {
         "<p style='color:red;font-size:14px;font-weight:bold;'>Failed to load student report</p>";
     }
 }
-
-// =====================================
-// LOAD STAFF REPORT
-// =====================================
 
 async function loadStaffReport() {
 
@@ -894,14 +796,11 @@ async function loadStaffReport() {
             method:"POST",
 
             headers:{
-                "Content-Type":
-                "text/plain;charset=utf-8"
+                "Content-Type":"text/plain;charset=utf-8"
             },
 
             body:JSON.stringify({
-
                 action:"staffReport",
-
                 staffID:staff.staffID
             })
         });
@@ -922,35 +821,17 @@ async function loadStaffReport() {
 
         renderReport({
 
-            reportTitle:
-            "Staff Register Summary",
-
-            detailsTitle:
-            "Staff Details",
-
-            idLabel:
-            "Staff ID",
-
-            idValue:
-            result.staffID,
-
-            name:
-            result.name,
-
-            groupLabel:
-            "Role",
-
-            groupValue:
-            result.role,
-
-            present:
-            result.present,
-
-            authorisedAbsent:
-            result.authorisedAbsent,
-
-            unauthorisedAbsent:
-            result.unauthorisedAbsent
+            reportTitle:"Staff Register Summary",
+            detailsTitle:"Staff Details",
+            idLabel:"Staff ID",
+            idValue:result.staffID,
+            name:result.name,
+            groupLabel:"Role",
+            groupValue:result.role,
+            present:result.present,
+            authorisedAbsent:result.authorisedAbsent,
+            unauthorisedAbsent:result.unauthorisedAbsent,
+            sick:result.sick
         });
 
     } catch (error) {
@@ -959,10 +840,6 @@ async function loadStaffReport() {
         "<p style='color:red;font-size:14px;font-weight:bold;'>Failed to load staff report</p>";
     }
 }
-
-// =====================================
-// RENDER REPORT
-// =====================================
 
 function renderReport(data) {
 
@@ -975,9 +852,7 @@ function renderReport(data) {
 
         <div class="report-header">
 
-            <img
-            src="logo.png"
-            class="print-logo">
+            <img src="logo.png" class="print-logo">
 
             <h1>The Gambia Academy</h1>
 
@@ -1030,6 +905,11 @@ function renderReport(data) {
                 ${data.unauthorisedAbsent || 0}
             </div>
 
+            <div class="report-row">
+                <span class="label">Sick:</span>
+                ${data.sick || 0}
+            </div>
+
         </div>
 
         <div class="signature-section">
@@ -1061,19 +941,9 @@ function renderReport(data) {
     `;
 }
 
-// =====================================
-// PRINT REPORT
-// Keeps original print style
-// =====================================
-
 function printReport() {
-
     window.print();
 }
-
-// =====================================
-// CLEAR REPORT
-// =====================================
 
 function clearReport() {
 
@@ -1092,7 +962,6 @@ function clearReport() {
     document.getElementById("printBtn").style.display =
     "none";
 }
-
 </script>
 
 </body>
