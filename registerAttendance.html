@@ -5,36 +5,22 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Attendance Register</title>
 
 <style>
-
-/* =====================================
-   GLOBAL RESET
-===================================== */
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
-/* =====================================
-   BODY
-===================================== */
-
 body{
     font-family:Arial,sans-serif;
     background:#eef3f9;
     color:#1d2b53;
 }
-
-/* =====================================
-   MAIN PAGE
-===================================== */
 
 .container{
     width:100%;
@@ -55,10 +41,6 @@ h2{
     font-size:13px;
     line-height:1.5;
 }
-
-/* =====================================
-   MAIN BUTTONS
-===================================== */
 
 .main-buttons{
     display:flex;
@@ -82,6 +64,12 @@ button:hover{
     transform:translateY(-1px);
 }
 
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+    transform:none;
+}
+
 .student-btn,
 .save-btn{
     background:linear-gradient(90deg,#0048d8,#0037ad);
@@ -92,24 +80,12 @@ button:hover{
 }
 
 .clear-btn{
-    background:linear-gradient(
-        90deg,
-        #d62828,
-        #b00020
-    );
+    background:linear-gradient(90deg,#d62828,#b00020);
 }
 
 .close-btn-bottom{
     background:#6c757d;
 }
-
-.close-btn-bottom:hover{
-    background:#5a6268;
-}
-
-/* =====================================
-   FORM FIELDS
-===================================== */
 
 .field{
     margin-bottom:14px;
@@ -138,10 +114,6 @@ input:focus{
     border:1px solid #0037ad;
 }
 
-/* =====================================
-   MODAL
-===================================== */
-
 .modal-overlay{
     position:fixed;
     inset:0;
@@ -156,15 +128,11 @@ input:focus{
 
 .modal{
     width:92%;
-    max-width:600px;
+    max-width:700px;
     background:white;
     border-radius:16px;
     padding:14px 16px;
 }
-
-/* =====================================
-   MODAL HEADER
-===================================== */
 
 .modal-header{
     margin-bottom:12px;
@@ -175,13 +143,13 @@ input:focus{
     color:#17357a;
 }
 
-/* =====================================
-   TABLE
-===================================== */
+.modal-header p{
+    font-size:12px;
+    color:#555;
+}
 
 .table-wrapper{
     width:100%;
-    max-width:600px;
     margin:12px auto 0 auto;
 }
 
@@ -193,12 +161,7 @@ table{
 }
 
 thead{
-    background:linear-gradient(
-        90deg,
-        #17357a,
-        #001d5c
-    );
-
+    background:linear-gradient(90deg,#17357a,#001d5c);
     color:white;
 }
 
@@ -224,10 +187,6 @@ tbody tr:hover{
     background:#eef6ff;
 }
 
-/* =====================================
-   RESPONSIVE TABLE COLUMNS
-===================================== */
-
 th:nth-child(1),
 td:nth-child(1){
     width:18%;
@@ -248,10 +207,6 @@ td:nth-child(4){
     width:24%;
 }
 
-/* =====================================
-   DROPDOWN
-===================================== */
-
 select{
     width:100%;
     padding:6px 8px;
@@ -266,15 +221,16 @@ select:focus{
     border:1px solid #0037ad;
 }
 
-/* =====================================
-   ACTION BUTTONS
-===================================== */
-
 .buttons{
     margin-top:14px;
     display:flex;
     gap:10px;
     flex-wrap:wrap;
+}
+
+.buttons button{
+    flex:1;
+    min-width:130px;
 }
 
 #message{
@@ -283,20 +239,9 @@ select:focus{
     font-weight:700;
 }
 
-/* =====================================
-   TABLET
-===================================== */
-
 @media(max-width:992px){
     .modal{
         width:100%;
-        max-width:100%;
-    }
-
-    .table-wrapper{
-        max-width:100%;
-    }
-    .modal{
         max-width:100%;
     }
 
@@ -306,10 +251,6 @@ select:focus{
         padding:7px;
     }
 }
-
-/* =====================================
-   MOBILE
-===================================== */
 
 @media(max-width:768px){
 
@@ -336,7 +277,7 @@ select:focus{
     }
 
     table{
-        table-layout:auto;
+        table-layout:fixed;
     }
 
     th,
@@ -344,8 +285,12 @@ select:focus{
         font-size:10.5px;
         padding:6px;
     }
-}
 
+    select{
+        font-size:11px;
+        padding:5px;
+    }
+}
 </style>
 
 </head>
@@ -357,25 +302,20 @@ select:focus{
     <h2>Mark Register</h2>
 
     <p class="legend">
-        P = Present<br>AA = Authorised Absence<br>UA = Unauthorised Absence
+        P = Present<br>
+        AA = Authorised Absence<br>
+        UA = Unauthorised Absence<br>
+        S = Sick
     </p>
 
     <div class="main-buttons">
 
-        <button
-            class="staff-btn"
-            onclick="openRegister('staff')">
-
+        <button class="staff-btn" onclick="openRegister('staff')">
             + Staff Register
-
         </button>
 
-        <button
-            class="student-btn"
-            onclick="openRegister('student')">
-
+        <button class="student-btn" onclick="openRegister('student')">
             + Student Register
-
         </button>
 
     </div>
@@ -388,23 +328,21 @@ select:focus{
 
         <div class="modal-header">
 
-            <h2
-                class="modal-title"
-                id="modalTitle">
+            <h2 class="modal-title" id="modalTitle">
                 Mark Register
             </h2>
+
             <p>
-                P = Present, AA = Authorised Absence, UA = Unauthorised Absence
+                P = Present, AA = Authorised Absence, UA = Unauthorised Absence, S = Sick
             </p>
+
         </div>
 
         <div class="field">
 
             <label>Register Date</label>
 
-            <input
-                type="date"
-                id="date">
+            <input type="date" id="date">
 
         </div>
 
@@ -422,29 +360,16 @@ select:focus{
 
         <div class="buttons">
 
-            <button
-                class="save-btn"
-                id="saveBtn"
-                onclick="saveAttendance()">
-
+            <button class="save-btn" id="saveBtn" onclick="saveAttendance()">
                 Submit
-
             </button>
 
-            <button
-                class="clear-btn"
-                onclick="clearForm()">
-
+            <button class="clear-btn" onclick="clearForm()">
                 Clear
-
             </button>
 
-            <button
-                class="close-btn-bottom"
-                onclick="closeModal()">
-
+            <button class="close-btn-bottom" onclick="closeModal()">
                 Close
-
             </button>
 
         </div>
@@ -456,40 +381,28 @@ select:focus{
 </div>
 
 <script>
-
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbx70aP3mQ7QHnIeDU1vhdckv2UAo7T5F8U9GOgxY1fW8fxKDMFEEjR0P77v8NT90ulE/exec";
+"https://script.google.com/macros/s/AKfycbyTZqMJJ_i2D1D1hKogYHtxJj37pQnnHp36LkEDEwkNBQEd19uPwrcK8-kwryXPZMYo/exec";
 
 let currentRegisterType = "";
-
-/* =====================================
-   OPEN REGISTER
-===================================== */
 
 function openRegister(type){
 
     currentRegisterType = type;
 
-    document.getElementById(
-        "modalOverlay"
-    ).style.display = "flex";
+    document.getElementById("modalOverlay").style.display = "flex";
 
-    document.getElementById(
-        "date"
-    ).value =
-    new Date()
-    .toISOString()
-    .split("T")[0];
+    document.getElementById("date").value =
+    new Date().toISOString().split("T")[0];
 
-    document.getElementById(
-        "message"
-    ).innerText = "";
+    document.getElementById("message").innerText = "";
+
+    document.getElementById("saveBtn").disabled = false;
+    document.getElementById("saveBtn").style.opacity = "1";
 
     if(type === "student"){
 
-        document.getElementById(
-            "modalTitle"
-        ).innerText =
+        document.getElementById("modalTitle").innerText =
         "Mark Student Register";
 
         loadStudents();
@@ -497,58 +410,28 @@ function openRegister(type){
 
     if(type === "staff"){
 
-        document.getElementById(
-            "modalTitle"
-        ).innerText =
+        document.getElementById("modalTitle").innerText =
         "Mark Staff Register";
 
         loadStaff();
     }
 }
 
-/* =====================================
-   CLOSE MODAL
-===================================== */
-
 function closeModal(){
 
-    document.getElementById(
-        "modalOverlay"
-    ).style.display = "none";
+    document.getElementById("modalOverlay").style.display = "none";
+    document.getElementById("attendanceTable").innerHTML = "";
+    document.getElementById("tableHead").innerHTML = "";
+    document.getElementById("message").innerText = "";
 
-    document.getElementById(
-        "attendanceTable"
-    ).innerHTML = "";
-
-    document.getElementById(
-        "message"
-    ).innerText = "";
+    currentRegisterType = "";
 }
-
-/* =====================================
-   LOAD STUDENTS
-===================================== */
 
 async function loadStudents(){
 
-    const response =
-    await fetch(
-        WEB_APP_URL +
-        "?action=getStudents"
-    );
-
-    const result =
-    await response.json();
-
-    const tableHead =
-    document.getElementById(
-        "tableHead"
-    );
-
-    const tbody =
-    document.getElementById(
-        "attendanceTable"
-    );
+    const tableHead = document.getElementById("tableHead");
+    const tbody = document.getElementById("attendanceTable");
+    const message = document.getElementById("message");
 
     tableHead.innerHTML = `
         <tr>
@@ -560,55 +443,69 @@ async function loadStudents(){
     `;
 
     tbody.innerHTML = "";
+    message.style.color = "#0037ad";
+    message.innerText = "Loading students...";
 
-    result.data.forEach(student => {
+    try{
 
-        tbody.innerHTML += `
-            <tr>
+        const response =
+        await fetch(WEB_APP_URL + "?action=getStudents");
 
-                <td>${student.studentID}</td>
+        const result =
+        await response.json();
 
-                <td>${student.studentName}</td>
+        if(result.status !== "SUCCESS"){
 
-                <td>${student.className}</td>
+            message.style.color = "red";
+            message.innerText =
+            result.message || "Failed to load students";
 
-                <td>
-                    <select>
-                        <option value="P">P</option>
-                        <option value="AA">AA</option>
-                        <option value="UA">UA</option>
-                    </select>
-                </td>
+            return;
+        }
 
-            </tr>
-        `;
-    });
+        if(!Array.isArray(result.data) || result.data.length === 0){
+
+            message.style.color = "red";
+            message.innerText = "No student found";
+
+            return;
+        }
+
+        result.data.forEach(student => {
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${student.studentID}</td>
+                    <td>${student.studentName}</td>
+                    <td>${student.className}</td>
+                    <td>
+                        <select>
+                            <option value="P">P</option>
+                            <option value="AA">AA</option>
+                            <option value="UA">UA</option>
+                            <option value="S">S</option>
+                        </select>
+                    </td>
+                </tr>
+            `;
+        });
+
+        message.innerText = "";
+
+    }catch(error){
+
+        message.style.color = "red";
+        message.innerText = "Failed to load students";
+
+        console.error(error);
+    }
 }
-
-/* =====================================
-   LOAD STAFF
-===================================== */
 
 async function loadStaff(){
 
-    const response =
-    await fetch(
-        WEB_APP_URL +
-        "?action=getStaff"
-    );
-
-    const result =
-    await response.json();
-
-    const tableHead =
-    document.getElementById(
-        "tableHead"
-    );
-
-    const tbody =
-    document.getElementById(
-        "attendanceTable"
-    );
+    const tableHead = document.getElementById("tableHead");
+    const tbody = document.getElementById("attendanceTable");
+    const message = document.getElementById("message");
 
     tableHead.innerHTML = `
         <tr>
@@ -620,64 +517,254 @@ async function loadStaff(){
     `;
 
     tbody.innerHTML = "";
+    message.style.color = "#0037ad";
+    message.innerText = "Loading staff...";
 
-    result.data.forEach(staff => {
+    try{
 
-        tbody.innerHTML += `
-            <tr>
+        const response =
+        await fetch(WEB_APP_URL + "?action=getStaff");
 
-                <td>${staff.staffID}</td>
+        const result =
+        await response.json();
 
-                <td>${staff.staffName}</td>
+        if(result.status !== "SUCCESS"){
 
-                <td>${staff.role}</td>
+            message.style.color = "red";
+            message.innerText =
+            result.message || "Failed to load staff";
 
-                <td>
-                    <select>
-                        <option value="P">P</option>
-                        <option value="AA">AA</option>
-                        <option value="UA">UA</option>
-                    </select>
-                </td>
+            return;
+        }
 
-            </tr>
-        `;
-    });
+        if(!Array.isArray(result.data) || result.data.length === 0){
+
+            message.style.color = "red";
+            message.innerText = "No staff found";
+
+            return;
+        }
+
+        result.data.forEach(staff => {
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${staff.staffID}</td>
+                    <td>${staff.staffName}</td>
+                    <td>${staff.role}</td>
+                    <td>
+                        <select>
+                                <option value="P">P</option>
+                                <option value="AA">AA</option>
+                                <option value="UA">UA</option>
+                                <option value="S">S</option>
+                        </select>
+                    </td>
+                </tr>
+            `;
+        });
+
+        message.innerText = "";
+
+    }catch(error){
+
+        message.style.color = "red";
+        message.innerText = "Failed to load staff";
+
+        console.error(error);
+    }
 }
-
-/* =====================================
-   CLEAR FORM
-===================================== */
 
 function clearForm(){
 
     document
-    .querySelectorAll("select")
+    .querySelectorAll("#attendanceTable select")
     .forEach(select => {
-
         select.value = "P";
     });
 
-    document.getElementById(
-        "message"
-    ).innerText = "";
-}
+    document.getElementById("message").innerText = "";
 
-/* =====================================
-   SAVE ATTENDANCE
-===================================== */
+    document.getElementById("saveBtn").disabled = false;
+    document.getElementById("saveBtn").style.opacity = "1";
+}
 
 function saveAttendance(){
 
     if(currentRegisterType === "student"){
         saveStudentAttendance();
+        return;
     }
 
     if(currentRegisterType === "staff"){
         saveStaffAttendance();
+        return;
     }
+
+    const message = document.getElementById("message");
+    message.style.color = "red";
+    message.innerText = "Select student or staff register first";
 }
 
+async function saveStudentAttendance(){
+
+    const date = document.getElementById("date").value;
+    const rows = document.querySelectorAll("#attendanceTable tr");
+    const message = document.getElementById("message");
+
+    if(!date){
+
+        message.style.color = "red";
+        message.innerText = "Please select register date";
+
+        return;
+    }
+
+    const data = [];
+
+    rows.forEach(row => {
+
+        data.push({
+            date: date,
+            studentID: row.cells[0].innerText.trim(),
+            studentName: row.cells[1].innerText.trim(),
+            className: row.cells[2].innerText.trim(),
+            attendance: row.querySelector("select").value
+        });
+
+    });
+
+    if(data.length === 0){
+
+        message.style.color = "red";
+        message.innerText = "No student data found";
+
+        return;
+    }
+
+    await submitAttendance(
+        "saveStudentAttendance",
+        data,
+        "Student register submitted successfully"
+    );
+}
+
+async function saveStaffAttendance(){
+
+    const date = document.getElementById("date").value;
+    const rows = document.querySelectorAll("#attendanceTable tr");
+    const message = document.getElementById("message");
+
+    if(!date){
+
+        message.style.color = "red";
+        message.innerText = "Please select register date";
+
+        return;
+    }
+
+    const data = [];
+
+    rows.forEach(row => {
+
+        data.push({
+            date: date,
+            staffID: row.cells[0].innerText.trim(),
+            staffName: row.cells[1].innerText.trim(),
+            role: row.cells[2].innerText.trim(),
+            attendance: row.querySelector("select").value
+        });
+
+    });
+
+    if(data.length === 0){
+
+        message.style.color = "red";
+        message.innerText = "No staff data found";
+
+        return;
+    }
+
+    await submitAttendance(
+        "saveStaffAttendance",
+        data,
+        "Staff register submitted successfully"
+    );
+}
+
+async function submitAttendance(action, data, successText){
+
+    const message = document.getElementById("message");
+    const saveBtn = document.getElementById("saveBtn");
+
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = "0.6";
+
+    message.style.color = "#0037ad";
+    message.innerText = "Submitting register...";
+
+    try{
+
+        const response =
+        await fetch(WEB_APP_URL, {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"text/plain;charset=utf-8"
+            },
+
+            body:JSON.stringify({
+                action:action,
+                data:data
+            })
+        });
+
+        const result =
+        await response.json();
+
+        if(result.status === "SUCCESS"){
+
+            message.style.color = "green";
+            message.innerText = successText;
+
+            saveBtn.disabled = true;
+            saveBtn.style.opacity = "0.6";
+
+            return;
+        }
+
+        if(result.status === "DUPLICATE"){
+
+            message.style.color = "red";
+            message.innerText =
+            result.message || "Register already marked";
+
+            saveBtn.disabled = true;
+            saveBtn.style.opacity = "0.6";
+
+            return;
+        }
+
+        message.style.color = "red";
+        message.innerText =
+        result.message || "Failed to save register";
+
+        saveBtn.disabled = false;
+        saveBtn.style.opacity = "1";
+
+    }catch(error){
+
+        message.style.color = "red";
+        message.innerText = "Failed to submit register";
+
+        saveBtn.disabled = false;
+        saveBtn.style.opacity = "1";
+
+        console.error(error);
+    }
+}
 </script>
 
 </body>
+</html>
