@@ -542,6 +542,209 @@
       color: #666;
     }
 
+
+    /* Lesson-plan approval */
+    .approval-toolbar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+
+    .approval-toolbar .button-row {
+      align-self: end;
+    }
+
+    .approval-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .approval-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .approval-card.pending-card {
+      border-left: 4px solid var(--orange);
+    }
+
+    .approval-card.approved-card {
+      border-left: 4px solid var(--success);
+    }
+
+    .approval-card.rejected-card {
+      border-left: 4px solid var(--error);
+    }
+
+    .approval-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .approval-header h3 {
+      color: #17357a;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+
+    .status-pill.pending {
+      background: #fff7e7;
+      color: #a16207;
+    }
+
+    .status-pill.approved {
+      background: #eaf8ef;
+      color: var(--success);
+    }
+
+    .status-pill.rejected {
+      background: #fff0f2;
+      color: var(--error);
+    }
+
+    .approval-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 12px;
+      margin: 10px 0;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .approval-meta strong {
+      color: #17357a;
+    }
+
+    .approval-objective,
+    .approval-comment-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 9px;
+    }
+
+    .approval-comment-box label {
+      margin-bottom: 6px;
+    }
+
+    .approval-comment-box textarea {
+      min-height: 64px;
+    }
+
+    .approve-btn {
+      background: var(--success);
+      color: white;
+    }
+
+    .reject-btn {
+      background: var(--error);
+      color: white;
+    }
+
+    .approval-actions {
+      margin-top: 10px;
+    }
+
+    .approval-file-row {
+      margin-top: 8px;
+    }
+
+    /* Assignment viewer — assignments are visible to administrators but are not reviewed here. */
+    .assignment-toolbar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+
+    .assignment-toolbar .button-row {
+      align-self: end;
+    }
+
+    .assignment-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--blue);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .assignment-card h3 {
+      color: #17357a;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .assignment-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 12px;
+      margin: 10px 0;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .assignment-meta strong {
+      color: #17357a;
+    }
+
+    .assignment-activity {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 9px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .assignment-file-row {
+      margin-top: 8px;
+    }
+
+    .report-status-row {
+      margin: 8px 0;
+    }
+
+    .report-admin-comment {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 9px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media(max-width: 560px) {
+      .approval-meta,
+      .assignment-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media(max-width: 900px) {
       .header-box,
       .dashboard-hero,
@@ -594,7 +797,9 @@
 
   <div class="menu-bar">
     <button class="active" onclick="showSection('overview', this)">Report Summary</button>
+    <button onclick="showSection('approval', this)">Review Lesson Plans</button>
     <button onclick="showSection('view', this)">Lesson Reports</button>
+    <button onclick="showSection('assignments', this)">Assignments</button>
   </div>
 
   <main class="main">
@@ -645,6 +850,100 @@
       </div>
     </section>
 
+
+    <section id="approval" class="section">
+      <div class="view-hero">
+        <div>
+          <h1>Review Lesson Plans</h1>
+          <p>Open the full lesson report, assess its content, then approve it or return it with clear feedback.</p>
+        </div>
+        <button class="primary" onclick="loadApprovals()">Refresh</button>
+      </div>
+
+      <div class="report-search-panel">
+        <div class="approval-toolbar">
+          <div>
+            <label>School Level</label>
+            <select id="approvalLevel">
+              <option value="ALL">All levels</option>
+              <option value="JUNIOR">Junior</option>
+              <option value="SENIOR1">Senior 1</option>
+              <option value="SENIOR2">Senior 2</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Review Status</label>
+            <select id="approvalStatus">
+              <option value="Pending">Pending review</option>
+              <option value="ALL">All statuses</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Search</label>
+            <input type="text" id="approvalSearch" placeholder="Topic, teacher, subject, class...">
+          </div>
+
+          <div class="button-row">
+            <button class="primary" onclick="loadApprovals()">Apply Filters</button>
+            <button class="secondary" onclick="clearApprovalFilters()">Clear</button>
+          </div>
+        </div>
+        <div id="approvalMessage" class="message"></div>
+      </div>
+
+      <div id="approvalStats" class="approval-stats"></div>
+      <div id="approvalContent" class="reports-grid"></div>
+    </section>
+
+    <section id="assignments" class="section">
+      <div class="view-hero">
+        <div>
+          <h1>Assignments</h1>
+          <p>View assignments submitted by teachers. Assignments are visible here only and do not require approval.</p>
+        </div>
+        <button class="primary" onclick="loadAssignments()">Refresh</button>
+      </div>
+
+      <div class="report-search-panel">
+        <div class="assignment-toolbar">
+          <div>
+            <label>School Level</label>
+            <select id="assignmentViewLevel" onchange="updateSubjectOptions('assignmentViewLevel','assignmentViewSubject',true)">
+              <option value="ALL">All levels</option>
+              <option value="JUNIOR">Junior</option>
+              <option value="SENIOR1">Senior 1</option>
+              <option value="SENIOR2">Senior 2</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Subject</label>
+            <select id="assignmentViewSubject">
+              <option value="ALL">All subjects</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Search</label>
+            <input type="text" id="assignmentSearch" placeholder="Question, teacher, subject, class...">
+          </div>
+
+          <div class="button-row">
+            <button class="primary" onclick="loadAssignments()">Apply Filters</button>
+            <button class="secondary" onclick="clearAssignmentFilters()">Clear</button>
+          </div>
+        </div>
+        <div id="assignmentMessage" class="message"></div>
+      </div>
+
+      <div id="assignmentStats" class="report-stats"></div>
+      <div id="assignmentContent" class="reports-grid"></div>
+    </section>
+
     <section id="view" class="section">
       <div class="view-hero">
         <div>
@@ -693,7 +992,7 @@
   </main>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzw20Eejvw1Ye9U_JU6fQ0sZF_CBK9oVIxKh6GtDxgUZEAeDitU0BVQt9sui0tKA_wRGQ/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzCG252oko_7dDWKdqahjzNzd9kWcDxKK3wHmrwR613Q0Wf-icWjp62wXySd0_L-fmgpw/exec';
 
     const LEVELS = {
       JUNIOR: {
@@ -726,6 +1025,14 @@
 
       if (sectionId === 'overview') {
         loadOverview();
+      }
+
+      if (sectionId === 'approval') {
+        loadApprovals();
+      }
+
+      if (sectionId === 'assignments') {
+        loadAssignments();
       }
     }
 
@@ -772,6 +1079,7 @@ async function loadOverview() {
         let totalWeek = 0;
         let totalMonth = 0;
         let totalAssignments = 0;
+        let totalRejected = 0;
 
         result.overview.forEach(item => {
           totalLessons += Number(item.totalLessons || 0);
@@ -779,9 +1087,10 @@ async function loadOverview() {
           totalWeek += Number(item.weekly || 0);
           totalMonth += Number(item.monthly || 0);
           totalAssignments += Number(item.totalAssignments || 0);
+          totalRejected += Number(item.rejected || 0);
         });
 
-        renderKpis({ totalLessons, totalToday, totalWeek, totalMonth, totalAssignments });
+        renderKpis({ totalLessons, totalToday, totalWeek, totalMonth, totalAssignments, totalRejected });
         renderClassPerformance(result.overview, totalLessons);
         renderClassDistributionChart(result.overview);
         result.overview.forEach(item => addInteractivePieChart(item));
@@ -801,6 +1110,7 @@ async function loadOverview() {
         <div class="kpi-card"><div class="kpi-label">This Week</div><div class="kpi-number">${data.totalWeek}</div></div>
         <div class="kpi-card"><div class="kpi-label">This Month</div><div class="kpi-number">${data.totalMonth}</div></div>
         <div class="kpi-card"><div class="kpi-label">Assignments</div><div class="kpi-number">${data.totalAssignments}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Returned for Revision</div><div class="kpi-number">${data.totalRejected}</div></div>
       `;
     }
 
@@ -950,6 +1260,17 @@ async function loadOverview() {
             ? `<a class="file-link" href="${escapeAttribute(report.fileUrl)}" target="_blank">Open File</a>`
             : `<span class="muted">No file uploaded</span>`;
 
+          const reportStatus = String(report.status || 'Pending');
+          const reportStatusKey = reportStatus.toLowerCase();
+          const reportComment = report.adminComment
+            ? `
+              <div class="report-admin-comment">
+                <strong>Administrator Comment</strong><br>
+                ${escapeHtml(report.adminComment)}
+              </div>
+            `
+            : '';
+
           card.innerHTML = `
             <div class="report-badges">
               <span class="report-badge">${escapeHtml(report.level)}</span>
@@ -958,10 +1279,12 @@ async function loadOverview() {
             </div>
 
             <h3>${escapeHtml(report.topicContent)}</h3>
+            <div class="report-status-row"><span class="status-pill ${escapeAttribute(reportStatusKey)}">${escapeHtml(reportStatus)}</span></div>
             <div class="report-detail"><strong>Class:</strong> ${escapeHtml(report.classGroup)}</div>
             <div class="report-detail"><strong>Course:</strong> ${escapeHtml(report.subjectCourse)}</div>
             <div class="report-detail"><strong>Teacher:</strong> ${escapeHtml(report.teacher)}</div>
             <div class="report-objective"><strong>Objective(s):</strong><br>${escapeHtml(report.objectives)}</div>
+            ${reportComment}
             ${fileLink}
           `;
 
@@ -972,6 +1295,353 @@ async function loadOverview() {
         message.textContent = error.message || error;
         message.className = 'message error';
       }
+    }
+
+
+    async function loadApprovals() {
+      const message = document.getElementById('approvalMessage');
+      const container = document.getElementById('approvalContent');
+      const stats = document.getElementById('approvalStats');
+
+      container.innerHTML = '';
+      stats.innerHTML = '';
+      message.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading lesson plans for review...';
+      message.className = 'message';
+
+      try {
+        const result = await jsonp(WEB_APP_URL + '?action=adminData');
+
+        if (!result.success) {
+          throw new Error(result.message || 'Could not load lesson plans.');
+        }
+
+        const level = document.getElementById('approvalLevel').value;
+        const status = document.getElementById('approvalStatus').value;
+        const search = document.getElementById('approvalSearch').value.trim().toLowerCase();
+
+        const allLessons = Array.isArray(result.lessons) ? result.lessons : [];
+
+        const filteredLessons = allLessons.filter(record => {
+          if (level !== 'ALL' && record.levelKey !== level) return false;
+          if (status !== 'ALL' && String(record.status || 'Pending') !== status) return false;
+
+          if (search) {
+            const searchableText = [
+              record.level,
+              record.subjectSheet,
+              record.date,
+              record.classGroup,
+              record.subjectCourse,
+              record.topicContent,
+              record.objectives,
+              record.teacher,
+              record.status
+            ].join(' ').toLowerCase();
+
+            if (!searchableText.includes(search)) return false;
+          }
+
+          return true;
+        });
+
+        renderApprovalStats(allLessons, filteredLessons);
+        renderApprovalRecords(filteredLessons);
+        message.textContent = '';
+
+      } catch (error) {
+        message.textContent = error.message || String(error);
+        message.className = 'message error';
+      }
+    }
+
+    function renderApprovalStats(allLessons, filteredLessons) {
+      const pending = allLessons.filter(record => String(record.status || 'Pending') === 'Pending').length;
+      const approved = allLessons.filter(record => String(record.status || '') === 'Approved').length;
+      const rejected = allLessons.filter(record => String(record.status || '') === 'Rejected').length;
+
+      document.getElementById('approvalStats').innerHTML = `
+        <div class="report-stat-card"><span>Pending Review</span><strong>${pending}</strong></div>
+        <div class="report-stat-card"><span>Approved</span><strong>${approved}</strong></div>
+        <div class="report-stat-card"><span>Returned for Revision</span><strong>${rejected}</strong></div>
+        <div class="report-stat-card"><span>Current Results</span><strong>${filteredLessons.length}</strong></div>
+      `;
+    }
+
+    function renderApprovalRecords(records) {
+      const container = document.getElementById('approvalContent');
+
+      if (!records.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>No lesson plans found</h3>
+            <p>There are no lesson plans matching the selected review filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = records.map(record => {
+        const safeRecordId = escapeAttribute(record.recordId || '');
+        const recordStatus = String(record.status || 'Pending');
+        const statusKey = recordStatus.toLowerCase();
+        const cardClass = statusKey === 'approved'
+          ? 'approved-card'
+          : statusKey === 'rejected'
+            ? 'rejected-card'
+            : 'pending-card';
+
+        const commentId = 'adminComment_' + safeRecordId.replace(/[^A-Za-z0-9_-]/g, '_');
+        const fileLink = record.fileUrl
+          ? `<a class="file-link" href="${escapeAttribute(record.fileUrl)}" target="_blank">Open Lesson File</a>`
+          : '<span class="muted">No lesson file attached</span>';
+
+        const actionButtons = record.recordId
+          ? `
+            <div class="approval-comment-box">
+              <label for="${commentId}">Admin Feedback</label>
+              <textarea id="${commentId}" placeholder="Add feedback. A reason is required when returning a plan for revision.">${escapeHtml(record.adminComment || '')}</textarea>
+            </div>
+
+            <div class="button-row approval-actions">
+              <button class="primary approve-btn" onclick="submitLessonDecision('${safeRecordId}', '${escapeAttribute(record.levelKey || '')}', 'approve', '${commentId}')">
+                <i class="fas fa-check"></i> Approve
+              </button>
+              <button class="secondary reject-btn" onclick="submitLessonDecision('${safeRecordId}', '${escapeAttribute(record.levelKey || '')}', 'reject', '${commentId}')">
+                <i class="fas fa-rotate-left"></i> Return for Revision
+              </button>
+            </div>
+          `
+          : `
+            <div class="approval-comment-box">
+              <strong>Action unavailable</strong><br>
+              This legacy lesson row does not have a Record ID yet. Run the system setup once in Apps Script to assign IDs before approving or rejecting it.
+            </div>
+          `;
+
+        return `
+          <article class="approval-card ${cardClass}">
+            <div class="approval-header">
+              <div>
+                <div class="report-badges">
+                  <span class="report-badge">${escapeHtml(record.level || '')}</span>
+                  <span class="report-badge">${escapeHtml(record.subjectSheet || '')}</span>
+                  <span class="report-badge">${escapeHtml(record.date || '')}</span>
+                </div>
+                <h3>${escapeHtml(record.topicContent || 'Untitled lesson plan')}</h3>
+              </div>
+              <span class="status-pill ${statusKey}">${escapeHtml(recordStatus)}</span>
+            </div>
+
+            <div class="approval-meta">
+              <div><strong>Class:</strong> ${escapeHtml(record.classGroup || '—')}</div>
+              <div><strong>Course:</strong> ${escapeHtml(record.subjectCourse || '—')}</div>
+              <div><strong>Teacher:</strong> ${escapeHtml(record.teacher || '—')}</div>
+              <div><strong>Submitted / Updated:</strong> ${escapeHtml(record.lastUpdated || '—')}</div>
+            </div>
+
+            <div class="approval-objective">
+              <strong>Objective(s)</strong><br>
+              ${escapeHtml(record.objectives || 'No objectives were provided.')}
+            </div>
+
+            <div class="approval-file-row">${fileLink}</div>
+            ${actionButtons}
+          </article>
+        `;
+      }).join('');
+    }
+
+    async function submitLessonDecision(recordId, levelKey, action, commentId) {
+      const message = document.getElementById('approvalMessage');
+      const commentBox = document.getElementById(commentId);
+      const comment = commentBox ? commentBox.value.trim() : '';
+
+      if (action === 'reject' && !comment) {
+        message.textContent = 'Provide clear feedback before returning a lesson plan for revision.';
+        message.className = 'message error';
+        if (commentBox) commentBox.focus();
+        return;
+      }
+
+      const actionLabel = action === 'approve' ? 'approve' : 'return for revision';
+
+      if (!confirm('Are you sure you want to ' + actionLabel + ' this lesson plan?')) {
+        return;
+      }
+
+      message.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving approval decision...';
+      message.className = 'message';
+
+      try {
+        const url =
+          WEB_APP_URL +
+          '?action=' + encodeURIComponent(action) +
+          '&level=' + encodeURIComponent(levelKey) +
+          '&recordId=' + encodeURIComponent(recordId) +
+          '&adminComment=' + encodeURIComponent(comment);
+
+        const result = await jsonp(url);
+
+        if (!result.success) {
+          throw new Error(result.message || 'The approval decision could not be saved.');
+        }
+
+        // A returned plan is no longer Pending. Switch the visible list
+        // to the matching status so the administrator can immediately
+        // confirm that the decision was saved.
+        const approvalStatus = document.getElementById('approvalStatus');
+
+        if (approvalStatus) {
+          approvalStatus.value = action === 'reject' ? 'Rejected' : 'Approved';
+        }
+
+        await loadApprovals();
+
+        message.textContent = action === 'reject'
+          ? 'Lesson plan returned for revision. The returned plan is shown below.'
+          : 'Lesson plan approved. The approved plan is shown below.';
+        message.className = 'message success';
+
+        loadOverview();
+
+      } catch (error) {
+        message.textContent = error.message || String(error);
+        message.className = 'message error';
+      }
+    }
+
+    function clearApprovalFilters() {
+      document.getElementById('approvalLevel').value = 'ALL';
+      document.getElementById('approvalStatus').value = 'Pending';
+      document.getElementById('approvalSearch').value = '';
+      loadApprovals();
+    }
+
+    async function loadAssignments() {
+      const message = document.getElementById('assignmentMessage');
+      const container = document.getElementById('assignmentContent');
+      const stats = document.getElementById('assignmentStats');
+
+      container.innerHTML = '';
+      stats.innerHTML = '';
+      message.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading assignments...';
+      message.className = 'message';
+
+      try {
+        const result = await jsonp(WEB_APP_URL + '?action=adminData');
+
+        if (!result.success) {
+          throw new Error(result.message || 'Could not load assignments.');
+        }
+
+        const level = document.getElementById('assignmentViewLevel').value;
+        const subject = document.getElementById('assignmentViewSubject').value || 'ALL';
+        const search = document.getElementById('assignmentSearch').value.trim().toLowerCase();
+        const allAssignments = Array.isArray(result.assignments) ? result.assignments : [];
+
+        const filteredAssignments = allAssignments.filter(record => {
+          if (level !== 'ALL' && record.levelKey !== level) return false;
+          if (subject !== 'ALL' && String(record.subject || '').toUpperCase() !== subject) return false;
+
+          if (search) {
+            const searchableText = [
+              record.level,
+              record.subject,
+              record.date,
+              record.className,
+              record.contentQuestion,
+              record.activities,
+              record.submissionDate,
+              record.assignedMarks,
+              record.teacher
+            ].join(' ').toLowerCase();
+
+            if (!searchableText.includes(search)) return false;
+          }
+
+          return true;
+        });
+
+        renderAssignmentStats(allAssignments, filteredAssignments);
+        renderAssignmentRecords(filteredAssignments);
+        message.textContent = '';
+
+      } catch (error) {
+        message.textContent = error.message || String(error);
+        message.className = 'message error';
+      }
+    }
+
+    function renderAssignmentStats(allAssignments, filteredAssignments) {
+      const teachers = new Set(
+        allAssignments.map(record => String(record.teacher || '').trim()).filter(Boolean)
+      );
+      const subjects = new Set(
+        allAssignments.map(record => String(record.subject || '').trim()).filter(Boolean)
+      );
+      const withFiles = allAssignments.filter(record => Boolean(record.fileUrl)).length;
+
+      document.getElementById('assignmentStats').innerHTML = `
+        <div class="report-stat-card"><span>Total Assignments</span><strong>${allAssignments.length}</strong></div>
+        <div class="report-stat-card"><span>Teachers</span><strong>${teachers.size}</strong></div>
+        <div class="report-stat-card"><span>Subjects</span><strong>${subjects.size}</strong></div>
+        <div class="report-stat-card"><span>Assignments With Files</span><strong>${withFiles}</strong></div>
+        <div class="report-stat-card"><span>Current Results</span><strong>${filteredAssignments.length}</strong></div>
+      `;
+    }
+
+    function renderAssignmentRecords(records) {
+      const container = document.getElementById('assignmentContent');
+
+      if (!records.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>No assignments found</h3>
+            <p>There are no assignments matching the selected filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = records.map(record => {
+        const fileLink = record.fileUrl
+          ? `<a class="file-link" href="${escapeAttribute(record.fileUrl)}" target="_blank">Open Assignment File</a>`
+          : '<span class="muted">No assignment file attached</span>';
+
+        return `
+          <article class="assignment-card">
+            <div class="report-badges">
+              <span class="report-badge">${escapeHtml(record.level || '')}</span>
+              <span class="report-badge">${escapeHtml(record.subject || '')}</span>
+              <span class="report-badge">${escapeHtml(record.date || '')}</span>
+            </div>
+
+            <h3>${escapeHtml(record.contentQuestion || 'Untitled assignment')}</h3>
+
+            <div class="assignment-meta">
+              <div><strong>Class:</strong> ${escapeHtml(record.className || '—')}</div>
+              <div><strong>Teacher:</strong> ${escapeHtml(record.teacher || '—')}</div>
+              <div><strong>Submission Date:</strong> ${escapeHtml(record.submissionDate || '—')}</div>
+              <div><strong>Assigned Marks:</strong> ${escapeHtml(record.assignedMarks || '—')}</div>
+              <div><strong>Submitted / Updated:</strong> ${escapeHtml(record.lastUpdated || '—')}</div>
+            </div>
+
+            <div class="assignment-activity">
+              <strong>Activities</strong><br>
+              ${escapeHtml(record.activities || 'No activities were provided.')}
+            </div>
+
+            <div class="assignment-file-row">${fileLink}</div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function clearAssignmentFilters() {
+      document.getElementById('assignmentViewLevel').value = 'ALL';
+      document.getElementById('assignmentViewSubject').innerHTML = '<option value="ALL">All subjects</option>';
+      document.getElementById('assignmentSearch').value = '';
+      loadAssignments();
     }
 
     function clearReportSearch() {
