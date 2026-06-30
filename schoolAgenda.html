@@ -612,7 +612,7 @@
       if (res.success) {
         agendas = res.data || [];
 
-        agendas.sort(sortByNewestAdded);
+        agendas.sort(sortByNewestDiscussionDate);
 
         renderFlatAgenda();
         renderEditTable();
@@ -652,7 +652,7 @@
       records.forEach(function(item) {
         body.innerHTML += `
           <tr>
-            <td>${escapeHtml(item.date)}</td>
+            <td>${escapeHtml(formatUKDate(item.date))}</td>
             <td>${escapeHtml(item.assembly)}</td>
             <td>${escapeHtml(item.start)}</td>
             <td>${escapeHtml(item.end)}</td>
@@ -675,42 +675,41 @@
       return new Date(year, month, day, 0, 0, 0, 0);
     }
 
+    // Also support dates returned by a spreadsheet in UK display format.
+    const ukMatch = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (ukMatch) {
+      const day = Number(ukMatch[1]);
+      const month = Number(ukMatch[2]) - 1;
+      const year = Number(ukMatch[3]);
+      return new Date(year, month, day, 0, 0, 0, 0);
+    }
+
     const parsed = new Date(value);
     return isNaN(parsed) ? null : parsed;
   }
 
-  function getAddedDate(item) {
-    const timestampDate = new Date(item.timestamp);
-    return isNaN(timestampDate) ? null : timestampDate;
-  }
-
-  function sortByNewestAdded(a, b) {
-    const rowA = Number(a.row || 0);
-    const rowB = Number(b.row || 0);
-
-    // The sheet row is the most reliable indicator of when an agenda was added.
-    // Higher row numbers are newer, so newly submitted agendas appear first.
-    if (rowA !== rowB) return rowB - rowA;
-
-    // Retain a timestamp fallback where two records do not expose usable row numbers.
-    const dateA = getAddedDate(a);
-    const dateB = getAddedDate(b);
-    if (!dateA && !dateB) return 0;
-    if (!dateA) return 1;
-    if (!dateB) return -1;
-    return dateB - dateA;
-  }
-
-  function sortByDiscussionDate(a, b) {
+  function sortByNewestDiscussionDate(a, b) {
     const dateA = getDiscussionDate(a);
     const dateB = getDiscussionDate(b);
 
-    // Valid dates come first. Items without a valid date remain at the end.
-    if (!dateA && !dateB) return Number(a.row || 0) - Number(b.row || 0);
+    // Valid dates come first. The latest scheduled discussion date appears first.
+    if (!dateA && !dateB) return Number(b.row || 0) - Number(a.row || 0);
     if (!dateA) return 1;
     if (!dateB) return -1;
 
-    return dateA - dateB;
+    const difference = dateB - dateA;
+    // Where agenda dates are identical, retain the newest record at the top.
+    return difference || (Number(b.row || 0) - Number(a.row || 0));
+  }
+
+  function formatUKDate(value) {
+    const date = value instanceof Date ? value : getDiscussionDate({ date: value });
+    if (!date || isNaN(date)) return String(value || "");
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   function fillStaffDropdown() {
@@ -743,7 +742,7 @@
           <div class="flat-line">
             <div>
               <span class="flat-label">Date:</span>
-              <span class="flat-value">${escapeHtml(item.date)}</span>
+              <span class="flat-value">${escapeHtml(formatUKDate(item.date))}</span>
             </div>
           </div>
           <div class="agenda-text">
@@ -771,7 +770,7 @@
     agendas.forEach(function(item) {
       body.innerHTML += `
         <tr>
-          <td>${escapeHtml(item.date)}</td>
+          <td>${escapeHtml(formatUKDate(item.date))}</td>
           <td>${escapeHtml(item.agenda)}</td>
           <td>${escapeHtml(item.sign)}</td>
           <td><button onclick="openManageModal(${item.row})">Manage</button></td>
@@ -803,10 +802,10 @@
       return discussionDate && discussionDate >= range.start && discussionDate <= range.end;
     });
 
-    reportData.sort(sortByDiscussionDate);
+    reportData.sort(sortByNewestDiscussionDate);
 
     document.getElementById("printReportRange").textContent =
-      formatDate(range.start) + " to " + formatDate(range.end);
+      formatUKDate(range.start) + " to " + formatUKDate(range.end);
 
     if (!reportData.length) {
       body.innerHTML = `<tr><td colspan="3">No agenda found for this period.</td></tr>`;
@@ -816,7 +815,7 @@
     reportData.forEach(function(item) {
       body.innerHTML += `
         <tr>
-          <td>${escapeHtml(item.date)}</td>
+          <td>${escapeHtml(formatUKDate(item.date))}</td>
           <td>${escapeHtml(item.agenda)}</td>
           <td>${escapeHtml(item.sign)}</td>
         </tr>
@@ -1066,7 +1065,7 @@
   }
 
   function formatDate(date) {
-    return date.toISOString().split("T")[0];
+    return formatUKDate(date);
   }
 
   function escapeHtml(text) {
