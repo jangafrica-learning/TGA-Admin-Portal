@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>The Gambia Academy | Assembly Agenda Portal</title>
+  <title>Agenda</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -122,7 +122,9 @@
       font-size: 13px;
     }
 
-    button:hover { background: var(--blue-dark); }
+    button:hover {
+      background: var(--blue-dark);
+    }
 
     button:disabled {
       opacity: 0.6;
@@ -134,9 +136,17 @@
       color: var(--blue-dark);
     }
 
-    .btn-danger { background: var(--danger); }
-    .btn-green { background: var(--green); }
-    .hidden { display: none; }
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-green {
+      background: var(--green);
+    }
+
+    .hidden {
+      display: none;
+    }
 
     .search-row {
       display: flex;
@@ -145,7 +155,9 @@
       align-items: center;
     }
 
-    input, select, textarea {
+    input,
+    select,
+    textarea {
       width: 100%;
       padding: 9px;
       border: 1px solid var(--border);
@@ -207,13 +219,6 @@
       border: 1px solid #fecaca;
     }
 
-    .form-success {
-      display: block;
-      color: #166534;
-      background: #dcfce7;
-      border: 1px solid #bbf7d0;
-    }
-
     .flat-agenda-list {
       background: white;
       padding: 14px 18px;
@@ -228,7 +233,9 @@
       color: #000000;
     }
 
-    .flat-agenda:last-child { border-bottom: none; }
+    .flat-agenda:last-child {
+      border-bottom: none;
+    }
 
     .flat-line {
       display: flex;
@@ -312,7 +319,9 @@
       font-size: 18px;
     }
 
-    .form-group { margin-bottom: 14px; }
+    .form-group {
+      margin-bottom: 14px;
+    }
 
     .footer {
       text-align: center;
@@ -321,7 +330,9 @@
       font-size: 12px;
     }
 
-    .print-title { display: none; }
+    .print-title {
+      display: none;
+    }
 
     .print-title img {
       width: 75px;
@@ -342,7 +353,9 @@
         display: none !important;
       }
 
-      body { background: white; }
+      body {
+        background: white;
+      }
 
       .container {
         max-width: none;
@@ -367,7 +380,9 @@
     }
 
     @media (max-width: 800px) {
-      .topbar { padding: 20px; }
+      .topbar {
+        padding: 20px;
+      }
 
       .brand-row {
         flex-direction: column;
@@ -394,7 +409,7 @@
 <header class="topbar">
   <div class="brand-row">
     <div>
-      <p>Assembly Management</p>
+      <p>Agenda Management</p>
     </div>
   </div>
 
@@ -423,7 +438,12 @@
     <div id="pageMessage" class="message-box"></div>
 
     <div class="search-row">
-      <input type="text" id="viewSearch" placeholder="Search agenda, date, responsible staff..." onkeyup="renderFlatAgenda()">
+      <input
+      type="text"
+      id="viewSearch"
+      placeholder="Search agenda, date, responsible staff..."
+      onkeyup="renderFlatAgenda()">
+
       <button class="btn-muted" onclick="clearViewSearch()">Clear</button>
     </div>
 
@@ -484,7 +504,9 @@
         </tr>
       </thead>
       <tbody id="reportBody">
-        <tr><td colspan="3">Select a report period and click Generate.</td></tr>
+        <tr>
+          <td colspan="3">Select a report period and click Generate.</td>
+        </tr>
       </tbody>
     </table>
   </section>
@@ -514,25 +536,40 @@
   © The Gambia Academy 2026
 </div>
 
+<!-- ADD / MANAGE AGENDA MODAL -->
+
 <div id="agendaModal" class="modal">
   <div class="modal-box">
+
     <h2 id="modalTitle">New Agenda</h2>
 
     <input type="hidden" id="editRow">
 
     <div class="form-group">
       <label>Date</label>
-      <input type="date" id="agendaDate">
+
+      <input
+      type="date"
+      id="agendaDate"
+      onchange="updateSubmitButtonState()">
     </div>
 
     <div class="form-group">
       <label>Agenda</label>
-      <textarea id="agendaText" placeholder="Enter assembly agenda..."></textarea>
+
+      <textarea
+      id="agendaText"
+      placeholder="Enter assembly agenda..."
+      oninput="updateSubmitButtonState()"></textarea>
     </div>
 
     <div class="form-group">
       <label>By</label>
-      <select id="agendaSign">
+
+      <select
+      id="agendaSign"
+      onchange="updateSubmitButtonState()">
+
         <option value="">Select staff</option>
       </select>
     </div>
@@ -543,38 +580,123 @@
       <button class="btn-danger" onclick="closeModal()">Close</button>
     </div>
 
+    <!-- Used only for validation errors. No success or waiting message. -->
     <div id="formMessage" class="form-message"></div>
+
   </div>
 </div>
 
 <script>
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrmolFlm6QhB93H5c71Mn8-rjameC106mhZCwXvVuPG8xglDqB5sTroHdScZoinpyTdw/exec";
+  const WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbxrmolFlm6QhB93H5c71Mn8-rjameC106mhZCwXvVuPG8xglDqB5sTroHdScZoinpyTdw/exec";
 
   let agendas = [];
   let staff = [];
   let reportGenerated = false;
 
-  function jsonp(params, callback) {
-    const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 99999);
+  /*
+   * Background queue:
+   * The user can keep entering new agendas immediately.
+   * Each saved agenda is sent to Apps Script one after another.
+   */
+  let agendaSubmissionQueue = [];
+  let agendaQueueProcessing = false;
+
+  function jsonp(params, callback, errorCallback) {
+    const cbName =
+    "cb_" +
+    Date.now() +
+    "_" +
+    Math.floor(Math.random() * 99999);
+
+    let completed = false;
+    let script;
+    let timeout;
+
     params.callback = cbName;
 
+    function cleanUp() {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+
+      if (
+        script &&
+        script.parentNode
+      ) {
+        script.parentNode.removeChild(script);
+      }
+
+      try {
+        delete window[cbName];
+      } catch (error) {
+        window[cbName] = undefined;
+      }
+    }
+
     window[cbName] = function(response) {
-      delete window[cbName];
-      script.remove();
-      callback(response);
+      if (completed) return;
+
+      completed = true;
+      cleanUp();
+
+      if (typeof callback === "function") {
+        callback(response);
+      }
     };
 
-    const script = document.createElement("script");
-    script.src = WEB_APP_URL + "?" + new URLSearchParams(params).toString();
+    script = document.createElement("script");
+
+    script.onerror = function() {
+      if (completed) return;
+
+      completed = true;
+      cleanUp();
+
+      if (typeof errorCallback === "function") {
+        errorCallback(
+          new Error("Unable to connect to the Agenda server.")
+        );
+      }
+    };
+
+    timeout = setTimeout(function() {
+      if (completed) return;
+
+      completed = true;
+      cleanUp();
+
+      if (typeof errorCallback === "function") {
+        errorCallback(
+          new Error("The Agenda server took too long to respond.")
+        );
+      }
+    }, 30000);
+
+    script.src =
+    WEB_APP_URL +
+    "?" +
+    new URLSearchParams(params).toString();
+
     document.body.appendChild(script);
   }
 
   function showTab(tab) {
-    ["viewTab", "editTab", "reportTab", "assemblyTab"].forEach(id => {
+    [
+      "viewTab",
+      "editTab",
+      "reportTab",
+      "assemblyTab"
+    ].forEach(function(id) {
       document.getElementById(id).classList.add("hidden");
     });
 
-    ["viewTabBtn", "editTabBtn", "reportTabBtn", "assemblyTabBtn"].forEach(id => {
+    [
+      "viewTabBtn",
+      "editTabBtn",
+      "reportTabBtn",
+      "assemblyTabBtn"
+    ].forEach(function(id) {
       document.getElementById(id).classList.remove("active");
     });
 
@@ -601,138 +723,247 @@
   }
 
   function loadAll() {
-    jsonp({ action: "staff" }, function(res) {
-      if (res.success) {
-        staff = res.data || [];
-        fillStaffDropdown();
-      }
-    });
-
-    jsonp({ action: "list" }, function(res) {
-      if (res.success) {
-        agendas = res.data || [];
-
-        agendas.sort(sortByNewestDiscussionDate);
-
-        renderFlatAgenda();
-        renderEditTable();
-
-        if (reportGenerated) {
-          generateReport();
+    jsonp(
+      { action: "staff" },
+      function(res) {
+        if (res.success) {
+          staff = res.data || [];
+          fillStaffDropdown();
         }
-      } else {
-        showPageMessage(res.message || "Unable to load agenda records.", "error");
+      },
+      function(error) {
+        console.error(error);
       }
-    });
+    );
+
+    jsonp(
+      { action: "list" },
+      function(res) {
+        if (res.success) {
+          agendas = res.data || [];
+
+          agendas.sort(sortByNewestDiscussionDate);
+
+          renderFlatAgenda();
+          renderEditTable();
+
+          if (reportGenerated) {
+            generateReport();
+          }
+
+        } else {
+          showPageMessage(
+            res.message || "Unable to load agenda records.",
+            "error"
+          );
+        }
+      },
+      function(error) {
+        console.error(error);
+      }
+    );
 
     loadAssemblyRecords();
   }
 
   function loadAssemblyRecords() {
-    const body = document.getElementById("assemblyBody");
+    const body =
+    document.getElementById("assemblyBody");
+
     if (!body) return;
 
-    body.innerHTML = `<tr><td colspan="4">Loading assembly records...</td></tr>`;
+    body.innerHTML =
+    `<tr>
+      <td colspan="4">Loading assembly records...</td>
+    </tr>`;
 
-    jsonp({ action: "listAssembly" }, function(res) {
-      body.innerHTML = "";
+    jsonp(
+      { action: "listAssembly" },
+      function(res) {
+        body.innerHTML = "";
 
-      if (!res.success) {
-        body.innerHTML = `<tr><td colspan="4">${escapeHtml(res.message || "Unable to load assembly records.")}</td></tr>`;
-        return;
+        if (!res.success) {
+          body.innerHTML =
+          `<tr>
+            <td colspan="4">
+              ${escapeHtml(res.message || "Unable to load assembly records.")}
+            </td>
+          </tr>`;
+
+          return;
+        }
+
+        const records = res.data || [];
+
+        if (!records.length) {
+          body.innerHTML =
+          `<tr>
+            <td colspan="4">No assembly records found.</td>
+          </tr>`;
+
+          return;
+        }
+
+        records.forEach(function(item) {
+          body.innerHTML += `
+            <tr>
+              <td>${escapeHtml(formatUKDate(item.date))}</td>
+              <td>${escapeHtml(item.assembly)}</td>
+              <td>${escapeHtml(item.start)}</td>
+              <td>${escapeHtml(item.end)}</td>
+            </tr>
+          `;
+        });
+      },
+      function(error) {
+        console.error(error);
+
+        body.innerHTML =
+        `<tr>
+          <td colspan="4">Unable to load assembly records.</td>
+        </tr>`;
       }
-
-      const records = res.data || [];
-
-      if (!records.length) {
-        body.innerHTML = `<tr><td colspan="4">No assembly records found.</td></tr>`;
-        return;
-      }
-
-      records.forEach(function(item) {
-        body.innerHTML += `
-          <tr>
-            <td>${escapeHtml(formatUKDate(item.date))}</td>
-            <td>${escapeHtml(item.assembly)}</td>
-            <td>${escapeHtml(item.start)}</td>
-            <td>${escapeHtml(item.end)}</td>
-          </tr>
-        `;
-      });
-    });
+    );
   }
 
   function getDiscussionDate(item) {
-    const value = String(item.date || "").trim();
+    const value =
+    String(item.date || "").trim();
 
-    // Date inputs normally return YYYY-MM-DD. Parse this locally to avoid
-    // time-zone shifts when agendas are sorted or filtered.
-    const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const isoMatch =
+    value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
     if (isoMatch) {
-      const year = Number(isoMatch[1]);
-      const month = Number(isoMatch[2]) - 1;
-      const day = Number(isoMatch[3]);
-      return new Date(year, month, day, 0, 0, 0, 0);
+      return new Date(
+        Number(isoMatch[1]),
+        Number(isoMatch[2]) - 1,
+        Number(isoMatch[3]),
+        0,
+        0,
+        0,
+        0
+      );
     }
 
-    // Also support dates returned by a spreadsheet in UK display format.
-    const ukMatch = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    const ukMatch =
+    value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
     if (ukMatch) {
-      const day = Number(ukMatch[1]);
-      const month = Number(ukMatch[2]) - 1;
-      const year = Number(ukMatch[3]);
-      return new Date(year, month, day, 0, 0, 0, 0);
+      return new Date(
+        Number(ukMatch[3]),
+        Number(ukMatch[2]) - 1,
+        Number(ukMatch[1]),
+        0,
+        0,
+        0,
+        0
+      );
     }
 
-    const parsed = new Date(value);
-    return isNaN(parsed) ? null : parsed;
+    const parsed =
+    new Date(value);
+
+    return isNaN(parsed)
+      ? null
+      : parsed;
   }
 
   function sortByNewestDiscussionDate(a, b) {
-    const dateA = getDiscussionDate(a);
-    const dateB = getDiscussionDate(b);
+    const dateA =
+    getDiscussionDate(a);
 
-    // Valid dates come first. The latest scheduled discussion date appears first.
-    if (!dateA && !dateB) return Number(b.row || 0) - Number(a.row || 0);
+    const dateB =
+    getDiscussionDate(b);
+
+    if (!dateA && !dateB) {
+      return Number(b.row || 0) - Number(a.row || 0);
+    }
+
     if (!dateA) return 1;
     if (!dateB) return -1;
 
-    const difference = dateB - dateA;
-    // Where agenda dates are identical, retain the newest record at the top.
-    return difference || (Number(b.row || 0) - Number(a.row || 0));
+    return (
+      dateB - dateA ||
+      Number(b.row || 0) - Number(a.row || 0)
+    );
   }
 
   function formatUKDate(value) {
-    const date = value instanceof Date ? value : getDiscussionDate({ date: value });
-    if (!date || isNaN(date)) return String(value || "");
+    const date =
+    value instanceof Date
+      ? value
+      : getDiscussionDate({ date: value });
 
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
+    if (!date || isNaN(date)) {
+      return String(value || "");
+    }
+
+    const day =
+    String(date.getDate()).padStart(2, "0");
+
+    const month =
+    String(date.getMonth() + 1).padStart(2, "0");
+
+    const year =
+    date.getFullYear();
+
     return `${day}/${month}/${year}`;
   }
 
   function fillStaffDropdown() {
-    const select = document.getElementById("agendaSign");
-    select.innerHTML = '<option value="">Select staff</option>';
+    const select =
+    document.getElementById("agendaSign");
+
+    const selectedValue =
+    select.value;
+
+    select.innerHTML =
+    '<option value="">Select staff</option>';
 
     staff.forEach(function(name) {
-      select.innerHTML += `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
+      const option =
+      document.createElement("option");
+
+      option.value = name;
+      option.textContent = name;
+
+      select.appendChild(option);
     });
+
+    select.value =
+    selectedValue;
   }
 
   function renderFlatAgenda() {
-    const box = document.getElementById("agendaFlatList");
-    const search = document.getElementById("viewSearch").value.toLowerCase();
+    const box =
+    document.getElementById("agendaFlatList");
+
+    const search =
+    document
+      .getElementById("viewSearch")
+      .value
+      .toLowerCase();
+
     box.innerHTML = "";
 
-    const filtered = agendas.filter(function(item) {
-      const combined = String(item.date) + " " + String(item.agenda) + " " + String(item.sign);
-      return combined.toLowerCase().includes(search);
+    const filtered =
+    agendas.filter(function(item) {
+      const combined =
+      String(item.date) +
+      " " +
+      String(item.agenda) +
+      " " +
+      String(item.sign);
+
+      return combined
+        .toLowerCase()
+        .includes(search);
     });
 
     if (!filtered.length) {
-      box.innerHTML = `<div class="flat-agenda">No agenda found.</div>`;
+      box.innerHTML =
+      `<div class="flat-agenda">No agenda found.</div>`;
+
       return;
     }
 
@@ -745,10 +976,12 @@
               <span class="flat-value">${escapeHtml(formatUKDate(item.date))}</span>
             </div>
           </div>
+
           <div class="agenda-text">
             <span class="flat-label">Agenda:</span>
             <span class="flat-value">${escapeHtml(item.agenda)}</span>
           </div>
+
           <div>
             <span class="flat-label">By:</span>
             <span class="flat-value">${escapeHtml(item.sign)}</span>
@@ -759,11 +992,17 @@
   }
 
   function renderEditTable() {
-    const body = document.getElementById("editBody");
+    const body =
+    document.getElementById("editBody");
+
     body.innerHTML = "";
 
     if (!agendas.length) {
-      body.innerHTML = `<tr><td colspan="4">No agenda found.</td></tr>`;
+      body.innerHTML =
+      `<tr>
+        <td colspan="4">No agenda found.</td>
+      </tr>`;
+
       return;
     }
 
@@ -773,42 +1012,79 @@
           <td>${escapeHtml(formatUKDate(item.date))}</td>
           <td>${escapeHtml(item.agenda)}</td>
           <td>${escapeHtml(item.sign)}</td>
-          <td><button onclick="openManageModal(${item.row})">Manage</button></td>
+          <td>
+            <button onclick="openManageModal(${item.row})">
+              Manage
+            </button>
+          </td>
         </tr>
       `;
     });
   }
 
   function generateReport() {
-    const period = document.getElementById("reportPeriod").value;
-    const body = document.getElementById("reportBody");
+    const period =
+    document.getElementById("reportPeriod").value;
+
+    const body =
+    document.getElementById("reportBody");
 
     clearReportMessage();
 
     if (!period) {
       reportGenerated = false;
-      body.innerHTML = `<tr><td colspan="3">Select a report period and click Generate.</td></tr>`;
-      showReportMessage("Select a report period first.", "error");
+
+      body.innerHTML =
+      `<tr>
+        <td colspan="3">
+          Select a report period and click Generate.
+        </td>
+      </tr>`;
+
+      showReportMessage(
+        "Select a report period first.",
+        "error"
+      );
+
       return;
     }
 
     reportGenerated = true;
 
-    const range = getReportRange(period);
+    const range =
+    getReportRange(period);
+
     body.innerHTML = "";
 
-    let reportData = agendas.filter(function(item) {
-      const discussionDate = getDiscussionDate(item);
-      return discussionDate && discussionDate >= range.start && discussionDate <= range.end;
-    });
+    const reportData =
+    agendas
+      .filter(function(item) {
+        const discussionDate =
+        getDiscussionDate(item);
 
-    reportData.sort(sortByNewestDiscussionDate);
+        return (
+          discussionDate &&
+          discussionDate >= range.start &&
+          discussionDate <= range.end
+        );
+      })
+      .sort(sortByNewestDiscussionDate);
 
-    document.getElementById("printReportRange").textContent =
-      formatUKDate(range.start) + " to " + formatUKDate(range.end);
+    document
+    .getElementById("printReportRange")
+    .textContent =
+    formatUKDate(range.start) +
+    " to " +
+    formatUKDate(range.end);
 
     if (!reportData.length) {
-      body.innerHTML = `<tr><td colspan="3">No agenda found for this period.</td></tr>`;
+      body.innerHTML =
+      `<tr>
+        <td colspan="3">
+          No agenda found for this period.
+        </td>
+      </tr>`;
+
       return;
     }
 
@@ -825,7 +1101,11 @@
 
   function printReport() {
     if (!reportGenerated) {
-      showReportMessage("Generate a report before printing.", "error");
+      showReportMessage(
+        "Generate a report before printing.",
+        "error"
+      );
+
       return;
     }
 
@@ -833,19 +1113,32 @@
   }
 
   function showReportMessage(message, type) {
-    const box = document.getElementById("reportMessage");
+    const box =
+    document.getElementById("reportMessage");
+
     box.textContent = message;
-    box.className = "message-box " + (type === "success" ? "message-success" : "message-error");
+
+    box.className =
+    "message-box " +
+    (
+      type === "success"
+        ? "message-success"
+        : "message-error"
+    );
   }
 
   function clearReportMessage() {
-    const box = document.getElementById("reportMessage");
+    const box =
+    document.getElementById("reportMessage");
+
     box.textContent = "";
     box.className = "message-box";
   }
 
   function getReportRange(period) {
-    const now = new Date();
+    const now =
+    new Date();
+
     let start;
     let end;
 
@@ -856,133 +1149,386 @@
     }
 
     if (period === "month") {
-      start = new Date(now.getFullYear(), now.getMonth(), 1);
-      end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      start =
+      new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+      );
+
+      end =
+      new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0
+      );
     }
 
     if (period === "quarter") {
-      const quarter = Math.floor(now.getMonth() / 3);
-      start = new Date(now.getFullYear(), quarter * 3, 1);
-      end = new Date(now.getFullYear(), quarter * 3 + 3, 0);
+      const quarter =
+      Math.floor(now.getMonth() / 3);
+
+      start =
+      new Date(
+        now.getFullYear(),
+        quarter * 3,
+        1
+      );
+
+      end =
+      new Date(
+        now.getFullYear(),
+        quarter * 3 + 3,
+        0
+      );
     }
 
     start.setHours(0, 0, 0, 0);
     end.setHours(23, 59, 59, 999);
 
-    return { start, end };
+    return {
+      start: start,
+      end: end
+    };
   }
 
   function startOfWeek(date) {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + 1;
-    d.setDate(diff);
+    const d =
+    new Date(date);
+
+    const day =
+    d.getDay();
+
+    const difference =
+    d.getDate() -
+    day +
+    1;
+
+    d.setDate(difference);
     d.setHours(0, 0, 0, 0);
+
     return d;
   }
 
   function clearViewSearch() {
-    document.getElementById("viewSearch").value = "";
+    document
+    .getElementById("viewSearch")
+    .value = "";
+
     renderFlatAgenda();
   }
 
   function openAddModal() {
-    clearFormError();
-    clearForm();
-    setFieldsDisabled(false);
+    prepareNewAgendaEntry();
 
-    document.getElementById("modalTitle").textContent = "New Agenda";
-    document.getElementById("modalActions").innerHTML = `
-      <button id="submitBtn" onclick="submitAgenda()">Submit</button>
-      <button class="btn-muted" onclick="clearForm()">Clear</button>
-      <button class="btn-danger" onclick="closeModal()">Close</button>
+    document
+    .getElementById("agendaModal")
+    .style.display = "flex";
+
+    document
+    .getElementById("agendaDate")
+    .focus();
+  }
+
+  function prepareNewAgendaEntry() {
+    clearFormError();
+
+    document
+    .getElementById("modalTitle")
+    .textContent =
+    "New Agenda";
+
+    document
+    .getElementById("modalActions")
+    .innerHTML = `
+      <button id="submitBtn" onclick="submitAgenda()">
+        Submit
+      </button>
+
+      <button class="btn-muted" onclick="clearForm()">
+        Clear
+      </button>
+
+      <button class="btn-danger" onclick="closeModal()">
+        Close
+      </button>
     `;
 
-    document.getElementById("agendaModal").style.display = "flex";
+    setFieldsDisabled(false);
+    clearAgendaFields();
+    updateSubmitButtonState();
   }
 
   function openManageModal(row) {
     clearFormError();
 
-    const item = agendas.find(a => Number(a.row) === Number(row));
+    const item =
+    agendas.find(function(agenda) {
+      return Number(agenda.row) === Number(row);
+    });
+
     if (!item) return;
 
-    document.getElementById("modalTitle").textContent = "Manage Agenda";
-    document.getElementById("editRow").value = item.row;
-    document.getElementById("agendaDate").value = item.date;
-    document.getElementById("agendaText").value = item.agenda;
-    document.getElementById("agendaSign").value = item.sign;
+    document
+    .getElementById("modalTitle")
+    .textContent =
+    "Manage Agenda";
+
+    document
+    .getElementById("editRow")
+    .value =
+    item.row;
+
+    document
+    .getElementById("agendaDate")
+    .value =
+    item.date;
+
+    document
+    .getElementById("agendaText")
+    .value =
+    item.agenda;
+
+    document
+    .getElementById("agendaSign")
+    .value =
+    item.sign;
 
     setFieldsDisabled(false);
 
-    document.getElementById("modalActions").innerHTML = `
-      <button onclick="submitAgenda()">Save</button>
-      <button class="btn-danger" onclick="deleteCurrentAgenda()">Delete</button>
-      <button class="btn-muted" onclick="closeModal()">Close</button>
+    document
+    .getElementById("modalActions")
+    .innerHTML = `
+      <button id="submitBtn" onclick="submitAgenda()">
+        Save
+      </button>
+
+      <button class="btn-danger" onclick="deleteCurrentAgenda()">
+        Delete
+      </button>
+
+      <button class="btn-muted" onclick="closeModal()">
+        Close
+      </button>
     `;
 
-    document.getElementById("agendaModal").style.display = "flex";
+    document
+    .getElementById("agendaModal")
+    .style.display = "flex";
+
+    updateSubmitButtonState();
   }
 
   function closeModal() {
-    document.getElementById("agendaModal").style.display = "none";
+    document
+    .getElementById("agendaModal")
+    .style.display = "none";
+
     clearFormError();
   }
 
   function clearForm() {
-    document.getElementById("editRow").value = "";
-    document.getElementById("agendaDate").value = "";
-    document.getElementById("agendaText").value = "";
-    document.getElementById("agendaSign").value = "";
+    clearAgendaFields();
     clearFormError();
+    updateSubmitButtonState();
+  }
+
+  function clearAgendaFields() {
+    document
+    .getElementById("editRow")
+    .value = "";
+
+    document
+    .getElementById("agendaDate")
+    .value = "";
+
+    document
+    .getElementById("agendaText")
+    .value = "";
+
+    document
+    .getElementById("agendaSign")
+    .value = "";
   }
 
   function setFieldsDisabled(state) {
-    document.getElementById("agendaDate").disabled = state;
-    document.getElementById("agendaText").disabled = state;
-    document.getElementById("agendaSign").disabled = state;
+    document
+    .getElementById("agendaDate")
+    .disabled = state;
+
+    document
+    .getElementById("agendaText")
+    .disabled = state;
+
+    document
+    .getElementById("agendaSign")
+    .disabled = state;
   }
 
+  function updateSubmitButtonState() {
+    const submitButton =
+    document.getElementById("submitBtn");
+
+    if (!submitButton) return;
+
+    const date =
+    document
+    .getElementById("agendaDate")
+    .value;
+
+    const agenda =
+    document
+    .getElementById("agendaText")
+    .value
+    .trim();
+
+    const sign =
+    document
+    .getElementById("agendaSign")
+    .value;
+
+    submitButton.disabled =
+    !date ||
+    !agenda ||
+    !sign;
+  }
+
+  /*
+   * Immediate Agenda Submission
+   *
+   * 1. Captures the agenda values.
+   * 2. Clears the form immediately.
+   * 3. Keeps the modal open.
+   * 4. Queues the Apps Script request silently.
+   * 5. Shows no loading or success message.
+   */
   function submitAgenda() {
     clearFormError();
 
-    const submitButton = document.querySelector("#modalActions button");
-    if (submitButton) submitButton.disabled = true;
+    const row =
+    document
+    .getElementById("editRow")
+    .value;
 
-    const row = document.getElementById("editRow").value;
-    const date = document.getElementById("agendaDate").value;
-    const agenda = document.getElementById("agendaText").value.trim();
-    const sign = document.getElementById("agendaSign").value;
+    const date =
+    document
+    .getElementById("agendaDate")
+    .value;
+
+    const agenda =
+    document
+    .getElementById("agendaText")
+    .value
+    .trim();
+
+    const sign =
+    document
+    .getElementById("agendaSign")
+    .value;
 
     if (!date || !agenda || !sign) {
-      showFormError("Complete all required fields.");
-      if (submitButton) submitButton.disabled = false;
+      showFormError(
+        "Complete all required fields before submitting."
+      );
+
+      updateSubmitButtonState();
       return;
     }
 
-    const action = row ? "update" : "add";
+    const requestData = {
+      action: row ? "update" : "add",
+      row: row,
+      date: date,
+      agenda: agenda,
+      sign: sign
+    };
 
-    jsonp({ action, row, date, agenda, sign }, function(res) {
-      if (submitButton) submitButton.disabled = false;
+    /*
+     * This happens immediately before Apps Script responds.
+     * The form is instantly ready for the next agenda entry.
+     */
+    prepareNewAgendaEntry();
 
-      if (res.success) {
-        showFormSuccess(row ? "Agenda updated." : "Agenda submitted.");
-        loadAll();
+    document
+    .getElementById("agendaDate")
+    .focus();
 
-        if (!row) {
-          document.getElementById("agendaText").value = "";
+    /*
+     * Send invisibly in the background.
+     * Multiple rapid entries are protected using a queue.
+     */
+    agendaSubmissionQueue.push(requestData);
+
+    processAgendaSubmissionQueue();
+  }
+
+  function processAgendaSubmissionQueue() {
+    if (
+      agendaQueueProcessing ||
+      !agendaSubmissionQueue.length
+    ) {
+      return;
+    }
+
+    agendaQueueProcessing = true;
+
+    const currentRequest =
+    agendaSubmissionQueue[0];
+
+    jsonp(
+      currentRequest,
+      function(response) {
+        /*
+         * No visible message is shown.
+         * The record list refreshes silently only after success.
+         */
+        if (
+          response &&
+          response.success
+        ) {
+          loadAll();
+
+        } else {
+          console.error(
+            "Background agenda submission failed:",
+            response
+          );
         }
-      } else {
-        showFormError(res.message || "Unable to save agenda.");
+
+        agendaSubmissionQueue.shift();
+        agendaQueueProcessing = false;
+
+        processAgendaSubmissionQueue();
+      },
+      function(error) {
+        /*
+         * Errors remain in the browser console.
+         * The form remains uninterrupted for the user.
+         */
+        console.error(
+          "Background agenda submission failed:",
+          error
+        );
+
+        agendaSubmissionQueue.shift();
+        agendaQueueProcessing = false;
+
+        processAgendaSubmissionQueue();
       }
-    });
+    );
   }
 
   function deleteCurrentAgenda() {
-    const row = document.getElementById("editRow").value;
+    const row =
+    document
+    .getElementById("editRow")
+    .value;
 
     if (!row) {
-      showFormError("No agenda selected.");
+      showFormError(
+        "No agenda selected."
+      );
+
       return;
     }
 
@@ -990,61 +1536,103 @@
   }
 
   function deleteAgenda(row) {
-    jsonp({ action: "delete", row }, function(res) {
-      if (res.success) {
-        closeModal();
-        showPageMessage("Agenda deleted.", "success");
-        loadAll();
-      } else {
-        showFormError(res.message || "Unable to delete agenda.");
+    jsonp(
+      {
+        action: "delete",
+        row: row
+      },
+      function(res) {
+        if (res.success) {
+          closeModal();
+
+          showPageMessage(
+            "Agenda deleted.",
+            "success"
+          );
+
+          loadAll();
+
+        } else {
+          showFormError(
+            res.message ||
+            "Unable to delete agenda."
+          );
+        }
+      },
+      function(error) {
+        showFormError(
+          error.message ||
+          "Unable to delete agenda."
+        );
       }
-    });
+    );
   }
 
   function startAssembly() {
-    jsonp({ action: "startAssembly" }, function(res) {
-      showPageMessage(
-        res.message || "Unable to record start time.",
-        res.success ? "success" : "error"
-      );
+    jsonp(
+      { action: "startAssembly" },
+      function(res) {
+        showPageMessage(
+          res.message ||
+          "Unable to record start time.",
+          res.success
+            ? "success"
+            : "error"
+        );
 
-      if (res.success) {
-        loadAssemblyRecords();
+        if (res.success) {
+          loadAssemblyRecords();
+        }
+      },
+      function(error) {
+        showPageMessage(
+          error.message ||
+          "Unable to record start time.",
+          "error"
+        );
       }
-    });
+    );
   }
 
   function endAssembly() {
-    jsonp({ action: "endAssembly" }, function(res) {
-      showPageMessage(
-        res.message || "Unable to record end time.",
-        res.success ? "success" : "error"
-      );
+    jsonp(
+      { action: "endAssembly" },
+      function(res) {
+        showPageMessage(
+          res.message ||
+          "Unable to record end time.",
+          res.success
+            ? "success"
+            : "error"
+        );
 
-      if (res.success) {
-        loadAssemblyRecords();
+        if (res.success) {
+          loadAssemblyRecords();
+        }
+      },
+      function(error) {
+        showPageMessage(
+          error.message ||
+          "Unable to record end time.",
+          "error"
+        );
       }
-    });
+    );
   }
 
   function showFormError(message) {
-    const box = document.getElementById("formMessage");
-    box.textContent = message;
-    box.className = "form-message form-error";
-  }
+    const box =
+    document.getElementById("formMessage");
 
-  function showFormSuccess(message) {
-    const box = document.getElementById("formMessage");
     box.textContent = message;
-    box.className = "form-message form-success";
-
-    setTimeout(function() {
-      clearFormError();
-    }, 3000);
+    box.className =
+    "form-message form-error";
   }
 
   function clearFormError() {
-    const box = document.getElementById("formMessage");
+    const box =
+    document.getElementById("formMessage");
+
     if (!box) return;
 
     box.textContent = "";
@@ -1052,20 +1640,25 @@
   }
 
   function showPageMessage(message, type) {
-    const box = document.getElementById("pageMessage");
+    const box =
+    document.getElementById("pageMessage");
+
     if (!box) return;
 
     box.textContent = message;
-    box.className = "message-box " + (type === "success" ? "message-success" : "message-error");
+
+    box.className =
+    "message-box " +
+    (
+      type === "success"
+        ? "message-success"
+        : "message-error"
+    );
 
     setTimeout(function() {
       box.className = "message-box";
       box.textContent = "";
     }, 5000);
-  }
-
-  function formatDate(date) {
-    return formatUKDate(date);
   }
 
   function escapeHtml(text) {
@@ -1078,7 +1671,11 @@
   }
 
   loadAll();
-  setInterval(loadAll, 30000);
+
+  setInterval(
+    loadAll,
+    30000
+  );
 </script>
 
 </body>
