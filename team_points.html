@@ -33,7 +33,8 @@
 
         button,
         input,
-        select {
+        select,
+        textarea {
             font-family: Arial, sans-serif;
             font-size: 11pt;
         }
@@ -54,7 +55,7 @@
 
         .nav-container button {
             flex: 1;
-            min-width: 180px;
+            min-width: 150px;
             padding: 11px 12px;
             border: none;
             border-radius: 5px;
@@ -118,7 +119,8 @@
         }
 
         input,
-        select {
+        select,
+        textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #cfd7e6;
@@ -128,7 +130,8 @@
         }
 
         input:focus,
-        select:focus {
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: var(--blue);
         }
@@ -649,6 +652,106 @@
         }
     }
 
+    
+        /* TEAMS + RULES TABS */
+
+        textarea { resize: vertical; line-height: 1.4; }
+
+        .hint {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 10pt;
+            font-weight: normal;
+        }
+
+        .sub-title {
+            margin: 30px 0 0 0;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .status {
+            max-width: 500px;
+            margin-top: 14px;
+            padding: 11px 13px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .status.success { color: var(--success); background: #edf8ef; border: 1px solid #b7e0be; }
+        .status.error { color: var(--danger); background: #fff0f0; border: 1px solid #f1b9b9; }
+
+        .buttons button:disabled { opacity: 0.6; cursor: wait; }
+
+        .members-cell { max-width: 420px; line-height: 1.5; }
+
+        /* MULTI-ROW ENTRY (STUDENTS + RULES) */
+
+        .entry-grid { max-width: 760px; }
+
+        .entry-head,
+        .entry-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 40px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .rules-grid .entry-head,
+        .rules-grid .entry-row { grid-template-columns: 2fr 1fr 40px; }
+
+        .entry-head {
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: var(--dark-blue);
+        }
+
+        .entry-row { margin-bottom: 8px; }
+
+        .row-remove {
+            height: 38px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            background: var(--muted);
+            font-weight: bold;
+            font-size: 14pt;
+            line-height: 1;
+        }
+
+        .row-remove:hover { background: var(--danger); }
+
+        .entry-buttons { max-width: 760px; flex-wrap: wrap; }
+        .entry-buttons button { flex: 1 1 140px; }
+
+        @media screen and (max-width: 768px) {
+            .entry-head,
+            .entry-row { grid-template-columns: 1fr 1fr 34px; gap: 6px; }
+            .rules-grid .entry-head,
+            .rules-grid .entry-row { grid-template-columns: 1.6fr 1fr 34px; }
+        }
+
+    @media screen and (max-width: 768px) {
+
+        #teamsTableBody td:nth-child(1)::before { content: "Team"; }
+        #teamsTableBody td:nth-child(2)::before { content: "Members"; }
+        #teamsTableBody td:nth-child(3)::before { content: "Total"; }
+        #teamsTableBody td:nth-child(4)::before { content: "Records"; }
+        #teamsTableBody td:nth-child(5)::before { content: "Action"; }
+
+        #rulesTableBody td:nth-child(1)::before { content: "Rule"; }
+        #rulesTableBody td:nth-child(2)::before { content: "Points"; }
+        #rulesTableBody td:nth-child(3)::before { content: "Action"; }
+
+        #staffTableBody td:nth-child(1)::before { content: "Name"; }
+        #staffTableBody td:nth-child(2)::before { content: "Role"; }
+        #staffTableBody td:nth-child(3)::before { content: "Action"; }
+
+        .members-cell { max-width: none; }
+        .status { max-width: none; }
+    }
+
     </style>
 </head>
 
@@ -683,6 +786,33 @@
         onclick="showSection('top')">
 
             TOP POINT EARNER
+
+        </button>
+
+        <button
+        id="teamsTabBtn"
+        type="button"
+        onclick="showSection('teams')">
+
+            MANAGE TEAMS
+
+        </button>
+
+        <button
+        id="rulesTabBtn"
+        type="button"
+        onclick="showSection('rules')">
+
+            MANAGE RULES
+
+        </button>
+
+        <button
+        id="staffTabBtn"
+        type="button"
+        onclick="showSection('staff')">
+
+            MANAGE STAFF
 
         </button>
 
@@ -1015,6 +1145,157 @@
 
     </div>
 
+    <!-- MANAGE TEAMS -->
+
+    <div class="form-container hidden" id="teamsSection">
+
+        <div class="section-header">
+            <h2>Add Students</h2>
+            <button class="hidden" id="openStudentsBtn" type="button" onclick="openStudentsPanel()">+ Add Students</button>
+        </div>
+
+        <div id="studentsPanel">
+
+            <div class="entry-grid">
+                <div class="entry-head">
+                    <span>Name</span>
+                    <span>Team</span>
+                    <span></span>
+                </div>
+                <div id="studentRows"></div>
+            </div>
+
+            <datalist id="teamOptions"></datalist>
+
+            <div class="hint" id="studentCount">0 students ready to submit. Pick an existing team or type a new one.</div>
+            <div class="error-text" id="studentsError"></div>
+
+            <div class="buttons entry-buttons">
+                <button class="edit-btn" type="button" onclick="addEntryRow('students')">Add another student</button>
+                <button class="save-btn" id="submitStudentsBtn" type="button" onclick="submitStudents()">Submit</button>
+                <button class="clear-btn" type="button" onclick="clearStudents()">Clear</button>
+                <button class="close-btn" type="button" onclick="closeStudentsPanel()">Close</button>
+            </div>
+
+        </div>
+
+        <div class="status hidden" id="teamsStatus"></div>
+
+        <h2 class="sub-title">Existing Teams</h2>
+
+        <div class="empty-message" id="teamsEmptyMessage">Loading teams...</div>
+
+        <div class="table-wrapper hidden" id="teamsTableWrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Members</th>
+                        <th>Total</th>
+                        <th>Records</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="teamsTableBody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- MANAGE RULES -->
+
+    <div class="form-container hidden" id="rulesSection">
+
+        <div class="section-header">
+            <h2>Add Auto Deduct Rules</h2>
+        </div>
+
+        <div class="entry-grid rules-grid">
+            <div class="entry-head">
+                <span>Rule</span>
+                <span>Points to Deduct</span>
+                <span></span>
+            </div>
+            <div id="ruleRows"></div>
+        </div>
+
+        <div class="hint" id="ruleCount">0 rules ready to submit. Enter a positive number: it is saved as a deduction (5 becomes -5).</div>
+        <div class="error-text" id="rulesError"></div>
+
+        <div class="buttons entry-buttons">
+            <button class="edit-btn" type="button" onclick="addEntryRow('rules')">Add another rule</button>
+            <button class="save-btn" id="submitRulesBtn" type="button" onclick="submitRules()">Submit</button>
+            <button class="clear-btn" type="button" onclick="clearRules()">Clear</button>
+        </div>
+
+        <div class="status hidden" id="rulesStatus"></div>
+
+        <h2 class="sub-title">Existing Rules</h2>
+
+        <div class="empty-message" id="rulesEmptyMessage">No auto deduct rules yet. Add one above.</div>
+
+        <div class="table-wrapper hidden" id="rulesTableWrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Points</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="rulesTableBody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- MANAGE STAFF -->
+
+    <div class="form-container hidden" id="staffSection">
+
+        <div class="section-header">
+            <h2>Add Staff</h2>
+        </div>
+
+        <div class="field">
+            <label>Name</label>
+            <input id="newStaffName" placeholder="e.g. Mr. Jallow" autocomplete="off">
+            <div class="error-text" id="newStaffName-error"></div>
+        </div>
+
+        <div class="field">
+            <label>Role</label>
+            <input id="newStaffRole" value="Teacher" autocomplete="off">
+            <div class="hint">Leave as Teacher or change it (e.g. Principal).</div>
+            <div class="error-text" id="newStaffRole-error"></div>
+        </div>
+
+        <div class="buttons">
+            <button class="save-btn" id="addStaffBtn" type="button" onclick="addStaff()">Add Staff</button>
+            <button class="clear-btn" type="button" onclick="clearStaffForm()">Clear</button>
+        </div>
+
+        <div class="status hidden" id="staffStatus"></div>
+
+        <h2 class="sub-title">Current Staff</h2>
+
+        <div class="empty-message" id="staffEmptyMessage">No staff yet. Add one above.</div>
+
+        <div class="table-wrapper hidden" id="staffTableWrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="staffTableBody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
     <!-- TEAM POINT ENTRY FORM -->
 
     <div
@@ -1242,10 +1523,24 @@
 
     </div>
 
+    <!-- GENERIC CONFIRMATION (delete team / delete rule) -->
+
+    <div class="delete-modal-overlay" id="genericConfirmModal">
+        <div class="delete-modal">
+            <h2 id="confirmTitle">Confirm</h2>
+            <p id="confirmMessage"></p>
+            <div class="delete-record-details" id="confirmDetails"></div>
+            <div class="delete-modal-buttons">
+                <button class="cancel-delete-btn" type="button" onclick="closeGenericConfirm()">Cancel</button>
+                <button class="confirm-delete-btn" id="genericConfirmBtn" type="button" onclick="runGenericConfirm()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
 
         const WEB_APP_URL =
-        "https://script.google.com/macros/s/AKfycbxbLE7FC-2OreRnAwrJdnXh3qI_megG14AceHabDDdNsUkVPxI5en_4dcgCbQMWcPfw/exec";
+        "https://script.google.com/macros/s/AKfycbw9Mx303qOdxzNwh8GUI1soUhCD9T_GAcsGlCzA43BeVQHH4orp2gbgDNVmUEgZk1P_/exec";
 
         const ENTRY_MODAL_STORAGE_KEY =
         "teamPointEntryOpen";
@@ -1262,7 +1557,9 @@
             activeSection: "view",
             jsonpCounter: 0,
             submissionQueue: [],
-            processingQueue: false
+            processingQueue: false,
+            teamsOverview: [],
+            pendingConfirm: null
         };
 
         const timestamp =
@@ -1311,7 +1608,7 @@
             setToday();
             setTopDefaults();
             setEventListeners();
-
+            setManagementListeners();
             /*
              * Load all dropdown data quietly in the background.
              */
@@ -1444,10 +1741,11 @@
                 populateRules();
                 populateStaff();
                 populateTeamFilters();
+                populateTeamOptions();
                 populateTerms();
-
+                renderRulesTable();
+                renderStaffTable();
             } catch (error) {
-
                 console.error(
                     "Unable to load Team Point data:",
                     error
@@ -1469,7 +1767,8 @@
 
             if (
                 entryModal.classList.contains("show") ||
-                deleteModal.classList.contains("show")
+                deleteModal.classList.contains("show") ||
+                document.getElementById("genericConfirmModal").classList.contains("show")
             ) {
                 return;
             }
@@ -1606,8 +1905,29 @@
                     currentValue;
                 }
             });
+            updateNoTeamHints();
         }
 
+        function updateNoTeamHints() {
+            const hint =
+            "No teams yet. Open MANAGE TEAMS to create one.";
+            [
+                ["viewEmptyMessage",
+                 "Select a team to load that team's point records."],
+                ["manageEmptyMessage",
+                 "Select a team to manage its point records."]
+            ].forEach(pair => {
+                const element =
+                document.getElementById(pair[0]);
+                if (!state.teams.length) {
+                    element.textContent = hint;
+                } else if (
+                    element.textContent.trim() === hint
+                ) {
+                    element.textContent = pair[1];
+                }
+            });
+        }
         function populateTerms() {
 
             const currentValue =
@@ -1653,70 +1973,65 @@
             }
         }
 
+        const SECTION_IDS = {
+            view: "viewSection",
+            manage: "manageSection",
+            top: "topSection",
+            teams: "teamsSection",
+            rules: "rulesSection",
+            staff: "staffSection"
+        };
+        const TAB_IDS = {
+            view: "viewTabBtn",
+            manage: "manageTabBtn",
+            top: "topEarnersTabBtn",
+            teams: "teamsTabBtn",
+            rules: "rulesTabBtn",
+            staff: "staffTabBtn"
+        };
         function showSection(sectionName) {
-
             state.activeSection =
             sectionName;
-
-            document
-            .getElementById("viewSection")
-            .classList.toggle(
-                "hidden",
-                sectionName !== "view"
-            );
-
-            document
-            .getElementById("manageSection")
-            .classList.toggle(
-                "hidden",
-                sectionName !== "manage"
-            );
-
-            document
-            .getElementById("topSection")
-            .classList.toggle(
-                "hidden",
-                sectionName !== "top"
-            );
-
-            document
-            .getElementById("viewTabBtn")
-            .classList.toggle(
-                "active",
-                sectionName === "view"
-            );
-
-            document
-            .getElementById("manageTabBtn")
-            .classList.toggle(
-                "active",
-                sectionName === "manage"
-            );
-
-            document
-            .getElementById("topEarnersTabBtn")
-            .classList.toggle(
-                "active",
-                sectionName === "top"
-            );
-
+            Object.keys(SECTION_IDS).forEach(name => {
+                document
+                .getElementById(SECTION_IDS[name])
+                .classList.toggle(
+                    "hidden",
+                    sectionName !== name
+                );
+                document
+                .getElementById(TAB_IDS[name])
+                .classList.toggle(
+                    "active",
+                    sectionName === name
+                );
+            });
             if (
                 sectionName === "view" &&
                 viewTeamSelect.value
             ) {
                 loadViewTeamPoints(true);
             }
-
             if (
                 sectionName === "manage" &&
                 manageTeamSelect.value
             ) {
                 loadManageTeamPoints(true);
             }
-
             if (sectionName === "top") {
                 updateTopPeriodFields();
                 loadTopPointEarners(true);
+            }
+            if (sectionName === "teams") {
+                loadTeamsOverview(true);
+            }
+            if (sectionName === "rules") {
+                renderRulesTable();
+                loadFormData(true);
+            }
+            if (sectionName === "staff") {
+                renderStaffTable();
+                loadFormData(true);
             }
         }
 
@@ -1745,8 +2060,13 @@
             if (state.activeSection === "top") {
                 loadTopPointEarners(true);
             }
+            if (state.activeSection === "teams") {
+                loadTeamsOverview(true);
+            }
+            if (state.activeSection === "rules" || state.activeSection === "staff") {
+                loadFormData(true);
+            }
         }
-
         function setToday() {
 
             const now =
@@ -2837,6 +3157,667 @@
                 tableBody.appendChild(row);
             });
         }
+
+                /* ===============================================
+         * STATUS MESSAGES + GENERIC CONFIRMATION
+         * =============================================== */
+        const statusTimers = {};
+        function setStatus(elementId, message, type) {
+            const element =
+            document.getElementById(elementId);
+            element.textContent = message;
+            element.className = "status " + type;
+            clearTimeout(statusTimers[elementId]);
+            statusTimers[elementId] =
+            setTimeout(() => {
+                element.classList.add("hidden");
+            }, 8000);
+        }
+        function openGenericConfirm(options) {
+            state.pendingConfirm = options.onConfirm;
+            document.getElementById("confirmTitle").textContent = options.title;
+            document.getElementById("confirmMessage").textContent = options.message;
+            document.getElementById("confirmDetails").innerHTML =
+            options.details.map(pair => {
+                return `<div><strong>${escapeHtml(pair[0])}:</strong> ${escapeHtml(pair[1])}</div>`;
+            }).join("");
+            document.getElementById("genericConfirmBtn").textContent = options.buttonText;
+            document.getElementById("genericConfirmModal").classList.add("show");
+        }
+        function closeGenericConfirm() {
+            state.pendingConfirm = null;
+            document.getElementById("genericConfirmModal").classList.remove("show");
+        }
+        async function runGenericConfirm() {
+            const action = state.pendingConfirm;
+            closeGenericConfirm();
+            if (action) {
+                await action();
+            }
+        }
+        function showFieldError(fieldId, message) {
+            document.getElementById(fieldId).classList.add("error");
+            document.getElementById(fieldId + "-error").textContent = message;
+        }
+        function clearFieldErrors(ids) {
+            ids.forEach(id => {
+                document.getElementById(id).classList.remove("error");
+                document.getElementById(id + "-error").textContent = "";
+            });
+        }
+
+        /* ===============================================
+         * MANAGE TEAMS
+         * =============================================== */
+        /* ---- Generic multi-row grid (used by Students and Rules) ---- */
+        const ENTRY_GRIDS = {
+            students: {
+                containerId: "studentRows",
+                fields: [
+                    { key: "name", placeholder: "Student name", maxLength: 100 },
+                    { key: "team", placeholder: "Team (pick or type)", maxLength: 60, list: "teamOptions" }
+                ],
+                copyFromPrevious: ["team"]
+            },
+            rules: {
+                containerId: "ruleRows",
+                fields: [
+                    { key: "rule", placeholder: "e.g. Late to class", maxLength: 200 },
+                    { key: "points", placeholder: "e.g. 5", type: "number", min: "1", step: "1" }
+                ],
+                copyFromPrevious: []
+            }
+        };
+        function getEntryRows(gridName) {
+            const container = document.getElementById(ENTRY_GRIDS[gridName].containerId);
+            return Array.from(container.querySelectorAll(".entry-row")).map(element => {
+                const values = {};
+                element.querySelectorAll("input[data-field]").forEach(input => {
+                    values[input.dataset.field] = input.value;
+                });
+                return { element: element, values: values };
+            });
+        }
+        function addEntryRow(gridName, values, options) {
+            const grid = ENTRY_GRIDS[gridName];
+            const container = document.getElementById(grid.containerId);
+            const settings = options || {};
+            const existingRows = container.querySelectorAll(".entry-row");
+            const previous = settings.afterRow || existingRows[existingRows.length - 1];
+            const row = document.createElement("div");
+            row.className = "entry-row";
+            grid.fields.forEach(field => {
+                const input = document.createElement("input");
+                input.type = field.type || "text";
+                input.dataset.field = field.key;
+                input.placeholder = field.placeholder || "";
+                input.autocomplete = "off";
+                if (field.maxLength) { input.maxLength = field.maxLength; }
+                if (field.min) { input.min = field.min; }
+                if (field.step) { input.step = field.step; }
+                if (field.list) { input.setAttribute("list", field.list); }
+                let value = values && values[field.key];
+                if (value === undefined && previous && grid.copyFromPrevious.includes(field.key)) {
+                    const prevInput = previous.querySelector('input[data-field="' + field.key + '"]');
+                    value = prevInput ? prevInput.value : "";
+                }
+                input.value = value === undefined || value === null ? "" : value;
+                row.appendChild(input);
+            });
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.className = "row-remove";
+            remove.title = "Remove this row";
+            remove.setAttribute("aria-label", "Remove this row");
+            remove.dataset.removeRow = "1";
+            remove.textContent = "\u00d7";
+            row.appendChild(remove);
+            if (settings.afterRow) {
+                container.insertBefore(row, settings.afterRow.nextSibling);
+            } else {
+                container.appendChild(row);
+            }
+            if (settings.focus !== false) {
+                row.querySelector("input").focus();
+            }
+            updateEntryCounts();
+            return row;
+        }
+        function resetEntryGrid(gridName, keepTeam) {
+            const container = document.getElementById(ENTRY_GRIDS[gridName].containerId);
+            const lastTeam = keepTeam ? (getEntryRows(gridName).slice(-1)[0] || { values: {} }).values.team : undefined;
+            container.innerHTML = "";
+            addEntryRow(gridName, lastTeam ? { team: lastTeam } : {}, { focus: false });
+        }
+        function markEntryError(row, fieldKey) {
+            const input = row.element.querySelector('input[data-field="' + fieldKey + '"]');
+            if (input) { input.classList.add("error"); }
+        }
+        function clearEntryErrors(gridName) {
+            document.getElementById(ENTRY_GRIDS[gridName].containerId)
+            .querySelectorAll(".error")
+            .forEach(input => input.classList.remove("error"));
+        }
+        function cleanCell(value) {
+            return String(value || "").replace(/\s+/g, " ").trim();
+        }
+        function updateEntryCounts() {
+            const studentTotal = getEntryRows("students")
+            .filter(row => cleanCell(row.values.name)).length;
+            document.getElementById("studentCount").textContent =
+            `${studentTotal} ${studentTotal === 1 ? "student" : "students"} ready to submit. Pick an existing team or type a new one.`;
+            const ruleTotal = getEntryRows("rules")
+            .filter(row => cleanCell(row.values.rule)).length;
+            document.getElementById("ruleCount").textContent =
+            `${ruleTotal} ${ruleTotal === 1 ? "rule" : "rules"} ready to submit. Enter a positive number: it is saved as a deduction (5 becomes -5).`;
+        }
+        function chunkRows(rows, maxEncodedLength) {
+            const chunks = [];
+            let current = [];
+            rows.forEach(row => {
+                const test = current.concat([row]);
+                if (current.length && encodeURIComponent(JSON.stringify(test)).length > maxEncodedLength) {
+                    chunks.push(current);
+                    current = [row];
+                } else {
+                    current = test;
+                }
+            });
+            if (current.length) { chunks.push(current); }
+            return chunks;
+        }
+        function setupEntryGridListeners(gridName) {
+            const grid = ENTRY_GRIDS[gridName];
+            const container = document.getElementById(grid.containerId);
+            container.addEventListener("input", function (event) {
+                event.target.classList.remove("error");
+                updateEntryCounts();
+            });
+            container.addEventListener("click", function (event) {
+                const button = event.target.closest("button[data-remove-row]");
+                if (!button) { return; }
+                const row = button.closest(".entry-row");
+                if (container.querySelectorAll(".entry-row").length === 1) {
+                    row.querySelectorAll("input").forEach(input => { input.value = ""; input.classList.remove("error"); });
+                } else {
+                    row.remove();
+                }
+                updateEntryCounts();
+            });
+            container.addEventListener("keydown", function (event) {
+                if (event.key !== "Enter" || !event.target.matches("input[data-field]")) { return; }
+                event.preventDefault();
+                const row = event.target.closest(".entry-row");
+                const inputs = Array.from(row.querySelectorAll("input[data-field]"));
+                const index = inputs.indexOf(event.target);
+                if (index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                    return;
+                }
+                const nextRow = row.nextElementSibling;
+                if (nextRow) {
+                    nextRow.querySelector("input").focus();
+                } else {
+                    addEntryRow(gridName);
+                }
+            });
+        }
+        /* Pasting a list of names (one per line, or "Name<TAB>Team" from a sheet) fills several rows at once. */
+        function handleStudentPaste(event) {
+            const input = event.target;
+            if (!input.matches('input[data-field="name"]')) { return; }
+            const text = (event.clipboardData || window.clipboardData).getData("text");
+            if (!/\r?\n/.test(text.trim())) { return; }
+            event.preventDefault();
+            const currentRow = input.closest(".entry-row");
+            const defaultTeam = currentRow.querySelector('input[data-field="team"]').value;
+            const lines = text.split(/\r?\n/)
+            .map(line => line.replace(/^\s*\d+\s*[.)\-]\s+/, ""))
+            .filter(line => line.trim());
+            let anchor = currentRow;
+            lines.forEach((line, index) => {
+                const parts = line.split("\t");
+                const name = cleanCell(parts[0]);
+                const team = cleanCell(parts[1]) || defaultTeam;
+                if (index === 0) {
+                    input.value = name;
+                    currentRow.querySelector('input[data-field="team"]').value = team;
+                } else {
+                    anchor = addEntryRow("students", { name: name, team: team }, { afterRow: anchor, focus: false });
+                }
+            });
+            updateEntryCounts();
+        }
+        /* ---- Students ---- */
+        function populateTeamOptions() {
+            const list = document.getElementById("teamOptions");
+            list.innerHTML = "";
+            state.teams.forEach(team => {
+                const option = document.createElement("option");
+                option.value = team;
+                list.appendChild(option);
+            });
+        }
+        function clearStudents() {
+            resetEntryGrid("students", false);
+            document.getElementById("studentsError").textContent = "";
+        }
+        function closeStudentsPanel() {
+            document.getElementById("studentsPanel").classList.add("hidden");
+            document.getElementById("openStudentsBtn").classList.remove("hidden");
+        }
+        function openStudentsPanel() {
+            document.getElementById("studentsPanel").classList.remove("hidden");
+            document.getElementById("openStudentsBtn").classList.add("hidden");
+            const rows = getEntryRows("students");
+            const last = rows[rows.length - 1];
+            if (last) { last.element.querySelector("input").focus(); }
+        }
+        async function submitStudents() {
+            clearEntryErrors("students");
+            const errorBox = document.getElementById("studentsError");
+            errorBox.textContent = "";
+            const entries = [];
+            let problem = "";
+            getEntryRows("students").forEach((row, index) => {
+                const name = cleanCell(row.values.name);
+                const team = cleanCell(row.values.team);
+                if (!name && !team) { return; }
+                if (!name) {
+                    markEntryError(row, "name");
+                    problem = problem || `Row ${index + 1}: enter the student's name.`;
+                }
+                if (!team) {
+                    markEntryError(row, "team");
+                    problem = problem || `Row ${index + 1}: enter or pick a team.`;
+                }
+                if (name && team) { entries.push([name, team]); }
+            });
+            if (!problem && !entries.length) {
+                problem = "Add at least one student.";
+            }
+            if (problem) {
+                errorBox.textContent = problem;
+                return;
+            }
+            const button = document.getElementById("submitStudentsBtn");
+            button.disabled = true;
+            button.textContent = "Saving...";
+            let added = 0;
+            let skipped = 0;
+            const newTeams = new Set();
+            try {
+                for (const chunk of chunkRows(entries, 3200)) {
+                    const response = await jsonpRequest({
+                        action: "addStudents",
+                        students: JSON.stringify(chunk)
+                    });
+                    if (!response.success) {
+                        throw new Error(response.message || "Unable to add the students.");
+                    }
+                    added += response.added || 0;
+                    skipped += response.skipped || 0;
+                    (response.newTeams || []).forEach(team => newTeams.add(team));
+                }
+                let message = `${added} ${added === 1 ? "student" : "students"} added.`;
+                if (newTeams.size) {
+                    message += ` New ${newTeams.size === 1 ? "team" : "teams"}: ${Array.from(newTeams).join(", ")}.`;
+                }
+                if (skipped) {
+                    message += ` ${skipped} skipped (already in that team).`;
+                }
+                setStatus("teamsStatus", message, "success");
+                resetEntryGrid("students", true);
+                await Promise.all([loadFormData(true), loadTeamsOverview(true)]);
+            } catch (error) {
+                const saved = added ? ` ${added} saved before the problem; press Submit again and those will be skipped.` : "";
+                setStatus("teamsStatus", error.message + saved, "error");
+            } finally {
+                button.disabled = false;
+                button.textContent = "Submit";
+            }
+        }
+        async function loadTeamsOverview(silent = false) {
+            try {
+                const response = await jsonpRequest({ action: "getTeamsOverview" });
+                if (!response.success) {
+                    throw new Error(response.message || "Unable to load teams.");
+                }
+                state.teamsOverview = response.teams || [];
+                renderTeamsTable();
+            } catch (error) {
+                console.error(error);
+                if (!silent) {
+                    setStatus("teamsStatus", error.message, "error");
+                }
+            }
+        }
+        function renderTeamsTable() {
+            const body = document.getElementById("teamsTableBody");
+            const wrapper = document.getElementById("teamsTableWrapper");
+            const empty = document.getElementById("teamsEmptyMessage");
+            body.innerHTML = "";
+            if (!state.teamsOverview.length) {
+                wrapper.classList.add("hidden");
+                empty.classList.remove("hidden");
+                empty.textContent = "No teams yet. Create your first team above.";
+                return;
+            }
+            empty.classList.add("hidden");
+            wrapper.classList.remove("hidden");
+            state.teamsOverview.forEach(team => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><strong>${escapeHtml(team.team)}</strong></td>
+                    <td class="members-cell">${escapeHtml(team.members.join(", "))}</td>
+                    <td>${escapeHtml(team.members.length)}</td>
+                    <td>${escapeHtml(team.recordCount)}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="delete-btn" type="button" data-team="${escapeHtml(team.team)}">Delete</button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+        }
+        function deleteTeamPrompt(teamName) {
+            const team = state.teamsOverview.find(item => item.team === teamName);
+            if (!team) {
+                return;
+            }
+            openGenericConfirm({
+                title: "Delete Team",
+                message: "This permanently deletes the team, all its members and all its point records. This action cannot be undone.",
+                details: [
+                    ["Team", team.team],
+                    ["Members", team.members.length],
+                    ["Point records", team.recordCount]
+                ],
+                buttonText: "Delete Team",
+                onConfirm: () => deleteTeam(team.team)
+            });
+        }
+        async function deleteTeam(teamName) {
+            try {
+                const response =
+                await jsonpRequest({ action: "deleteTeam", team: teamName });
+                if (!response.success) {
+                    throw new Error(response.message || "Unable to delete the team.");
+                }
+                setStatus("teamsStatus", response.message, "success");
+                if (normalizeText(viewTeamSelect.value) === normalizeText(teamName)) {
+                    viewTeamSelect.value = "";
+                    resetViewSection();
+                }
+                if (normalizeText(manageTeamSelect.value) === normalizeText(teamName)) {
+                    manageTeamSelect.value = "";
+                    resetManageSection();
+                }
+            } catch (error) {
+                setStatus("teamsStatus", error.message, "error");
+            }
+            await Promise.all([loadFormData(true), loadTeamsOverview(true)]);
+        }
+
+        /* ===============================================
+         * MANAGE RULES
+         * =============================================== */
+        function clearRules() {
+            resetEntryGrid("rules", false);
+            document.getElementById("rulesError").textContent = "";
+        }
+        async function submitRules() {
+            clearEntryErrors("rules");
+            const errorBox = document.getElementById("rulesError");
+            errorBox.textContent = "";
+            const entries = [];
+            const seen = new Set(state.rules.map(item => normalizeText(item.rule)));
+            let problem = "";
+            getEntryRows("rules").forEach((row, index) => {
+                const rule = cleanCell(row.values.rule);
+                const pointsText = String(row.values.points || "").trim();
+                if (!rule && !pointsText) { return; }
+                const deduction = Math.abs(Number(pointsText));
+                if (!rule) {
+                    markEntryError(row, "rule");
+                    problem = problem || `Row ${index + 1}: enter the rule.`;
+                } else if (seen.has(normalizeText(rule))) {
+                    markEntryError(row, "rule");
+                    problem = problem || `Row ${index + 1}: "${rule}" already exists or is repeated.`;
+                }
+                if (pointsText === "" || !Number.isFinite(deduction) || deduction === 0) {
+                    markEntryError(row, "points");
+                    problem = problem || `Row ${index + 1}: enter points greater than zero.`;
+                }
+                if (rule) { seen.add(normalizeText(rule)); }
+                if (rule && pointsText !== "" && Number.isFinite(deduction) && deduction !== 0) {
+                    entries.push([rule, deduction]);
+                }
+            });
+            if (!problem && !entries.length) {
+                problem = "Add at least one rule.";
+            }
+            if (problem) {
+                errorBox.textContent = problem;
+                return;
+            }
+            const button = document.getElementById("submitRulesBtn");
+            button.disabled = true;
+            button.textContent = "Saving...";
+            let added = 0;
+            let skipped = 0;
+            try {
+                for (const chunk of chunkRows(entries, 3200)) {
+                    const response = await jsonpRequest({
+                        action: "addRules",
+                        rules: JSON.stringify(chunk)
+                    });
+                    if (!response.success) {
+                        throw new Error(response.message || "Unable to add the rules.");
+                    }
+                    added += response.added || 0;
+                    skipped += response.skipped || 0;
+                }
+                let message = `${added} ${added === 1 ? "rule" : "rules"} added.`;
+                if (skipped) {
+                    message += ` ${skipped} skipped (rule already exists).`;
+                }
+                setStatus("rulesStatus", message, "success");
+                resetEntryGrid("rules", false);
+                await loadFormData(true);
+            } catch (error) {
+                const saved = added ? ` ${added} saved before the problem; press Submit again and those will be skipped.` : "";
+                setStatus("rulesStatus", error.message + saved, "error");
+            } finally {
+                button.disabled = false;
+                button.textContent = "Submit";
+            }
+        }
+        function renderRulesTable() {
+            const body = document.getElementById("rulesTableBody");
+            const wrapper = document.getElementById("rulesTableWrapper");
+            const empty = document.getElementById("rulesEmptyMessage");
+            body.innerHTML = "";
+            if (!state.rules.length) {
+                wrapper.classList.add("hidden");
+                empty.classList.remove("hidden");
+                return;
+            }
+            empty.classList.add("hidden");
+            wrapper.classList.remove("hidden");
+            state.rules.forEach(item => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${escapeHtml(item.rule)}</td>
+                    <td class="negative-points">${escapeHtml(formatPoints(item.points))}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="delete-btn" type="button" data-rule-id="${escapeHtml(item.id)}">Delete</button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+        }
+        function deleteRulePrompt(ruleId) {
+            const item = state.rules.find(rule => String(rule.id) === String(ruleId));
+            if (!item) {
+                return;
+            }
+            openGenericConfirm({
+                title: "Delete Rule",
+                message: "This rule will no longer appear in the Auto Deduct Rules list. Points already recorded are not changed.",
+                details: [
+                    ["Rule", item.rule],
+                    ["Points", formatPoints(item.points)]
+                ],
+                buttonText: "Delete Rule",
+                onConfirm: () => deleteRule(item.id, item.rule)
+            });
+        }
+        async function deleteRule(ruleId, ruleText) {
+            try {
+                const response =
+                await jsonpRequest({ action: "deleteRule", ruleId: ruleId, rule: ruleText });
+                if (!response.success) {
+                    throw new Error(response.message || "Unable to delete the rule.");
+                }
+                setStatus("rulesStatus", response.message, "success");
+            } catch (error) {
+                setStatus("rulesStatus", error.message, "error");
+            }
+            await loadFormData(true);
+        }
+
+                /* ===============================================
+         * MANAGE STAFF
+         * =============================================== */
+        function clearStaffForm() {
+            document.getElementById("newStaffName").value = "";
+            document.getElementById("newStaffRole").value = "Teacher";
+            clearFieldErrors(["newStaffName", "newStaffRole"]);
+        }
+        async function addStaff() {
+            clearFieldErrors(["newStaffName", "newStaffRole"]);
+            const name =
+            document.getElementById("newStaffName").value.replace(/\s+/g, " ").trim();
+            const role =
+            document.getElementById("newStaffRole").value.replace(/\s+/g, " ").trim() || "Teacher";
+            if (!name) {
+                showFieldError("newStaffName", "Name is required.");
+                return;
+            }
+            if (state.staff.some(item => normalizeText(item.name) === normalizeText(name))) {
+                showFieldError("newStaffName", "This person is already in the staff list.");
+                return;
+            }
+            const button = document.getElementById("addStaffBtn");
+            button.disabled = true;
+            button.textContent = "Adding...";
+            try {
+                const response =
+                await jsonpRequest({ action: "addStaff", name: name, role: role });
+                if (!response.success) {
+                    throw new Error(response.message || "Unable to add staff.");
+                }
+                setStatus("staffStatus", response.message, "success");
+                clearStaffForm();
+                await loadFormData(true);
+            } catch (error) {
+                setStatus("staffStatus", error.message, "error");
+            } finally {
+                button.disabled = false;
+                button.textContent = "Add Staff";
+            }
+        }
+        function renderStaffTable() {
+            const body = document.getElementById("staffTableBody");
+            const wrapper = document.getElementById("staffTableWrapper");
+            const empty = document.getElementById("staffEmptyMessage");
+            body.innerHTML = "";
+            if (!state.staff.length) {
+                wrapper.classList.add("hidden");
+                empty.classList.remove("hidden");
+                return;
+            }
+            empty.classList.add("hidden");
+            wrapper.classList.remove("hidden");
+            state.staff.forEach(item => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${escapeHtml(item.name)}</td>
+                    <td>${escapeHtml(item.role)}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="delete-btn" type="button" data-staff-id="${escapeHtml(item.id)}">Remove</button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+        }
+        function deleteStaffPrompt(staffId) {
+            const item = state.staff.find(person => String(person.id) === String(staffId));
+            if (!item) {
+                return;
+            }
+            openGenericConfirm({
+                title: "Remove Staff",
+                message: "This person will no longer appear in the \"By\" list. Point records they already made keep their name.",
+                details: [
+                    ["Name", item.name],
+                    ["Role", item.role || "-"]
+                ],
+                buttonText: "Remove Staff",
+                onConfirm: () => deleteStaff(item.id, item.name)
+            });
+        }
+        async function deleteStaff(staffId, staffName) {
+            try {
+                const response =
+                await jsonpRequest({ action: "deleteStaff", staffId: staffId, name: staffName });
+                if (!response.success) {
+                    throw new Error(response.message || "Unable to remove staff.");
+                }
+                setStatus("staffStatus", response.message, "success");
+            } catch (error) {
+                setStatus("staffStatus", error.message, "error");
+            }
+            await loadFormData(true);
+        }
+
+
+        function setManagementListeners() {
+            setupEntryGridListeners("students");
+            setupEntryGridListeners("rules");
+            document.getElementById("studentRows")
+            .addEventListener("paste", handleStudentPaste);
+            resetEntryGrid("students", false);
+            resetEntryGrid("rules", false);
+            document.getElementById("teamsTableBody")
+            .addEventListener("click", function (event) {
+                const button = event.target.closest("button[data-team]");
+                if (button) {
+                    deleteTeamPrompt(button.dataset.team);
+                }
+            });
+            document.getElementById("staffTableBody")
+            .addEventListener("click", function (event) {
+                const button = event.target.closest("button[data-staff-id]");
+                if (button) {
+                    deleteStaffPrompt(button.dataset.staffId);
+                }
+            });
+            document.getElementById("rulesTableBody")
+            .addEventListener("click", function (event) {
+                const button = event.target.closest("button[data-rule-id]");
+                if (button) {
+                    deleteRulePrompt(button.dataset.ruleId);
+                }
+            });
+        }
+
 
         function jsonpRequest(parameters) {
 
